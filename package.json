@@ -1,0 +1,28 @@
+{
+  "name": "consul-git",
+  "description": "Tools for moving config data from git to consul",
+  "version": "0.0.1",
+  "contributors": [
+    {
+      "name": "Ryan Breen",
+      "email": "rbreen@vistaprint.com",
+      "web": ""
+    }
+  ],
+  "dependencies": {
+    "log4js": "0.6.14",
+    "mkdirp": "0.5.0"
+  },
+  "devDependencies": {
+    "mocha": "1.20.1",
+    "should": "3.3.2",
+    "istanbul": "0.2.11",
+    "rimraf": "2.2.8"
+  },
+  "licenses": [
+    {
+      "name": "proprietary",
+      "url": ""
+    }
+  ]
+}

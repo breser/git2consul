@@ -1,0 +1,11 @@
+{
+    "service": {
+        "id": "testservice2_check",
+        "name": "testservice",
+        "tags": ["node"],
+        "port": 8081,
+        "check": {
+            "ttl": "1s"
+        }
+    }
+}

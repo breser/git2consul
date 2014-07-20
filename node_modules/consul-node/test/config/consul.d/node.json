@@ -1,0 +1,8 @@
+{
+    "datacenter": "test-dc",
+    "data_dir": "/tmp/consultest",
+    "node_name": "test-node1",
+    "server": true,
+    "bootstrap": true,
+    "bind_addr": "127.0.0.1"
+}
