@@ -53,7 +53,7 @@ if (operation === DELETE_TYPE) {
 
 }
 
-var process_file = function(data_dir, f) {
+var process_file = function(data_dir, branch, f) {
   
   if (!f) f = '';
   
@@ -71,7 +71,7 @@ var process_file = function(data_dir, f) {
       if (err) return console.error('Failed to read directory %s', err);
       
       files.forEach(function(file) {
-        process_file(data_dir, f + '/' + file);
+        process_file(data_dir, branch, f + '/' + file);
       });
     });
     
@@ -79,7 +79,7 @@ var process_file = function(data_dir, f) {
     
     fs.readFile(fqf, {encoding:'utf8'}, function(err, body) {
       
-      var key_name = f.substring(1);
+      var key_name = branch + '/' + f.substring(1);
       var body = body ? body.trim() : '';
       
       if (err) return console.error('Failed to read directory %s', err);
@@ -148,7 +148,7 @@ if (operation === SERVER_TYPE) {
               console.log('Branch %s updated.  Syncing with Consul', branch_name);
 
               // Add changed branch to Consul
-              process_file(bm.getPath());
+              process_file(bm.getPath(), branch_name);
             });
           });
         });
