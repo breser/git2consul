@@ -22,50 +22,13 @@ else if (process.argv[2] === 's') operation = SERVER_TYPE;
 
 if (operation === PUT_TYPE) {
   
-  var process_file = function(f) {
-    
-    if (!f) f = '';
-    
-    var fqf = data_dir + f;
-    
-    if (fs.statSync(fqf).isDirectory()) {
-      
-      console.log('Reading directory %s', fqf);
-      
-      fs.readdir(fqf, function(err, files) {
-        if (err) return console.error('Failed to read directory %s', err);
-        
-        files.forEach(function(file) {
-          process_file(f + '/' + file);
-        });
-      });
-      
-    } else {
-      
-      fs.readFile(fqf, {encoding:'utf8'}, function(err, body) {
-        
-        var key_name = f.substring(1);
-        var body = body ? body.trim() : '';
-        
-        if (err) return console.error('Failed to read directory %s', err);
-        console.log('Adding key %s, value %s', key_name, body);
-        consul.kv.put(key_name, body, function(err) {
-          if (err) return console.error('Failed to put key %s: %s', key_name, require('util').inspect(err));
-          
-          console.log('Wrote key %s', key_name);
-        });
-      });
-      
-    }
-  };
-  
   if (process.argv.length != 4) {
-    console.error('usage: node . d data_dir');
+    console.error('usage: node . p data_dir');
     process.exit(2);
   }
   
   var data_dir = process.argv[3];
-  process_file();
+  process_file(data_dir);
 }
 
 if (operation === DELETE_TYPE) {
@@ -89,6 +52,47 @@ if (operation === DELETE_TYPE) {
   });
 
 }
+
+var process_file = function(data_dir, f) {
+  
+  if (!f) f = '';
+  
+  var fqf = data_dir + f;
+  
+  if (f.indexOf('.git') != -1) return;
+  
+  console.log('Looking at config file %s', fqf);
+  
+  if (fs.statSync(fqf).isDirectory()) {
+    
+    console.log('Reading directory %s', fqf);
+    
+    fs.readdir(fqf, function(err, files) {
+      if (err) return console.error('Failed to read directory %s', err);
+      
+      files.forEach(function(file) {
+        process_file(data_dir, f + '/' + file);
+      });
+    });
+    
+  } else {
+    
+    fs.readFile(fqf, {encoding:'utf8'}, function(err, body) {
+      
+      var key_name = f.substring(1);
+      var body = body ? body.trim() : '';
+      
+      if (err) return console.error('Failed to read directory %s', err);
+      console.log('Adding key %s, value %s', key_name, body);
+      consul.kv.put(key_name, body, function(err) {
+        if (err) return console.error('Failed to put key %s: %s', key_name, require('util').inspect(err));
+        
+        console.log('Wrote key %s', key_name);
+      });
+    });
+    
+  }
+};
 
 if (operation === SERVER_TYPE) {
   var express = require('express');
@@ -137,12 +141,14 @@ if (operation === SERVER_TYPE) {
               if (err) return console.error('Failed to check current state of branch %s', branch_name);
           
               if (ref !== refChange.toHash) {
-                return console.error('Branch update failed to reach toHash value %s', refChange.toHash);
+                // TODO: Remove this once testing is complete.
+                //return console.error('Branch update failed to reach toHash value %s', refChange.toHash);
               }
               
               console.log('Branch %s updated.  Syncing with Consul', branch_name);
 
-              // TODO: Add changed branch to Consul
+              // Add changed branch to Consul
+              process_file(bm.getPath());
             });
           });
         });
