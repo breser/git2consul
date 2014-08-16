@@ -10,7 +10,7 @@ var consul = new Consul();
  */
 
 if (process.argv.length !== 3) {
-  console.error('usage: node utils/seed.js config.js');
+  console.error('usage: node utils/config_seeder.js config.js');
   process.exit(1);
 }
 

@@ -23,10 +23,6 @@ config_reader.read(function(err, config) {
 
     // parse application/json
     app.use(bodyParser.json());
-  
-    // TESTING PURPOSES
-    //handle_ref_change({'refId':'refs/heads/development', 'toHash':'0'});
-    // TESTING PURPOSES
 
     ['get','post','put','delete'].forEach(function(verb) {
       app[verb]('/gitpoke', function(req, res){
