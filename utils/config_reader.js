@@ -11,10 +11,10 @@ exports.read = function(cb) {
     
     try {
       var config = JSON.parse(items[0].value);
-      cb(null, config);
     } catch(e) {
-      cb('Config value is not valid JSON: ' + require('util').inspect(items));
+      return cb('Config value is not valid JSON: ' + require('util').inspect(items));
     }
+    cb(null, config);
     
   });
 };
