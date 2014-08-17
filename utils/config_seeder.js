@@ -21,20 +21,17 @@ var add_entry = function(key, value, cb) {
 
 var config_file = process.argv[2];
 
-console.log('Adding keys from config file %s to local consul cluster', config_file);
+console.log('Adding %s as consul config', config_file);
 
-var file = fs.readFileSync(config_file, {'encoding':'utf8'});
-var obj = JSON.parse(file);
-for (var key in obj) {
-  var value = obj[key];
-  if (typeof value === 'string') {
-    add_entry('git2consul/' + key, value, function(err) {
-      if (err) return console.error(err);
-    });
-  } else if (value.hasOwnProperty('length')) {
-    value = value.join();
-    add_entry('git2consul/' + key, value, function(err) {
-      if (err) return console.error(err);
-    });
-  }
+var config = fs.readFileSync(config_file, {'encoding':'utf8'});
+
+try {
+  JSON.parse(config);
+} catch(e) {
+  console.error('config_file is not valid JSON');
+  process.exit(2);
 }
+
+consul.kv.put('git2consul/config', config, function(err) {
+  if (err) return console.error(err);
+});

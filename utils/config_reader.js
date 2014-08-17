@@ -6,14 +6,15 @@ var consul = new Consul();
  * Grab the meta config to bootstrap git2consul.
  */
 exports.read = function(cb) {
-  consul.kv.get('/git2consul/?recurse', function(err, items) {
+  consul.kv.get('/git2consul/config', function(err, items) {
     if (err) return cb(err);
     
-    var config = {};
-    items.forEach(function(item) {
-      config[item.key.substring(11)] = item.value.indexOf(',') === -1 ? item.value : item.value.split(',');
-    });
+    try {
+      var config = JSON.parse(items[0].value);
+      cb(null, config);
+    } catch(e) {
+      cb('Config value is not valid JSON: ' + require('util').inspect(items));
+    }
     
-    cb(null, config);
   });
 };
