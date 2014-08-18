@@ -1,10 +1,12 @@
 ##### TODO
 
 * ✓ Create a readme.md
-* Create a framework for initting a new repo
-    * Initialize git2consul using that repo
+* ✓ Create a framework for initting a new repo
+    * ✓ Initialize git2consul using that repo
 * Create test cases around all git operations
     * Add
+        * On pull
+        * ✓ On clone
     * Delete
     * Copy
     * Move

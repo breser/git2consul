@@ -18,14 +18,14 @@ config_reader.read(function(err, config) {
   // TODO: Complete repo config validation
   
   // Set up the git manager for each repo.
-  config.repos.forEach(function(repo_config) {
-    git_manager_source.createGitManager(repo_config, function(err, git_manager) {
-      if (err) {
-        // The failure to initialize a git manager is considered fatal.
-        console.error('Failed to init repo %s due to %s', repo_config.name, err);
-        //process.exit(2);
-      }
-    });
+  git_manager_source.createGitManagers(config.repos, function(err) {
+    if (err) {
+      console.error('Failed to create git managers due to %s', err);
+      setTimeout(function() {
+        // If any git manager failed to start, consider this a fatal error.
+        process.exit(2);
+      }, 2000);
+    }
   });
   
 });
