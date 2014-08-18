@@ -5,8 +5,13 @@ var consul = new Consul();
 /**
  * Grab the meta config to bootstrap git2consul.
  */
-exports.read = function(cb) {
-  consul.kv.get('/git2consul/config', function(err, items) {
+exports.read = function(path, cb) {
+  if (!cb) {
+    cb = path;
+    path = '/git2consul/config';
+  }
+  
+  consul.kv.get(path, function(err, items) {
     if (err) return cb(err);
     
     try {

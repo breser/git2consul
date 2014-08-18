@@ -22,6 +22,9 @@
     "istanbul": "0.2.11",
     "rimraf": "2.2.8"
   },
+  "scripts": {
+    "test_unix": "XUNIT_FILE=\"reports/TESTS-xunit.xml\" node_modules/.bin/istanbul cover --root lib --dir ./reports ./node_modules/.bin/_mocha -- --reporter xunit-file -t 10000 test"
+  },
   "licenses": [
     {
       "name": "proprietary",
