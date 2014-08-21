@@ -4,7 +4,7 @@ gi2consul takes one or many git repositories and mirrors them into [Consul](http
 
 ##### Configuration
 
-git2consul expects to be run on the same node as a Consul agent.  git2consul expects its own configuration to be stored as a JSON object in at '/git2consul/config' in your Consul KV.  The utility `utils/config_seeder.js` will take a JSON file and place it in the correct location for you.
+git2consul expects to be run on the same node as a Consul agent.  git2consul expects its own configuration to be stored as a JSON object in '/git2consul/config' in your Consul KV.  The utility `utils/config_seeder.js` will take a JSON file and place it in the correct location for you.
 
 ###### Configuration Format
 
