@@ -12,7 +12,7 @@ describe('cloning a new repo', function() {
     var sample_value = 'test data';
     var default_repo_config = git_utils.createConfig().repos[0];
     
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Basic test.", function(err) {
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Clone test.", function(err) {
       if (err) return done(err);
           
       git_manager.createGitManager(default_repo_config, function(err) {
@@ -32,13 +32,13 @@ describe('cloning a new repo', function() {
     var sample_key = 'sample_key';
     var sample_value = 'test data';
     var default_repo_config = git_utils.createConfig().repos[0];
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Basic test.", function(err) {
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Clone test.", function(err) {
       if (err) return done(err);
 
       var sample_key2 = 'sample_key2';
       var sample_value2 = 'test data2';
       var default_repo_config = git_utils.createConfig().repos[0];
-      git_utils.addFileToGitRepo(sample_key2, sample_value2, "Basic test.", function(err) {
+      git_utils.addFileToGitRepo(sample_key2, sample_value2, "Second file for clone test.", function(err) {
         if (err) return done(err);
           
         git_manager.createGitManager(default_repo_config, function(err) {

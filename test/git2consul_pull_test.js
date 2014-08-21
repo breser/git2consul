@@ -10,13 +10,13 @@ require('./git2consul_bootstrap_test.js');
 
 var my_git_manager;
 
-describe('updates to existing repos', function() {
+describe('in-place repos', function() {
   
   beforeEach(function(done) {
     var sample_key = 'sample_key';
     var sample_value = 'test data';
     var default_repo_config = git_utils.createConfig().repos[0];
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Basic test.", function(err) {
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Pull test.", function(err) {
       if (err) return done(err);
         
       git_manager.createGitManager(default_repo_config, function(err, gm) {
@@ -28,12 +28,37 @@ describe('updates to existing repos', function() {
     });
   });
   
-  it ('should handle updates to a single file repo', function(done) {
+  it ('should handle updates to a single file', function(done) {
     // At this point, my_git_manager should have populated consul with our sample_key.  Now update it.
     var sample_key = 'sample_key';
     var sample_value = 'new test data';
     var default_repo_config = git_utils.createConfig().repos[0];
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Basic test.", function(err) {
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
+      if (err) return done(err);
+      
+      git_commands.getCurrentRef(git_utils.TEST_REPO, function(err, ref) {
+        if (err) return done(err);
+        
+        my_git_manager.getBranchManager('master').handleRefChange(ref, function(err) {
+          if (err) return done(err);
+        
+          // At this point, the git_manager should have populated consul with our sample_key
+          consul_utils.getValue('/' + default_repo_config.name + '/master/' + sample_key, function(err, value) {
+            if (err) return done(err);
+            value.should.equal(sample_value);
+            done();
+          });
+        });        
+      });
+    });
+  });
+  
+  it ('should handle additions of new files', function(done) {
+    // At this point, my_git_manager should have populated consul with our sample_key.  Now update it.
+    var sample_key = 'sample_new_key';
+    var sample_value = 'new value';
+    var default_repo_config = git_utils.createConfig().repos[0];
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
       if (err) return done(err);
       
       git_commands.getCurrentRef(git_utils.TEST_REPO, function(err, ref) {

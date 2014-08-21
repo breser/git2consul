@@ -5,7 +5,7 @@
     * ✓ Initialize git2consul using that repo
 * Create test cases around all git operations
     * Add
-        * On pull
+        * ✓ On pull
         * ✓ On clone
     * Delete
     * Copy
