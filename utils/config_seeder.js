@@ -4,25 +4,6 @@ var Consul = require('consul-node');
 
 var consul = new Consul();
 
-if (process.argv.length === 3) {
-  var config_file = process.argv[2];
-
-  console.log('Adding %s as consul config', config_file);
-
-  var config = fs.readFileSync(config_file, {'encoding':'utf8'});
-
-  try {
-    JSON.parse(config);
-  } catch(e) {
-    console.error('config_file is not valid JSON');
-    process.exit(1);
-  }
-  
-  exports.setConfig(config, function(err) {
-    if (err) return console.error("Failed to write config");
-  });
-}
-
 /**
  * This utility adds keys from the top level of a .json config file to the /git2consul/ path of
  * Consul.  We use this to seed Consul's KV with the bootstrapping information used by git2consul.
@@ -44,4 +25,23 @@ exports.setConfig = function(path, value, cb) {
     cb();
   });
   
+}
+
+if (process.argv.length === 3) {
+  var config_file = process.argv[2];
+
+  console.log('Adding %s as consul config', config_file);
+
+  var config = fs.readFileSync(config_file, {'encoding':'utf8'});
+
+  try {
+    JSON.parse(config);
+  } catch(e) {
+    console.error('config_file is not valid JSON');
+    process.exit(1);
+  }
+  
+  exports.setConfig(config, function(err) {
+    if (err) return console.error("Failed to write config");
+  });
 }
