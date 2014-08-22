@@ -4,7 +4,7 @@ gi2consul takes one or many git repositories and mirrors them into [Consul](http
 
 ##### Installation
 
-git2consul will be added to NPM shortly.  For now, installation requires that you clone the repo and run `npm install` from the git2consul directory.
+`npm install git2consul`
 
 ##### Requirements / Caveats
 

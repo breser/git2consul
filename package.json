@@ -1,12 +1,11 @@
 {
-  "name": "consul-git",
-  "description": "Tools for moving config data from git to consul",
+  "name": "git2consul",
+  "description": "System for moving data from git to consul",
   "version": "0.0.1",
   "contributors": [
     {
       "name": "Ryan Breen",
-      "email": "rbreen@vistaprint.com",
-      "web": ""
+      "email": "rbreen@vistaprint.com"
     }
   ],
   "dependencies": {
@@ -27,10 +26,8 @@
   "scripts": {
     "test_unix": "XUNIT_FILE=\"reports/TESTS-xunit.xml\" node_modules/.bin/istanbul cover --root lib --dir ./reports ./node_modules/.bin/_mocha -- --reporter xunit-file -t 10000 test"
   },
-  "licenses": [
-    {
-      "name": "proprietary",
-      "url": ""
-    }
-  ]
+  "licenses": [{
+    "type": "Apache-2.0",
+    "url": "http://www.apache.org/licenses/LICENSE-2.0"
+  }]
 }
