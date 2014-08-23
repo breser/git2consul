@@ -1,6 +1,6 @@
 #### git2consul 
 
-gi2consul takes one or many git repositories and mirrors them into [Consul](http://www.consul.io/) KVs.  The goal is for organizations of any size to use git as the backing store, audit trail, and access control mechanism for configuration changes and Consul as the delivery mechanism.
+gi2consul takes one or many Git repositories and mirrors them into [Consul](http://www.consul.io/) KVs.  The goal is for organizations of any size to use Git as the backing store, audit trail, and access control mechanism for configuration changes and Consul as the delivery mechanism.
 
 ##### Installation
 
@@ -8,7 +8,7 @@ gi2consul takes one or many git repositories and mirrors them into [Consul](http
 
 ##### Requirements / Caveats
 
-* git2consul does most of its git work by shelling out to git.  git must be installed and on your path.
+* git2consul does most of its Git work by shelling out to git.  Git must be installed and on your path.
 * git2consul does the rest of its work by calling Consul's REST API.  A Consul agent must be running on localhost.
 * git2consul has only been tested on Unix.
 
@@ -47,15 +47,15 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
       }]
     }
 
-The above example illustrates a 2 repo git2consul setup: one repo lives in an on-premises git solution and the other is hosted at github.  The hooks array under each repository defines how git2consul will be notified of changes.  git2consul supports [Atlassian Stash](https://confluence.atlassian.com/display/STASH/POST+service+webhook+for+Stash) and [GitHub](https://developer.github.com/v3/repos/hooks/) webhooks as well as a basic polling model.
+The above example illustrates a 2 repo git2consul setup: one repo lives in an on-premises Git solution and the other is hosted at github.  The hooks array under each repository defines how git2consul will be notified of changes.  git2consul supports [Atlassian Stash](https://confluence.atlassian.com/display/STASH/POST+service+webhook+for+Stash) and [GitHub](https://developer.github.com/v3/repos/hooks/) webhooks as well as a basic polling model.
 
 ##### How it works
 
 git2consul uses the name and branches of configured repos to namespace the created KVs.  The goal is to allow multiple teams to use the same Consul agents and KV store to migrate configuration data around a network without needing to worry about data conflicts.  In the above example, a settings file stored at `foo_service/settings.json` in the `development` branch of the repo `vp_config` would be persisted in Consul as `vp_config/development/foo_service/settings.json`.
 
-If you are using a more [Twelve-Factor](http://12factor.net/) approach, where you wish to configure your applications via environment variables, you would store these settings as files in git whose name is the key and whose body is the value.  For example, we could create the file `foo_service/log_level` with the body `trace` in the `development` branch of the `foo_service` repo and git2consul will create the KV `vp_config/development/foo_service/log_level` with the value `trace`.
+If you are using a more [Twelve-Factor](http://12factor.net/) approach, where you wish to configure your applications via environment variables, you would store these settings as files in Git whose name is the key and whose body is the value.  For example, we could create the file `foo_service/log_level` with the body `trace` in the `development` branch of the `foo_service` repo and git2consul will create the KV `vp_config/development/foo_service/log_level` with the value `trace`.
 
-As changes are detected in the specified git repos, git2consul determines which files have been added, updated, or deleted and replicates those changes to the KV.  Because only changed branches and files are analyzed, git2consul should have a very slim profile on hosting systems.
+As changes are detected in the specified Git repos, git2consul determines which files have been added, updated, or deleted and replicates those changes to the KV.  Because only changed branches and files are analyzed, git2consul should have a very slim profile on hosting systems.
 
 ##### Clients
 
@@ -63,7 +63,7 @@ A client system should query Consul for the subset of the KV containing the data
 
 ##### Future plans
 
-When Consul 4.0 ships, git2consul will be updated to support the ACL system.  To preserve data integrity, only systems running git2consul should be given write access to the configuration KV store.
+When Consul 0.4 ships, git2consul will be updated to support the ACL system.  To preserve data integrity, only systems running git2consul should be given write access to the configuration KV store.
 
 ##### License
 
