@@ -20,6 +20,23 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
 
     {
       "version": "1.0",
+      "logging" : [{
+        "transport" : "Logstash",
+        "config" : {
+          "port" : "5140",
+          "host": "ryans-mbp.ryanbreen.com",
+          "meta": {
+            "source": "git2consul"
+          },
+          "level": "verbose"
+        }
+      },{
+        "transport" : "Console",
+        "config" : {
+          "colorize": true,
+          "level": "debug"
+        }
+      }],
       "repos" : [{
         "name" : "vp_config",
         "local_store": "/tmp/git_cache",
@@ -48,6 +65,8 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
     }
 
 The above example illustrates a 2 repo git2consul setup: one repo lives in an on-premises Git solution and the other is hosted at github.  The hooks array under each repository defines how git2consul will be notified of changes.  git2consul supports [Atlassian Stash](https://confluence.atlassian.com/display/STASH/POST+service+webhook+for+Stash) and [GitHub](https://developer.github.com/v3/repos/hooks/) webhooks as well as a basic polling model.
+
+The above example also logs to the console as well as to [Logstash](http://logstash.net/).  Logging is handled via [Winston](https://github.com/flatiron/winston), and any value for the `transport` field can be used as long as `require('winston').transports[transport]` is not `undefined`.  The `config` element of a logging transport is passed to the constructor of that transport, so you should have full control in setting up all supported Winston transports.
 
 ##### How it works
 
