@@ -7,8 +7,6 @@ config_reader.read(function(err, config) {
   
   if (err) return console.error(err);
   
-  console.log(util.inspect(config));
-  
   logging.init(function() {
     
     var logger = require('./lib/utils/logging.js');
