@@ -1,4 +1,4 @@
-var logging = require('./lib/utils/logging.js')
+var logging = require('./lib/utils/logging.js');
 var config_reader = require('./lib/utils/config_reader.js');
 
 var util = require('util');
@@ -7,7 +7,7 @@ config_reader.read(function(err, config) {
   
   if (err) return console.error(err);
   
-  logging.init(function() {
+  logging.init(config, function() {
     
     var logger = require('./lib/utils/logging.js');
 
