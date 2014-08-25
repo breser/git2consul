@@ -13,11 +13,12 @@ var git_commands = require('../lib/utils/git_commands.js');
 var my_git_manager;
 
 describe('in-place repos', function() {
+
+  var default_repo_config = git_utils.createConfig().repos[0];
   
   beforeEach(function(done) {
     var sample_key = 'sample_key';
     var sample_value = 'test data';
-    var default_repo_config = git_utils.createConfig().repos[0];
     git_utils.addFileToGitRepo(sample_key, sample_value, "Pull test.", function(err) {
       if (err) return done(err);
         
@@ -27,6 +28,14 @@ describe('in-place repos', function() {
         my_git_manager = gm;
         done();
       });
+    });
+  });
+  
+  it ('should handle creating a git_manager around a repo that already exists', function(done) {
+    git_manager.createGitManager(default_repo_config, function(err, gm) {
+      (err === null).should.equal(true);
+      
+      done();
     });
   });
   
