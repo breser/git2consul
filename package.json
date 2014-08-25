@@ -1,7 +1,7 @@
 {
   "name": "git2consul",
   "description": "System for moving data from git to consul",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "contributors": [
     {
       "name": "Ryan Breen",
@@ -10,11 +10,10 @@
   ],
   "dependencies": {
     "body-parser": "~1.4.3",
+    "bunyan": "^1.0.0",
     "consul-node": "0.0.2",
     "express": "~4.6.1",
-    "mkdirp": "0.5.0",
-    "winston": "^0.7.3",
-    "winston-logstash": "git://github.com/ryanbreen/winston-logstash.git"
+    "mkdirp": "0.5.0"
   },
   "devDependencies": {
     "mocha": "1.20.1",
