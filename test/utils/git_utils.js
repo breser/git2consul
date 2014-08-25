@@ -3,7 +3,9 @@ var fs = require('fs');
 var git_commands = require('../../lib/utils/git_commands.js');
 
 exports.TEST_REMOTE_REPO = '/tmp/test_repo/';
+exports.TEST_GITHUB_REPO = 'git@github.com:ryanbreen/git2consul_data.git';
 exports.TEST_WORKING_DIR = '/tmp/test_workspace/';
+exports.TEST_GITHUB_WORKING_DIR = '/tmp/test_github_workspace/';
 
 exports.createConfig = function() {
   return {

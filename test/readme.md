@@ -3,8 +3,9 @@
 * ✓ Create a readme.md
 * ✓ Create a framework for initting a new repo
     * ✓ Initialize git2consul using that repo
+    * ✓ Initialize git2consul using a repo already on disk
 * Create test cases around all git operations
-    * Add
+    * ✓ Add
         * ✓ On pull
         * ✓ On clone
     * ✓ Delete

@@ -24,16 +24,21 @@ var git_utils = require('./utils/git_utils.js');
 beforeEach(function(done) {
   rimraf(git_utils.TEST_REMOTE_REPO, function(err) {
     if (err) return done(err);
-    rimraf(git_utils.TEST_WORKING_DIR, function(err) {
+    mkdirp(git_utils.TEST_REMOTE_REPO, function(err) {
       if (err) return done(err);
-      mkdirp(git_utils.TEST_REMOTE_REPO, function(err) {
+      rimraf(git_utils.TEST_WORKING_DIR, function(err) {
         if (err) return done(err);
         mkdirp(git_utils.TEST_WORKING_DIR, function(err) {
           if (err) return done(err);
-          
-          git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
+          rimraf(git_utils.TEST_GITHUB_WORKING_DIR, function(err) {
             if (err) return done(err);
-            done();
+            mkdirp(git_utils.TEST_GITHUB_WORKING_DIR, function(err) {
+              if (err) return done(err);
+              git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
+                if (err) return done(err);
+                done();
+              });
+            });
           });
         });
       })

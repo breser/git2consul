@@ -12,7 +12,7 @@ var git_commands = require('../lib/utils/git_commands.js');
 
 var my_git_manager;
 
-describe('in-place repos', function() {
+describe('Pull-based updates', function() {
 
   var default_repo_config = git_utils.createConfig().repos[0];
   

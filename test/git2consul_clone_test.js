@@ -8,7 +8,7 @@ var git_manager = require('../lib/git_manager.js');
 var git_utils = require('./utils/git_utils.js');
 var consul_utils = require('./utils/consul_utils.js');
 
-describe('cloning a new repo', function() {
+describe('Cloning a new repo', function() {
   it ('should handle a single file repo', function(done) {
     var sample_key = 'sample_key';
     var sample_value = 'test data';
