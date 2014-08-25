@@ -1,10 +1,12 @@
 var should = require('should');
 var _ = require('underscore');
+
+// We want this above any git2consul module to make sure logging gets configured
+require('./git2consul_bootstrap_test.js');
+
 var git_manager = require('../lib/git_manager.js');
 var git_utils = require('./utils/git_utils.js');
 var consul_utils = require('./utils/consul_utils.js');
-
-require('./git2consul_bootstrap_test.js');
 
 describe('cloning a new repo', function() {
   it ('should handle a single file repo', function(done) {

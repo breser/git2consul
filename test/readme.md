@@ -7,7 +7,7 @@
     * Add
         * ✓ On pull
         * ✓ On clone
-    * Delete
+    * ✓ Delete
     * Copy
     * Move
     * Type change

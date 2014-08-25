@@ -32,3 +32,15 @@ exports.addFileToGitRepo = function(name, content, commit_message, cb) {
     });
   });
 };
+
+exports.deleteFileFromGitRepo = function(name, commit_message, cb) {
+  git_commands.delete(name, exports.TEST_REMOTE_REPO, function(err) {
+    if (err) return cb(err);
+    
+    git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
+      if (err) return cb(err);
+      
+      cb();
+    });
+  });
+};

@@ -1,9 +1,11 @@
 var _ = require('underscore');
 var should = require('should');
+
+// We want this above any git2consul module to make sure logging gets configured
+require('./git2consul_bootstrap_test.js');
+
 var git_manager = require('../lib/git_manager.js');
 var git_utils = require('./utils/git_utils.js');
-
-require('./git2consul_bootstrap_test.js');
 
 describe('Config Validation', function() {
   
