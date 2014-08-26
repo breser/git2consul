@@ -4,13 +4,13 @@
 * ✓ Create a framework for initting a new repo
     * ✓ Initialize git2consul using that repo
     * ✓ Initialize git2consul using a repo already on disk
+    * ✓ Initializing multiple repos at once
 * Create test cases around all git operations
     * ✓ Add
         * ✓ On pull
         * ✓ On clone
     * ✓ Delete
-    * Copy
-    * Move
+    * ✓ Move
     * Type change
 * Create concurrency test case
     * Signal several concurrent gitpokes, validate that branch updates are serial

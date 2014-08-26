@@ -9,7 +9,7 @@ logging.init({
   "logger" : {
     "name" : "git2consul",
     "streams" : [{
-      "level": "debug",
+      "level": "trace",
       "type": "rotating-file",
       "path": "./test/logs/test.log"
     }]

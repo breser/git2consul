@@ -46,3 +46,15 @@ exports.deleteFileFromGitRepo = function(name, commit_message, cb) {
     });
   });
 };
+
+exports.moveFileInGitRepo = function(old_name, new_name, commit_message, cb) {
+  git_commands.mv(old_name, new_name, exports.TEST_REMOTE_REPO, function(err) {
+    if (err) return cb(err);
+    
+    git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
+      if (err) return cb(err);
+      
+      cb();
+    });
+  });
+};
