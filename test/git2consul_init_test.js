@@ -57,7 +57,11 @@ describe('Initializing git2consul', function() {
     
       git_manager.createGitManager(default_repo_config, function(err, gm) {
         (err === null).should.equal(true);
-        done();
+        
+        git_manager.createGitManager(default_repo_config, function(err, gm) {
+          (err === null).should.equal(true);
+          done();
+        });
       });
     });
   });

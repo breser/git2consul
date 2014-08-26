@@ -7,8 +7,6 @@ var rimraf = require('rimraf');
 var logging = require('../lib/utils/logging.js');
 logging.init({
   "logger" : {
-    "name" : "git2consul",
-    "streams" : [{
       "level": "trace",
       "type": "rotating-file",
       "path": "./test/logs/test.log"
