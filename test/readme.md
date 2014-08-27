@@ -13,7 +13,8 @@
     * ✓ Move
     * Type change
 * Create concurrency test case
-    * Signal several concurrent gitpokes, validate that branch updates are serial
+    * ✓ Signal several concurrent gitpokes, validate that branch updates are serial
+    * ✓ Validate that passing in refs out of order does not lead to inconsistent end state
 * Create test cases around file names
     * Test keys with other escape characters
 * Create boundary check test cases
