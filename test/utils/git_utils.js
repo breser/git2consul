@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 var git_commands = require('../../lib/utils/git_commands.js');
+var git_manager = require('../../lib/git_manager.js');
 
 exports.TEST_REMOTE_REPO = '/tmp/test_repo/';
 exports.TEST_GITHUB_REPO = 'git@github.com:ryanbreen/git2consul_data.git';
@@ -19,16 +20,33 @@ exports.createConfig = function() {
   };
 };
 
+exports.initRepo = function(name, cb) {
+
+  git_commands.init(exports.TEST_REMOTE_REPO, function(err) {
+    if (err) return cb(err);
+    exports.addFileToGitRepo("iceice", "baby", "Init repo.", function(err) {
+      if (err) return cb(err);
+
+      git_manager.createGitManager(exports.createConfig().repos[0], function(err, gm) {
+        if (err) return cb(err);
+
+        exports.GM = gm;
+        cb(null);
+      });
+    });
+  });
+};
+
 exports.addFileToGitRepo = function(name, content, commit_message, cb) {
   fs.writeFile(exports.TEST_REMOTE_REPO + name, content, function(err) {
     if (err) return cb(err);
-    
+
     git_commands.add(name, exports.TEST_REMOTE_REPO, function(err) {
       if (err) return cb(err);
-      
+
       git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
         if (err) return cb(err);
-        
+
         cb();
       });
     });
@@ -38,10 +56,10 @@ exports.addFileToGitRepo = function(name, content, commit_message, cb) {
 exports.deleteFileFromGitRepo = function(name, commit_message, cb) {
   git_commands.delete(name, exports.TEST_REMOTE_REPO, function(err) {
     if (err) return cb(err);
-    
+
     git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
       if (err) return cb(err);
-      
+
       cb();
     });
   });
@@ -50,10 +68,10 @@ exports.deleteFileFromGitRepo = function(name, commit_message, cb) {
 exports.moveFileInGitRepo = function(old_name, new_name, commit_message, cb) {
   git_commands.mv(old_name, new_name, exports.TEST_REMOTE_REPO, function(err) {
     if (err) return cb(err);
-    
+
     git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
       if (err) return cb(err);
-      
+
       cb();
     });
   });
