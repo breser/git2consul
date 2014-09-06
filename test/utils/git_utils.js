@@ -24,7 +24,7 @@ exports.initRepo = function(name, cb) {
 
   git_commands.init(exports.TEST_REMOTE_REPO, function(err) {
     if (err) return cb(err);
-    exports.addFileToGitRepo("iceice", "baby", "Init repo.", function(err) {
+    exports.addFileToGitRepo("readme.md", "Stub file to give us something to commit.", "Init repo.", function(err) {
       if (err) return cb(err);
 
       git_manager.createGitManager(exports.createConfig().repos[0], function(err, gm) {

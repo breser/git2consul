@@ -15,22 +15,16 @@ var my_git_manager;
 describe('File operations', function() {
 
   var default_repo_config = git_utils.createConfig().repos[0];
-  
+
   beforeEach(function(done) {
-    var sample_key = 'sample_key';
-    var sample_value = 'test data';
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Pull test.", function(err) {
+    git_manager.createGitManager(default_repo_config, function(err, gm) {
       if (err) return done(err);
-        
-      git_manager.createGitManager(default_repo_config, function(err, gm) {
-        if (err) return done(err);
-      
-        my_git_manager = gm;
-        done();
-      });
+
+      my_git_manager = gm;
+      done();
     });
   });
-  
+
   it ('should handle updates to a single file', function(done) {
     // At this point, my_git_manager should have populated consul with our sample_key.  Now update it.
     var sample_key = 'sample_key';
@@ -38,24 +32,24 @@ describe('File operations', function() {
     var default_repo_config = git_utils.createConfig().repos[0];
     git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
       if (err) return done(err);
-      
+
       git_commands.getCurrentRef(git_utils.TEST_REPO, function(err, ref) {
         if (err) return done(err);
-        
+
         my_git_manager.getBranchManager('master').handleRefChange(ref, function(err) {
           if (err) return done(err);
-        
+
           // At this point, the git_manager should have populated consul with our sample_key
           consul_utils.getValue('/' + default_repo_config.name + '/master/' + sample_key, function(err, value) {
             if (err) return done(err);
             value.should.equal(sample_value);
             done();
           });
-        });        
+        });
       });
     });
   });
-  
+
   it ('should handle additions of new files', function(done) {
     // At this point, my_git_manager should have populated consul with our sample_key.  Now update it.
     var sample_key = 'sample_new_key';
@@ -63,24 +57,24 @@ describe('File operations', function() {
     var default_repo_config = git_utils.createConfig().repos[0];
     git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
       if (err) return done(err);
-      
+
       git_commands.getCurrentRef(git_utils.TEST_REPO, function(err, ref) {
         if (err) return done(err);
-        
+
         my_git_manager.getBranchManager('master').handleRefChange(ref, function(err) {
           if (err) return done(err);
-        
+
           // At this point, the git_manager should have populated consul with our sample_key
           consul_utils.getValue('/' + default_repo_config.name + '/master/' + sample_key, function(err, value) {
             if (err) return done(err);
             value.should.equal(sample_value);
             done();
           });
-        });        
+        });
       });
     });
   });
-  
+
   it ('should handle deletions of existing files', function(done) {
     // At this point, my_git_manager should have populated consul with our sample_key.  Now update it.
     var sample_key = 'sample_new_key';
@@ -88,27 +82,27 @@ describe('File operations', function() {
     var default_repo_config = git_utils.createConfig().repos[0];
     git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
       if (err) return done(err);
-      
+
       git_commands.getCurrentRef(git_utils.TEST_REPO, function(err, ref) {
         if (err) return done(err);
-        
+
         my_git_manager.getBranchManager('master').handleRefChange(ref, function(err) {
           if (err) return done(err);
-        
+
           // At this point, the git_manager should have populated consul with our sample_key
           consul_utils.getValue('/' + default_repo_config.name + '/master/' + sample_key, function(err, value) {
             if (err) return done(err);
             value.should.equal(sample_value);
-            
+
             git_utils.deleteFileFromGitRepo(sample_key, "Delete file for pull test.", function(err) {
               if (err) return done(err);
-      
+
               git_commands.getCurrentRef(git_utils.TEST_REPO, function(err, ref) {
                 if (err) return done(err);
-        
+
                 my_git_manager.getBranchManager('master').handleRefChange(ref, function(err) {
                   if (err) return done(err);
-        
+
                   // At this point, the git_manager should have removed our sample_key
                   consul_utils.getValue('/' + default_repo_config.name + '/master/' + sample_key, function(err, value) {
                     if (err) return done(err);
@@ -119,7 +113,7 @@ describe('File operations', function() {
               });
             });
           });
-        });        
+        });
       });
     });
   });
@@ -132,27 +126,27 @@ describe('File operations', function() {
     var default_repo_config = git_utils.createConfig().repos[0];
     git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
       if (err) return done(err);
-    
+
       git_commands.getCurrentRef(git_utils.TEST_REPO, function(err, ref) {
         if (err) return done(err);
-      
+
         my_git_manager.getBranchManager('master').handleRefChange(ref, function(err) {
           if (err) return done(err);
-      
+
           // At this point, the git_manager should have populated consul with our sample_key
           consul_utils.getValue('/' + default_repo_config.name + '/master/' + sample_key, function(err, value) {
             if (err) return done(err);
             value.should.equal(sample_value);
-          
+
             git_utils.moveFileInGitRepo(sample_key, sample_moved_key, "Move file for pull test.", function(err) {
               if (err) return done(err);
-    
+
               git_commands.getCurrentRef(git_utils.TEST_REPO, function(err, ref) {
                 if (err) return done(err);
-      
+
                 my_git_manager.getBranchManager('master').handleRefChange(ref, function(err) {
                   if (err) return done(err);
-      
+
                   // At this point, the git_manager should have populated consul with our moved key, deleting the old name
                   consul_utils.getValue('/' + default_repo_config.name + '/master/' + sample_key, function(err, value) {
                     if (err) return done(err);
@@ -168,7 +162,7 @@ describe('File operations', function() {
               });
             });
           });
-        });        
+        });
       });
     });
   });
