@@ -22,8 +22,8 @@
     * ✓ Colon
     * ✓ Backslash
     * ✓ Exclamation point
-* Create boundary check test cases
-    * Test keys with values above 512kB
+* ✓ Create boundary check test cases
+    * ✓ Test keys with values above 512kB
 * Test config validation
     * repo
         * git repos do not have the same names
