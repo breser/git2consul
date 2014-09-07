@@ -21,7 +21,7 @@ describe('File operations', function() {
     var sample_key = 'sample_key';
     var sample_value = 'new test data';
     var default_repo_config = git_utils.createConfig().repos[0];
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", true, function(err) {
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
       if (err) return done(err);
         // At this point, the git_manager should have populated consul with our sample_key
       consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
@@ -36,7 +36,7 @@ describe('File operations', function() {
     var sample_key = 'sample_new_key';
     var sample_value = 'new value';
     var default_repo_config = git_utils.createConfig().repos[0];
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", true, function(err) {
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key
       consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
@@ -51,7 +51,7 @@ describe('File operations', function() {
     var sample_key = 'sample_new_key';
     var sample_value = 'new value';
     var default_repo_config = git_utils.createConfig().repos[0];
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", true, function(err) {
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key
       consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
@@ -74,12 +74,12 @@ describe('File operations', function() {
     var sample_moved_key = 'sample_moved_key';
     var sample_value = 'movable value';
     var default_repo_config = git_utils.createConfig().repos[0];
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", true, function(err) {
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Update for pull test.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key
       consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
         if (err) return done(err);
-        git_utils.moveFileInGitRepo(sample_key, sample_moved_key, "Move file for pull test.", true, function(err) {
+        git_utils.moveFileInGitRepo(sample_key, sample_moved_key, "Move file for pull test.", function(err) {
           if (err) return done(err);
           // At this point, the git_manager should have populated consul with our moved key, deleting the old name
           consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key, undefined, function(err) {

@@ -24,7 +24,7 @@ exports.initRepo = function(name, cb) {
 
   git_commands.init(exports.TEST_REMOTE_REPO, function(err) {
     if (err) return cb(err);
-    exports.addFileToGitRepo("readme.md", "Stub file to give us something to commit.", "Init repo.", function(err) {
+    exports.addFileToGitRepo("readme.md", "Stub file to give us something to commit.", "Init repo.", false, function(err) {
       if (err) return cb(err);
 
       git_manager.createGitManager(exports.createConfig().repos[0], function(err, gm) {
@@ -41,7 +41,7 @@ exports.addFileToGitRepo = function(name, content, commit_message, update, cb) {
 
   if (!cb) {
     cb = update;
-    update = false;
+    update = true;
   }
 
   fs.writeFile(exports.TEST_REMOTE_REPO + name, content, function(err) {
@@ -70,7 +70,7 @@ exports.deleteFileFromGitRepo = function(name, commit_message, update, cb) {
 
   if (!cb) {
     cb = update;
-    update = false;
+    update = true;
   }
 
   git_commands.delete(name, exports.TEST_REMOTE_REPO, function(err) {
@@ -95,7 +95,7 @@ exports.moveFileInGitRepo = function(old_name, new_name, commit_message, update,
 
   if (!cb) {
     cb = update;
-    update = false;
+    update = true;
   }
 
   git_commands.mv(old_name, new_name, exports.TEST_REMOTE_REPO, function(err) {

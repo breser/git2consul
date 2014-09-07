@@ -21,7 +21,7 @@ describe('KV handling', function() {
       buf[i] = 'A';
     }
 
-    git_utils.addFileToGitRepo("big_file", buf.toString(), "super big value test", true, function(err) {
+    git_utils.addFileToGitRepo("big_file", buf.toString(), "super big value test", function(err) {
       err.should.not.equal(null);
 
       // At this point, the git_manager should have populated consul with our sample_key
@@ -39,7 +39,7 @@ describe('KV handling', function() {
       buf[i] = 'A';
     }
 
-    git_utils.addFileToGitRepo("big_file", buf.toString(), "super big value test", true, function(err) {
+    git_utils.addFileToGitRepo("big_file", buf.toString(), "super big value test", function(err) {
       if (err) return done(err);
 
       // At this point, the git_manager should have populated consul with our sample_key
