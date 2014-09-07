@@ -37,7 +37,13 @@ exports.initRepo = function(name, cb) {
   });
 };
 
-exports.addFileToGitRepo = function(name, content, commit_message, cb) {
+exports.addFileToGitRepo = function(name, content, commit_message, update, cb) {
+
+  if (!cb) {
+    cb = update;
+    update = false;
+  }
+
   fs.writeFile(exports.TEST_REMOTE_REPO + name, content, function(err) {
     if (err) return cb(err);
 
@@ -47,32 +53,64 @@ exports.addFileToGitRepo = function(name, content, commit_message, cb) {
       git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
         if (err) return cb(err);
 
-        cb();
+        if (update) {
+          exports.GM.getBranchManager('master').handleRefChange(0, function(err) {
+            if (err) return cb(err);
+            cb();
+          });
+        } else {
+          cb();
+        }
       });
     });
   });
 };
 
-exports.deleteFileFromGitRepo = function(name, commit_message, cb) {
+exports.deleteFileFromGitRepo = function(name, commit_message, update, cb) {
+
+  if (!cb) {
+    cb = update;
+    update = false;
+  }
+
   git_commands.delete(name, exports.TEST_REMOTE_REPO, function(err) {
     if (err) return cb(err);
 
     git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
       if (err) return cb(err);
 
-      cb();
+      if (update) {
+        exports.GM.getBranchManager('master').handleRefChange(0, function(err) {
+          if (err) return cb(err);
+          cb();
+        });
+      } else {
+        cb();
+      }
     });
   });
 };
 
-exports.moveFileInGitRepo = function(old_name, new_name, commit_message, cb) {
+exports.moveFileInGitRepo = function(old_name, new_name, commit_message, update, cb) {
+
+  if (!cb) {
+    cb = update;
+    update = false;
+  }
+
   git_commands.mv(old_name, new_name, exports.TEST_REMOTE_REPO, function(err) {
     if (err) return cb(err);
 
     git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
       if (err) return cb(err);
-
-      cb();
+      if (update) {
+        exports.GM.getBranchManager('master').handleRefChange(0, function(err) {
+          if (err) return cb(err);
+          cb();
+        });
+      } else {
+        cb();
+      }
     });
   });
 };
