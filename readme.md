@@ -1,4 +1,4 @@
-#### git2consul 
+#### git2consul
 
 git2consul takes one or many git repositories and mirrors them into [Consul](http://www.consul.io/) KVs.  The goal is for organizations of any size to use git as the backing store, audit trail, and access control mechanism for configuration changes and Consul as the delivery mechanism.
 
@@ -74,10 +74,6 @@ As changes are detected in the specified Git repos, git2consul determines which 
 ##### Clients
 
 A client system should query Consul for the subset of the KV containing the data relevant to its operation.  To extend the above example, our `foo_service` on the development network might subscribe to the KV root `vp_config/development/foo_service` and emit any changes to disk (via something like [fsconsul](https://github.com/ryanbreen/fsconsul)) or environment variables (via something like [envconsul](https://github.com/hashicorp/envconsul)).
-
-##### Future plans
-
-When Consul 0.4 ships, git2consul will be updated to support the ACL system.  To preserve data integrity, only systems running git2consul should be given write access to the configuration KV store.
 
 ##### License
 

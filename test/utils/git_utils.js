@@ -27,7 +27,7 @@ exports.initRepo = function(name, cb) {
     exports.addFileToGitRepo("readme.md", "Stub file to give us something to commit.", "Init repo.", false, function(err) {
       if (err) return cb(err);
 
-      git_manager.createGitManager(exports.createConfig().repos[0], function(err, gm) {
+      git_manager.manageRepo(exports.createConfig().repos[0], function(err, gm) {
         if (err) return cb(err);
 
         exports.GM = gm;

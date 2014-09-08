@@ -49,10 +49,10 @@ describe('Initializing git2consul', function() {
     git_utils.addFileToGitRepo(sample_key, sample_value, "Pull test.", function(err) {
       if (err) return done(err);
 
-      git_manager.createGitManager(default_repo_config, function(err, gm) {
+      git_manager.manageRepo(default_repo_config, function(err, gm) {
         (err === null).should.equal(true);
 
-        git_manager.createGitManager(default_repo_config, function(err, gm) {
+        git_manager.manageRepo(default_repo_config, function(err, gm) {
           (err === null).should.equal(true);
           done();
         });
@@ -74,7 +74,7 @@ describe('Initializing git2consul', function() {
     git_utils.addFileToGitRepo(sample_key, sample_value, "Multi repo test.", function(err) {
       if (err) return done(err);
 
-      git_manager.createGitManagers(default_repo_config.repos, function(err, gms) {
+      git_manager.manageRepos(default_repo_config.repos, function(err, gms) {
         if (err) return done(err);
 
         (err == null).should.equal(true);
