@@ -5,7 +5,7 @@
     * ✓ Initialize git2consul using that repo
     * ✓ Initialize git2consul using a repo already on disk
     * ✓ Initializing multiple repos at once
-    * Initialize with an empty consul config but repos already on disk
+    * ✓ Initialize with an empty consul config but repos already on disk
 * Create test cases around all git operations
     * ✓ Add
         * ✓ On pull
