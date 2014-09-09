@@ -18,8 +18,7 @@ config_reader.read(function(err, config) {
     logger.error("No repos found in configuration.  Halting.")
     process.exit(1);
   }
-
-  // TODO: Complete repo config validation
+  
   logger.info('git2consul is running');
 
   // Set up the git manager for each repo.

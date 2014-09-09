@@ -28,9 +28,30 @@ describe('Config Validation', function() {
     });
   });
 
+  it ('should reject a config with duplicate repo names', function(done) {
+    git_manager.manageRepos([{'name': 'test_repo'}, {'name': 'test_repo'}, {'name': 'github_test_repo'}], function(err) {
+      err.should.startWith('Duplicate name found in repos');
+      done();
+    });
+  });
+
+  it ('should reject a repo with duplicate branch names', function(done) {
+    git_manager.manageRepo({}, function(err) {
+      err.should.equal('No branches specified');
+      done();
+    });
+  });
+
   it ('should reject a repo with no branches', function(done) {
     git_manager.manageRepo({}, function(err) {
       err.should.equal('No branches specified');
+      done();
+    });
+  });
+
+  it ('should reject a repo with duplicate branches', function(done) {
+    git_manager.manageRepo({'name': 'busted_repo', 'branches': ['master', 'master', 'commander']}, function(err) {
+      err.should.startWith('Duplicate name found in branches for repo busted_repo');
       done();
     });
   });

@@ -25,10 +25,10 @@
 * ✓ Create boundary check test cases
     * ✓ Test keys with values above 512kB
 * Test config validation
-    * repo
-        * git repos do not have the same names
-        * no duplicate branches in a repo
-        * hooks
-            * stash hook
-            * github hook
-            * polling hook
+    * ✓ repo
+        * ✓ git repos do not have the same names
+        * ✓ no duplicate branches in a repo
+    * hooks
+        * stash hook
+        * github hook
+        * polling hook
