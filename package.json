@@ -16,12 +16,13 @@
     "mkdirp": "0.5.0"
   },
   "devDependencies": {
-    "mocha": "1.20.1",
-    "should": "3.3.2",
     "istanbul": "0.2.11",
+    "mocha": "1.20.1",
+    "request": "^2.42.0",
     "rimraf": "2.2.8",
-    "xunit-file": "0.0.5",
-    "underscore": "1.6.0"
+    "should": "3.3.2",
+    "underscore": "1.6.0",
+    "xunit-file": "0.0.5"
   },
   "scripts": {
     "test_unix": "XUNIT_FILE=\"reports/TESTS-xunit.xml\" node_modules/.bin/istanbul cover --root lib --dir ./reports ./node_modules/.bin/_mocha -- --reporter xunit-file -t 10000 test"

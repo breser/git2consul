@@ -29,6 +29,6 @@
         * ✓ git repos do not have the same names
         * ✓ no duplicate branches in a repo
     * hooks
-        * stash hook
+        * ✓ stash hook
         * github hook
         * polling hook

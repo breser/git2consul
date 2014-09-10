@@ -16,8 +16,11 @@ exports.getValue = function(key, cb) {
 exports.validateValue = function(key, expected_value, cb) {
   exports.getValue(key, function(err, value) {
     if (err) return cb(err);
-    if (!expected_value) (value == undefined).should.equal(true)
-    else value.should.equal(expected_value);
+    if (!expected_value) (value == undefined).should.equal(true);
+    else {
+      (value != undefined).should.equal(true);
+      value.should.equal(expected_value);
+    }
     cb();
   })
 };
