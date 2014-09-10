@@ -30,5 +30,5 @@
         * ✓ no duplicate branches in a repo
     * hooks
         * ✓ stash hook
-        * github hook
+        * ✓ github hook
         * polling hook
