@@ -91,18 +91,11 @@ describe('Initializing git2consul', function() {
       consul_utils.purgeKeys('test_repo', function(err) {
         if (err) return done(err);
 
-        var check_value = function() {
-          consul_utils.getValue('/test_repo/master/sample_key', function(err, value) {
-            if (err) return done(err);
+        consul_utils.waitForDelete('test_repo?recurse', function(err) {
+          if (err) return done(err);
 
-            if (value) return setTimeout(check_value, 500);
-            // If we get here, we know the value was purged.
-            test_git_manager(done);
-          });
-        };
-
-        setTimeout(check_value, 500);
-
+          test_git_manager(done);
+        });
       });
     });
   });

@@ -27,7 +27,9 @@ var consul_utils = require('./utils/consul_utils.js');
 beforeEach(function(done) {
 
   consul_utils.purgeKeys('test_repo', function(err) {
+    if (err) return done(err);
     consul_utils.purgeKeys('test_github_repo', function(err) {
+      if (err) return done(err);
       rimraf(git_utils.TEST_REMOTE_REPO, function(err) {
         if (err) return done(err);
         mkdirp(git_utils.TEST_REMOTE_REPO, function(err) {
