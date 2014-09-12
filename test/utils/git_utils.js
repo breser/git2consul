@@ -114,3 +114,40 @@ exports.moveFileInGitRepo = function(old_name, new_name, commit_message, update,
     });
   });
 };
+
+exports.symlinkFileInGitRepo = function(link, referrent, commit_message, update, cb) {
+
+  if (!cb) {
+    cb = update;
+    update = true;
+  }
+
+  fs.rename(exports.TEST_REMOTE_REPO + link, exports.TEST_REMOTE_REPO + referrent, function(err) {
+    if (err) return cb(err);
+
+    fs.symlink(exports.TEST_REMOTE_REPO + referrent, exports.TEST_REMOTE_REPO + link, function(err) {
+      if (err) return cb(err);
+
+      git_commands.add(link, exports.TEST_REMOTE_REPO, function(err) {
+        if (err) return cb(err);
+
+        git_commands.add(referrent, exports.TEST_REMOTE_REPO, function(err) {
+          if (err) return cb(err);
+
+          git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
+            if (err) return cb(err);
+            if (update) {
+              exports.GM.getBranchManager('master').handleRefChange(0, function(err) {
+                if (err) return cb(err);
+                cb();
+              });
+            } else {
+              cb();
+            }
+          });
+        });
+      })
+    });
+  });
+
+};

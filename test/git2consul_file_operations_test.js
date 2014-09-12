@@ -94,4 +94,31 @@ describe('File operations', function() {
       });
     });
   });
+
+  it ('should handle changing an existing file into a symlink', function(done) {
+    // At this point, my_git_manager should have populated consul with our sample_key.  Now update it.
+    var sample_key = 'some_day_i_will_by_a_symlink';
+    var sample_referrent_file = 'referrent_file';
+    var sample_value = 'linked value';
+    var default_repo_config = git_utils.createConfig().repos[0];
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Create file for symlinking.", function(err) {
+      if (err) return done(err);
+      // At this point, the git_manager should have populated consul with our sample_key
+      consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
+        if (err) return done(err);
+        git_utils.symlinkFileInGitRepo(sample_key, sample_referrent_file, "Change type of file.", function(err) {
+          if (err) return done(err);
+          // At this point, the git_manager should have populated consul with our moved key, deleting the old name
+          consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key, sample_value, function(err) {
+            if (err) return done(err);
+            // At this point, the git_manager should have populated consul with our moved key, adding the new name
+            consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_referrent_file, sample_value, function(err) {
+              if (err) return done(err);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
 });
