@@ -12,6 +12,7 @@
         * ✓ On clone
     * ✓ Delete
     * ✓ Move
+    * ✓ Move to subfolder
     * ✓ Type change
 * ✓ Create concurrency test case
     * ✓ Signal several concurrent gitpokes, validate that branch updates are serial
