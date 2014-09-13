@@ -135,10 +135,10 @@ describe('File operations', function() {
         if (err) return done(err);
         git_utils.symlinkFileInGitRepo(sample_key, sample_referrent_file, "Change type of file.", function(err) {
           if (err) return done(err);
-          // At this point, the git_manager should have populated consul with our moved key, deleting the old name
+          // After symlinking, the consul KV should contain the symlink's name as a key and the symlinked file's contents as a value
           consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key, sample_value, function(err) {
             if (err) return done(err);
-            // At this point, the git_manager should have populated consul with our moved key, adding the new name
+            // The symlink's referrent should also appear in the KV store.
             consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_referrent_file, sample_value, function(err) {
               if (err) return done(err);
               done();
