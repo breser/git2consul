@@ -1,14 +1,12 @@
-var Consul = require('consul-node');
-
-var consul = new Consul();
+var consul = require('consul')();
 
 console.log('Listing all keys');
-consul.kv.get('?recurse', function (err, items) {
+consul.kv.get({key:'', recurse: true}, function (err, items, res) {
   if (err) return console.error(err);
-  
+
   if (items) {
     items.forEach(function(item) {
-      console.log(item.key);
+      console.log(item.Key);
     });
   }
 });

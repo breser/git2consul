@@ -21,6 +21,10 @@ config_reader.read(function(err, config) {
   
   logger.info('git2consul is running');
 
+  process.on('uncaughtException', function(err) {
+    logger.error("Uncaught exception " + err);
+  });
+
   // Set up the git manager for each repo.
   git_manager.manageRepos(config.repos, function(err) {
     if (err) {
@@ -33,3 +37,4 @@ config_reader.read(function(err, config) {
   });
 
 });
+

@@ -1,6 +1,4 @@
-var Consul = require('consul-node');
-
-var consul = new Consul();
+var consul = require('consul')();
 
 var kill_entry = function(key) {
   console.log('Deleting %s', key);

@@ -1,8 +1,6 @@
 var fs = require('fs');
 
-var Consul = require('consul-node');
-
-var consul = new Consul();
+var consul = require('consul')();
 
 /**
  * This utility adds keys from the top level of a .json config file to the /git2consul/ path of
@@ -17,7 +15,7 @@ exports.setConfig = function(path, value, cb) {
 
   var add_entry = function(key, value, cb) {
     console.log('Adding config %s : %s', key, value);
-    consul.kv.put(key, value, cb);
+    consul.kv.set(key, value, cb);
   };
 
   consul.kv.put('git2consul/config', config, function(err) {
