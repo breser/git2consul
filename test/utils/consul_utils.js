@@ -1,15 +1,14 @@
 var should = require('should');
 
-var ConsulClass = require('consul-node');
-var consul = new ConsulClass();
+var consul = require('consul')();
 
 var logger = require('../../lib/utils/logging.js');
 
 exports.getValue = function(key, cb) {
-  consul.kv.get(key, function(err, value) {
+  consul.kv.get({'key': key}, function(err, value) {
     if (err) return cb(err);
 
-    cb(null, value === undefined ? value : value[0].value);
+    cb(null, value === undefined ? value : value.Value);
   });
 };
 
@@ -29,7 +28,7 @@ var create_wait_function = function(wait_for_present) {
   return function(key, cb) {
     var check_value = function() {
       exports.getValue(key, function(err, value) {
-        if (err) return done(err);
+        if (err) return cb(err);
 
         if (wait_for_present && value === undefined) return setTimeout(check_value, 50);
         else if (!wait_for_present && value !== undefined) return setTimeout(check_value, 50);
@@ -48,19 +47,19 @@ exports.waitForDelete = create_wait_function(false);
 
 var kill_entry = function(key) {
   logger.trace('Deleting %s', key);
-  consul.kv.delete(key, function(err) {
+  consul.kv.del(key, function(err) {
     if (err) return console.error(err);
   });
 };
 
 exports.purgeKeys = function(test_root, cb) {
   logger.trace('Deleting all keys under %s', test_root);
-  consul.kv.get(test_root + '?recurse', function (err, items) {
+  consul.kv.get({'key': test_root, recurse: true}, function (err, items) {
     if (err) return console.error(err);
 
     if (items && items.length > 0) {
       items.forEach(function(item) {
-        kill_entry(item.key);
+        kill_entry(item.Key);
       });
     }
 

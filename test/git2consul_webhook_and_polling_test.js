@@ -53,7 +53,7 @@ var git_utils = require('./utils/git_utils.js');
         request({ url: hook_config.fqurl, method: 'POST', json: hook_config.body }, function(err) {
           if (err) return done(err);
 
-          consul_utils.waitForValue('/test_repo/master/sample_key', function(err) {
+          consul_utils.waitForValue('test_repo/master/sample_key', function(err) {
             if (err) return done(err);
             done();
           });
@@ -88,7 +88,7 @@ describe('polling hook', function() {
     git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", false, function(err) {
       if (err) return done(err);
 
-      consul_utils.waitForValue('/test_repo/master/sample_key', function(err) {
+      consul_utils.waitForValue('test_repo/master/sample_key', function(err) {
         if (err) return done(err);
         done();
       });

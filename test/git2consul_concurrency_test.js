@@ -51,10 +51,10 @@ describe('Concurrency protections', function() {
               bm.handleRefChange((normal_ref_order ? second_ref : first_ref), function(cb) {
                 if (err) return done(err);
                 // At this point, the git_manager should have populated consul with both sample_key
-                consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
+                consul_utils.validateValue(default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
                   if (err) return done(err);
 
-                  consul_utils.validateValue('/' + default_repo_config.name + '/master/' + sample_key2, sample_value2, function(err, value) {
+                  consul_utils.validateValue(default_repo_config.name + '/master/' + sample_key2, sample_value2, function(err, value) {
                     if (err) return done(err);
                     done();
                   });
