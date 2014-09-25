@@ -9,9 +9,9 @@ config_reader.read(function(err, config) {
 
   logging.init(config);
 
-  if (config.token) {
+  if (process.env.TOKEN) {
     // If a token was configured, register it with the consul broker
-    require('./lib/consul_broker.js').setToken(config.token);
+    require('./lib/consul_broker.js').setToken(process.env.TOKEN);
   }
 
   var logger = require('./lib/utils/logging.js');
