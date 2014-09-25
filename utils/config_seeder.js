@@ -18,7 +18,7 @@ exports.setConfig = function(path, value, cb) {
     consul.kv.set(key, value, cb);
   };
 
-  consul.kv.put('git2consul/config', config, function(err) {
+  consul.kv.set('git2consul/config', config, function(err) {
     if (err) return console.error(err);
     cb();
   });

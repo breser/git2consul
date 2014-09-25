@@ -9,6 +9,11 @@ config_reader.read(function(err, config) {
 
   logging.init(config);
 
+  if (config.token) {
+    // If a token was configured, register it with the consul broker
+    require('./lib/consul_broker.js').setToken(config.token);
+  }
+
   var logger = require('./lib/utils/logging.js');
 
   var git_manager = require('./lib/git_manager.js');
