@@ -15,24 +15,16 @@ exports.setConfig = function(path, value, cb) {
     path = 'git2consul/config';
   }
 
-  var add_entry = function(key, value, cb) {
-    console.log('Adding config %s : %s', key, value);
+  console.log('Adding config %s : %s', path, value);
 
-    var params = {'key': key, 'value': value};
+  var params = {'key': path, 'value': value};
 
-    if (process.env.TOKEN) {
-      params = _.extend(params, {'token': process.env.TOKEN})
-    }
+  if (process.env.TOKEN) {
+    params = _.extend(params, {'token': process.env.TOKEN})
+  }
 
-    consul.kv.set(params, cb);
-  };
-
-  consul.kv.set(path, config, function(err) {
-    if (err) return console.error(err);
-    cb();
-  });
-  
-}
+  consul.kv.set(params, cb);
+};
 
 if (process.argv.length === 3) {
   var config_file = process.argv[2];
