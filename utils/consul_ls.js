@@ -1,7 +1,15 @@
+var _ = require('underscore');
 var consul = require('consul')();
 
 console.log('Listing all keys');
-consul.kv.get({key:'', recurse: true}, function (err, items, res) {
+
+var params = {'key': '', recurse: true};
+
+if (process.env.TOKEN) {
+  params = _.extend(params, {'token': process.env.TOKEN})
+}
+
+consul.kv.get(params, function (err, items, res) {
   if (err) return console.error(err);
 
   if (items) {
