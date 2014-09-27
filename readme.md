@@ -77,7 +77,7 @@ A client system should query Consul for the subset of the KV containing the data
 
 ##### Tokens
 
-If you are using tokens for ACLs, you can pass a token to git2consul by specifying the `TOKEN` environment variable.  git2consul requires read/write access to your KV.
+If you are using tokens for ACLs, you can pass a token to git2consul by specifying the `TOKEN` environment variable.  git2consul requires read/write access to your KV.  The purpose of git2consul is to treat git as the single source of truth for KVs, so it typically makes the most sense to give all other users a read-only token to the KV.
 
 ##### License
 
