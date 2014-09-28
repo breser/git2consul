@@ -10,6 +10,7 @@ git2consul takes one or many git repositories and mirrors them into [Consul](htt
 
 * git2consul does most of its Git work by shelling out to git.  Git must be installed and on your path.
 * git2consul does the rest of its work by calling Consul's REST API.  A Consul agent must be running on localhost.
+* git2consul requires write access to the KV store of its Consul agent.
 * git2consul has only been tested on Unix.
 
 ##### Configuration
