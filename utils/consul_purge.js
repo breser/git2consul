@@ -2,6 +2,10 @@ var _ = require('underscore');
 var consul = require('consul')();
 
 var kill_entry = function(key) {
+
+  // Do not allow consul config to be purged.
+  if (key === 'git2consul/config') return;
+
   console.log('Deleting %s', key);
 
   var params = {'key': key};
