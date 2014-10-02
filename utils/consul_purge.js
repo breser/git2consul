@@ -24,7 +24,7 @@ if (process.env.TOKEN) {
 
 consul.kv.get(get_all_params, function (err, items) {
   if (err) return console.error(err);
-  
+
   if (items) {
     items.forEach(function(item) {
       kill_entry(item.Key);

@@ -23,7 +23,7 @@ config_reader.read(function(err, config) {
     logger.error("No repos found in configuration.  Halting.")
     process.exit(1);
   }
-  
+
   logger.info('git2consul is running');
 
   process.on('uncaughtException', function(err) {

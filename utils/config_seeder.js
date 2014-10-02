@@ -39,7 +39,7 @@ if (process.argv.length === 3) {
     console.error('config_file is not valid JSON');
     process.exit(1);
   }
-  
+
   exports.setConfig(config, function(err) {
     if (err) return console.error("Failed to write config");
   });
