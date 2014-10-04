@@ -48,7 +48,24 @@ describe('Initializing git2consul', function() {
     var sample_value = 'test data';
     // This addFileToGitRepo will automatically create a git_manager in git_utils, so once the callback
     // has fired we know that we are mirroring and managing the master branch locally.
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Pull test.", function(err) {
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Create a git repo.", function(err) {
+      if (err) return done(err);
+
+      // Now we create another git_manager around the same repo with the same local address.  This tells
+      // us that a git_manager can be created around an existing repo without issue.
+      git_manager.manageRepo(default_repo_config, function(err, gm) {
+        (err === null).should.equal(true);
+        done();
+      });
+    });
+  });
+
+  it ('should handle creating a git_manager around a repo that is been emptied', function(done) {
+    var default_repo_config = git_utils.createConfig().repos[0];
+
+    // This addFileToGitRepo will automatically create a git_manager in git_utils, so once the callback
+    // has fired we know that we are mirroring and managing the master branch locally.
+    git_utils.deleteFileFromGitRepo('readme.md', "Clearing repo.", function(err) {
       if (err) return done(err);
 
       // Now we create another git_manager around the same repo with the same local address.  This tells
