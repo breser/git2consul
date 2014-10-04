@@ -1,7 +1,7 @@
 {
   "name": "git2consul",
   "description": "System for moving data from git to consul",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "contributors": [
     {
       "name": "Ryan Breen",
@@ -25,7 +25,8 @@
     "xunit-file": "0.0.5"
   },
   "scripts": {
-    "test_unix": "XUNIT_FILE=\"reports/TESTS-xunit.xml\" node_modules/.bin/istanbul cover --root lib --dir ./reports ./node_modules/.bin/_mocha -- --reporter xunit-file -t 10000 test"
+    "cov": "XUNIT_FILE=\"reports/TESTS-xunit.xml\" node_modules/.bin/istanbul cover --root lib --dir ./reports ./node_modules/.bin/_mocha -- --reporter xunit-file -t 10000 test",
+    "test": "./node_modules/.bin/_mocha --reporter spec -t 10000 test"
   },
   "licenses": [
     {
