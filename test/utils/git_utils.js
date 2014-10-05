@@ -4,7 +4,7 @@ var git_commands = require('../../lib/utils/git_commands.js');
 var git_manager = require('../../lib/git_manager.js');
 
 exports.TEST_REMOTE_REPO = '/tmp/test_repo/';
-exports.TEST_GITHUB_REPO = 'git@github.com:ryanbreen/git2consul_data.git';
+exports.TEST_GITHUB_REPO = 'https://github.com/ryanbreen/git2consul_data.git';
 exports.TEST_WORKING_DIR = '/tmp/test_workspace/';
 exports.TEST_GITHUB_WORKING_DIR = '/tmp/test_github_workspace/';
 
