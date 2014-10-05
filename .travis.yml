@@ -1,0 +1,5 @@
+deploy:
+  provider: npm
+  email: ryan@ryanbreen.com
+  api_key:
+    secure: Ye12Q4WMTjuemAC/iexMVD8Y2O2+tJPBqwuNlp8U3u6RhYiFK8ynG/8f56a1T/zhxoELnhitF+2ctzaL+JhSRqTD4rizevzrCxF7phZ0jYo6JYizAzRY/37puvmcBTFOxuzHQ5ShahWLuG+ItCihWD0fnt6QUnKgR1zKEDt80DQ=
