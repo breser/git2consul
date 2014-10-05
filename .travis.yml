@@ -4,6 +4,7 @@ before_script:
   - unzip 0.4.0_linux_amd64.zip
   - mkdir consul_data
   - ./consul agent -server -bootstrap -data-dir=consul_data &
+  - sleep 2
 deploy:
   provider: npm
   email: ryan@ryanbreen.com
