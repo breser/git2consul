@@ -1,3 +1,4 @@
+language: node_js
 deploy:
   provider: npm
   email: ryan@ryanbreen.com
