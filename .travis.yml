@@ -1,4 +1,9 @@
 language: node_js
+before_script:
+  - wget  https://dl.bintray.com/mitchellh/consul/0.4.0_linux_amd64.zip
+  - unzip 0.4.0_linux_amd64.zip
+  - mkdir consul_data
+  - ./consul agent -server -bootstrap -data-dir=consul_data &
 deploy:
   provider: npm
   email: ryan@ryanbreen.com
