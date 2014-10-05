@@ -5,6 +5,8 @@ before_script:
   - mkdir consul_data
   - ./consul agent -server -bootstrap -data-dir=consul_data &
   - sleep 2
+  - git config --global user.email "ryan@ryanbreen.com"
+  - git config --global user.name "Ryan Breen"
 deploy:
   provider: npm
   email: ryan@ryanbreen.com
