@@ -18,19 +18,19 @@ var git_utils = require('./utils/git_utils.js');
 
 // TODO: Test failing webhook configs
 // TODO: Test webhooks sharing a port
-[{
+[[{
   'type': 'github',
   'url': '/githubpoke',
-  'port': 5151,
+  'port': 5252,
   'body': { ref: "refs/heads/master", head_commit: {id: 12345} },
-  'fqurl': 'http://localhost:5151/githubpoke'
+  'fqurl': 'http://localhost:5252/githubpoke'
 },{
   'type': 'stash',
   'url': '/stashpoke',
   'port': 5252,
   'body': { refChanges: [{refId: "refs/heads/master", toHash: "0"}]},
   'fqurl': 'http://localhost:5252/stashpoke'
-}].forEach(function(hook_config) {
+}]].forEach(function(hook_config) {
 
   describe(hook_config.type + ' webhook', function() {
 
@@ -38,7 +38,7 @@ var git_utils = require('./utils/git_utils.js');
 
     before(function(done) {
       var config = git_utils.createConfig().repos[0];
-      config.hooks = [hook_config];
+      config.hooks = hook_config;
 
       git_manager.manageRepo(config, function(err, gm) {
         if (err) return done(err);
@@ -54,7 +54,7 @@ var git_utils = require('./utils/git_utils.js');
       git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", false, function(err) {
         if (err) return done(err);
 
-        request({ url: hook_config.fqurl, method: 'POST', json: hook_config.body }, function(err) {
+        request({ url: hook_config[0].fqurl, method: 'POST', json: hook_config[0].body }, function(err) {
           if (err) return done(err);
 
           consul_utils.waitForValue('test_repo/master/sample_key', function(err) {
