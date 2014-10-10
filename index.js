@@ -3,10 +3,16 @@ var config_reader = require('./lib/utils/config_reader.js');
 
 var util = require('util');
 
+/**
+ * Read config from a specially named Consul resource.  If the config was not seeded
+ * (and this should be done using utils/config_seeder.js), git2consul will not boot.
+ */
 config_reader.read(function(err, config) {
 
   if (err) return console.error(err);
 
+  // Logging configuration is specified in the config object, so initialize our logger
+  // around that config.
   logging.init(config);
 
   if (process.env.TOKEN) {
