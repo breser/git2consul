@@ -16,16 +16,20 @@ var git_utils = require('./utils/git_utils.js');
  * reach in and disable a polling hook once it starts running.
  */
 
+// TODO: Test failing webhook configs
+// TODO: Test webhooks sharing a port
 [{
   'type': 'github',
   'url': '/githubpoke',
+  'port': 5151,
   'body': { ref: "refs/heads/master", head_commit: {id: 12345} },
   'fqurl': 'http://localhost:5151/githubpoke'
 },{
   'type': 'stash',
   'url': '/stashpoke',
+  'port': 5252,
   'body': { refChanges: [{refId: "refs/heads/master", toHash: "0"}]},
-  'fqurl': 'http://localhost:5050/stashpoke'
+  'fqurl': 'http://localhost:5252/stashpoke'
 }].forEach(function(hook_config) {
 
   describe(hook_config.type + ' webhook', function() {
