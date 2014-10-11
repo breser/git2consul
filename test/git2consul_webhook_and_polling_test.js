@@ -16,7 +16,32 @@ var git_utils = require('./utils/git_utils.js');
  * reach in and disable a polling hook once it starts running.
  */
 
-// TODO: Test failing webhook configs
+// Test failing webhook configs
+[[{
+  'type': 'github',
+  'err': 'Hook configuration failed due to Invalid webhook port undefined'
+}],[{
+  'type': 'stash',
+  'port': 5252,
+  'err': 'Hook configuration failed due to No config url provided'
+}]].forEach(function(hook_config) {
+
+  describe(hook_config.type + ' webhook', function() {
+
+    var my_hooked_gm;
+
+    it ('should reject invalid webhook config', function(done) {
+      var config = git_utils.createConfig().repos[0];
+      config.hooks = hook_config;
+
+      git_manager.manageRepo(config, function(err, gm) {
+        err[0].should.equal(hook_config[0].err);
+        done();
+      });
+    });
+  });
+});
+
 // TODO: Test webhooks sharing a port
 [[{
   'type': 'github',
