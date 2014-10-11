@@ -17,16 +17,25 @@ var git_utils = require('./utils/git_utils.js');
  */
 
 // Test failing webhook configs
-[
+[[
   undefined
-,{
+],[{
   'type': 'github',
   'err': 'Hook configuration failed due to Invalid webhook port undefined'
-},{
+}],[{
   'type': 'stash',
   'port': 5252,
   'err': 'Hook configuration failed due to No config url provided'
-}].forEach(function(hook_config) {
+}],[{
+  'type': 'stash',
+  'port': 5252,
+  'url': '/poke',
+  'err': 'Hook configuration failed due to A webhook is already listening on 5252, /poke'
+},{
+  'type': 'github',
+  'port': 5252,
+  'url': '/poke'
+}]].forEach(function(hook_config) {
 
   describe('webhook config validation', function() {
 
@@ -34,11 +43,11 @@ var git_utils = require('./utils/git_utils.js');
 
     it ('should reject invalid webhook config', function(done) {
       var config = git_utils.createConfig().repos[0];
-      config.hooks = [hook_config];
+      config.hooks = hook_config;
 
       git_manager.manageRepo(config, function(err, gm) {
-        if (hook_config) {
-          err[0].should.equal(hook_config.err);
+        if (hook_config[0]) {
+          err[0].should.equal(hook_config[0].err);
         } else {
           err[0].should.startWith('Hook configuration failed due to');
         }
