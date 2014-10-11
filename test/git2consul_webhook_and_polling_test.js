@@ -75,7 +75,7 @@ var git_utils = require('./utils/git_utils.js');
   describe('webhook', function() {
 
     var my_hooked_gm;
-    
+
     before(function(done) {
       var config = git_utils.createConfig().repos[0];
       config.hooks = hook_config;
@@ -121,9 +121,11 @@ describe('polling hook', function() {
     var config = git_utils.createConfig().repos[0];
     config.hooks = [{
       'type': 'polling',
-      'interval': '.01',
-      'immediate_polling': true
+      'interval': '1'
     }];
+
+    // Signal that we are in mocking mode to allow for < 1 minute polling
+    git_manager.mock();
 
     git_manager.manageRepo(config, function(err, gm) {
       if (err) return done(err);
