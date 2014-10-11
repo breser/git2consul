@@ -70,6 +70,20 @@ var git_utils = require('./utils/git_utils.js');
   'port': 5252,
   'body': { refChanges: [{refId: "refs/heads/master", toHash: "0"}]},
   'fqurl': 'http://localhost:5252/stashpoke'
+}],[{
+  'type': 'github',
+  'url': '/githubpoke_bogus_branch',
+  'port': 5252,
+  'body': { ref: "refs/heads/bogus_branch", head_commit: {id: 12345} },
+  'fqurl': 'http://localhost:5252/githubpoke_bogus_branch',
+  'no_change_expected': true
+},{
+  'type': 'stash',
+  'url': '/stashpoke_bogus_branch',
+  'port': 5252,
+  'body': { refChanges: [{refId: "refs/heads/bogus_branch", toHash: "0"}]},
+  'fqurl': 'http://localhost:5252/stashpoke_bogus_branch',
+  'no_change_expected': true
 }]].forEach(function(hook_config) {
 
   describe('webhook', function() {
@@ -97,6 +111,10 @@ var git_utils = require('./utils/git_utils.js');
 
           request({ url: config.fqurl, method: 'POST', json: config.body }, function(err) {
             if (err) return done(err);
+
+            // If this is a test that won't trigger an update, such as a req specifying an untracked branch,
+            // short-circuit here and don't test for a KV update.
+            if (config.no_change_expected) return done();
 
             consul_utils.waitForValue('test_repo/master/sample_key', function(err) {
               if (err) return done(err);
