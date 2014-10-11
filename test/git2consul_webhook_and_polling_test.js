@@ -72,10 +72,10 @@ var git_utils = require('./utils/git_utils.js');
   'fqurl': 'http://localhost:5252/stashpoke'
 }]].forEach(function(hook_config) {
 
-  describe(hook_config[0].type + ' webhook', function() {
+  describe('webhook', function() {
 
     var my_hooked_gm;
-
+    
     before(function(done) {
       var config = git_utils.createConfig().repos[0];
       config.hooks = hook_config;
@@ -88,21 +88,28 @@ var git_utils = require('./utils/git_utils.js');
       });
     });
 
-    it ('should handle inbound requests', function(done) {
-      var sample_key = 'sample_key';
-      var sample_value = 'stash test data';
-      git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", false, function(err) {
-        if (err) return done(err);
-
-        request({ url: hook_config[0].fqurl, method: 'POST', json: hook_config[0].body }, function(err) {
+    var create_request_validator = function(config) {
+      return function(done) {
+        var sample_key = 'sample_key';
+        var sample_value = 'stash test data';
+        git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", false, function(err) {
           if (err) return done(err);
 
-          consul_utils.waitForValue('test_repo/master/sample_key', function(err) {
+          request({ url: config.fqurl, method: 'POST', json: config.body }, function(err) {
             if (err) return done(err);
-            done();
+
+            consul_utils.waitForValue('test_repo/master/sample_key', function(err) {
+              if (err) return done(err);
+
+              done();
+            });
           });
         });
-      });
+      };
+    };
+
+    hook_config.forEach(function(config) {
+      it (config.type + ' should handle inbound requests', create_request_validator(config));
     });
   });
 });
