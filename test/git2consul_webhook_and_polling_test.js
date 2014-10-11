@@ -57,7 +57,7 @@ var git_utils = require('./utils/git_utils.js');
   });
 });
 
-// TODO: Test webhooks sharing a port
+// Test webhooks sharing a port
 [[{
   'type': 'github',
   'url': '/githubpoke',
@@ -110,6 +110,39 @@ var git_utils = require('./utils/git_utils.js');
 
     hook_config.forEach(function(config) {
       it (config.type + ' should handle inbound requests', create_request_validator(config));
+    });
+  });
+});
+
+// Test failing webhook configs
+[[
+  undefined
+],[{
+  'type': 'polling'
+}],[{
+  'type': 'polling',
+  'interval': -1
+}],[{
+  'type': 'polling',
+  'interval': 1.1
+}]].forEach(function(hook_config) {
+
+  describe('polling config validation', function() {
+
+    var my_hooked_gm;
+
+    it ('should reject invalid polling config', function(done) {
+      var config = git_utils.createConfig().repos[0];
+      config.hooks = hook_config;
+
+      git_manager.manageRepo(config, function(err, gm) {
+        if (hook_config[0]) {
+          err[0].should.equal('Hook configuration failed due to Polling intervals must be positive integers');
+        } else {
+          err[0].should.startWith('Hook configuration failed due to');
+        }
+        done();
+      });
     });
   });
 });
