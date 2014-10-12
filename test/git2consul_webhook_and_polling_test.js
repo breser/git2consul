@@ -109,7 +109,9 @@ var git_utils = require('./utils/git_utils.js');
         git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", false, function(err) {
           if (err) return done(err);
 
-          request({ url: config.fqurl, method: 'POST', json: config.body }, function(err) {
+          var req_conf = { url: config.fqurl, method: 'POST', json: config.body };
+          if (config.type === 'stash') req_conf.headers = {'content-encoding':'UTF-8'};
+          request(req_conf, function(err) {
             if (err) return done(err);
 
             // If this is a test that won't trigger an update, such as a req specifying an untracked branch,
