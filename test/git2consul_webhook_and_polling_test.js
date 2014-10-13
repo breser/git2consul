@@ -29,8 +29,12 @@ var git_utils = require('./utils/git_utils.js');
 }],[{
   'type': 'stash',
   'port': 5252,
-  'url': '/poke',
+  'url': '/happy',
   'err': 'Hook configuration failed due to A webhook is already listening on 5252, /poke'
+},{
+  'type': 'github',
+  'port': 5252,
+  'url': '/poke'
 },{
   'type': 'github',
   'port': 5252,
