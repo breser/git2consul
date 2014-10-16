@@ -61,34 +61,54 @@ var git_utils = require('./utils/git_utils.js');
   });
 });
 
-// Test webhooks sharing a port
-[[{
-  'type': 'github',
-  'url': '/githubpoke',
-  'port': 5252,
-  'body': { ref: "refs/heads/master", head_commit: {id: 12345} },
-  'fqurl': 'http://localhost:5252/githubpoke'
-},{
-  'type': 'stash',
-  'url': '/stashpoke',
-  'port': 5252,
-  'body': { refChanges: [{refId: "refs/heads/master", toHash: "0"}]},
-  'fqurl': 'http://localhost:5252/stashpoke'
-}],[{
-  'type': 'github',
-  'url': '/githubpoke_bogus_branch',
-  'port': 5252,
-  'body': { ref: "refs/heads/bogus_branch", head_commit: {id: 12345} },
-  'fqurl': 'http://localhost:5252/githubpoke_bogus_branch',
-  'no_change_expected': true
-},{
-  'type': 'stash',
-  'url': '/stashpoke_bogus_branch',
-  'port': 5252,
-  'body': { refChanges: [{refId: "refs/heads/bogus_branch", toHash: "0"}]},
-  'fqurl': 'http://localhost:5252/stashpoke_bogus_branch',
-  'no_change_expected': true
-}]].forEach(function(hook_config) {
+[
+  // Test webhooks sharing a port
+  [{
+    'type': 'github',
+    'url': '/githubpoke',
+    'port': 5252,
+    'body': { ref: "refs/heads/master", head_commit: {id: 12345} },
+    'fqurl': 'http://localhost:5252/githubpoke'
+  },{
+    'type': 'stash',
+    'url': '/stashpoke',
+    'port': 5252,
+    'body': { refChanges: [{refId: "refs/heads/master", toHash: "0"}]},
+    'fqurl': 'http://localhost:5252/stashpoke'
+  }],
+  // Test no-op changes to an incorrect branch
+  [{
+    'type': 'github',
+    'url': '/githubpoke_bogus_branch',
+    'port': 5252,
+    'body': { ref: "refs/heads/bogus_branch", head_commit: {id: 12345} },
+    'fqurl': 'http://localhost:5252/githubpoke_bogus_branch',
+    'no_change_expected': true
+  },{
+    'type': 'stash',
+    'url': '/stashpoke_bogus_branch',
+    'port': 5252,
+    'body': { refChanges: [{refId: "refs/heads/bogus_branch", toHash: "0"}]},
+    'fqurl': 'http://localhost:5252/stashpoke_bogus_branch',
+    'no_change_expected': true
+  }],
+  // Test no-op changes with non-HEAD refs
+  [{
+    'type': 'github',
+    'url': '/githubpoke_bogus_ref',
+    'port': 5252,
+    'body': { ref: "refs/remotes/origin/master", head_commit: {id: 12345} },
+    'fqurl': 'http://localhost:5252/githubpoke_bogus_branch',
+    'no_change_expected': true
+  },{
+    'type': 'stash',
+    'url': '/stashpoke_bogus_ref',
+    'port': 5252,
+    'body': { refChanges: [{refId: "refs/remotes/zorigin_master", toHash: "0"}]},
+    'fqurl': 'http://localhost:5252/stashpoke_bogus_ref',
+    'no_change_expected': true
+  }]
+].forEach(function(hook_config) {
 
   describe('webhook', function() {
 
@@ -106,6 +126,8 @@ var git_utils = require('./utils/git_utils.js');
       });
     });
 
+    // This creates a function suitable as the predicate of a mocha test.  The function will enclose
+    // the config object and use it to send a request to the webhook and validate the response.
     var create_request_validator = function(config) {
       return function(done) {
         var sample_key = 'sample_key';
