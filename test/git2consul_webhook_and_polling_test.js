@@ -75,6 +75,13 @@ var git_utils = require('./utils/git_utils.js');
     'port': 5252,
     'body': { refChanges: [{refId: "refs/heads/master", toHash: "0"}]},
     'fqurl': 'http://localhost:5252/stashpoke'
+  },{
+    'type': 'bitbucket',
+    'url': '/bitbucketpoke',
+    'port': 5252,
+    // Seriously, their default POST hook is this ugly
+    'body': '%7B%22repository%22%3A+%7B%22website%22%3A+null%2C+%22fork%22%3A+false%2C+%22name%22%3A+%22configuration%22%2C+%22scm%22%3A+%22git%22%2C+%22owner%22%3A+%22ryanbreen%22%2C+%22absolute_url%22%3A+%22%2Fryanbreen%2Fconfiguration%2F%22%2C+%22slug%22%3A+%22configuration%22%2C+%22is_private%22%3A+true%7D%2C+%22truncated%22%3A+false%2C+%22commits%22%3A+%5B%7B%22node%22%3A+%226f086f3d3de7%22%2C+%22files%22%3A+%5B%7B%22type%22%3A+%22modified%22%2C+%22file%22%3A+%22jobs_service%2Fauspice%2Fdemo-consumer-key%22%7D%5D%2C+%22raw_author%22%3A+%22Ryan+Breen+%3Crbreen%40vistaprint.com%3E%22%2C+%22utctimestamp%22%3A+%222014-10-18+23%3A20%3A47%2B00%3A00%22%2C+%22author%22%3A+%22Ryan+Breen%22%2C+%22timestamp%22%3A+%222014-10-19+01%3A20%3A47%22%2C+%22raw_node%22%3A+%226f086f3d3de724b9007934408e023b628a59ea15%22%2C+%22parents%22%3A+%5B%2230c88d68d029%22%5D%2C+%22branch%22%3A+%22master%22%2C+%22message%22%3A+%22Adding+bitbucket+test.%5Cn%22%2C+%22revision%22%3A+null%2C+%22size%22%3A+-1%7D%5D%2C+%22canon_url%22%3A+%22https%3A%2F%2Fbitbucket.org%22%2C+%22user%22%3A+%22ryanbreen%22%7D',
+    'fqurl': 'http://localhost:5252/bitbucketpoke'
   }],
   // Test no-op changes to an incorrect branch
   [{
@@ -104,7 +111,7 @@ var git_utils = require('./utils/git_utils.js');
     'type': 'stash',
     'url': '/stashpoke_bogus_ref',
     'port': 5252,
-    'body': { refChanges: [{refId: "refs/remotes/zorigin_master", toHash: "0"}]},
+    'body': { refChanges: [{refId: "refs/remotes/origin/master", toHash: "0"}]},
     'fqurl': 'http://localhost:5252/stashpoke_bogus_ref',
     'no_change_expected': true
   }]
@@ -135,7 +142,12 @@ var git_utils = require('./utils/git_utils.js');
         git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", false, function(err) {
           if (err) return done(err);
 
-          var req_conf = { url: config.fqurl, method: 'POST', json: config.body };
+          var req_conf = { url: config.fqurl, method: 'POST' };
+          if (config.type === 'bitbucket') {
+            //req_conf.headers = {'content-type':'application/x-www-form-urlencoded'};
+            req_conf.form = { payload: decodeURIComponent(config.body).replace(/\+/g, ' ') };
+          } else req_conf.json = config.body
+          
           if (config.type === 'stash') req_conf.headers = {'content-encoding':'UTF-8'};
           request(req_conf, function(err) {
             if (err) return done(err);
