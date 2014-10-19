@@ -121,6 +121,13 @@ var git_utils = require('./utils/git_utils.js');
     'body': { refChanges: [{refId: "refs/remotes/origin/master", toHash: "0"}]},
     'fqurl': 'http://localhost:5252/stashpoke_bogus_ref',
     'no_change_expected': true
+  },{
+    'type': 'bitbucket',
+    'url': '/bitbucket_bogus_ref',
+    'port': 5252,
+    'body': '',
+    'fqurl': 'http://localhost:5252/bitbucket_bogus_ref',
+    'no_change_expected': true
   }]
 ].forEach(function(hook_config) {
 
