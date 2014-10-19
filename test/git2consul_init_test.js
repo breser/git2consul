@@ -2,7 +2,7 @@ var should = require('should');
 var _ = require('underscore');
 
 // We want this above any git2consul module to make sure logging gets configured
-require('./git2consul_bootstrap_test.js');
+var bootstrap = require('./git2consul_bootstrap_test.js');
 
 var consul_utils = require('./utils/consul_utils.js');
 
@@ -40,6 +40,53 @@ describe('Cloning a repo for the first time', function() {
 });
 
 describe('Initializing git2consul', function() {
+
+  it ('should handle creating a git_manager tracking multiple branches', function(done) {
+
+    var config = git_utils.createConfig();
+    var branches = ['dev', 'test', 'prod'];
+    config.repos[0].branches = branches;
+    var branch_tests = [];
+    var create_branch_and_add = function(branch_name, done) {
+      return function() {
+        git_commands.checkout_branch(branch_name, git_utils.TEST_REMOTE_REPO, function(err) {
+          if (err) return done(err);
+
+          git_utils.addFileToGitRepo("readme.md", "Stub file in " + branch_name + " branch", branch_name + " stub.", false, function(err) {
+            if (err) return done(err);
+
+            // If we've processed every branch, we are done and are ready to create a git manager around these
+            // three branches.
+            if (branch_tests.length === 0) {
+              git_manager.manageRepo(config.repos[0], function(err, gm) {
+                if (err) return done(err);
+                done();
+              });
+            } else {
+              // If there are more test functions to run, do so.
+              branch_tests.pop()();
+            }
+          });
+        });
+      };
+    };
+
+    // Create a test function for each branch
+    branches.forEach(function(branch_name) {
+      branch_tests.push(create_branch_and_add(branch_name, done));
+    });
+
+    // Most tests assume that we want a repo already initted, so requiring bootstrap.js provides this.  However,
+    // for this test, we want to start with a clean slate.
+    bootstrap.cleanup(function(err) {
+      if (err) done(err);
+      git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
+        if (err) return done(err);
+        // Run the first test
+        branch_tests.pop()();
+      });
+    });
+  });
 
   it ('should handle creating a git_manager around a repo that already exists', function(done) {
     var default_repo_config = git_utils.createConfig().repos[0];
