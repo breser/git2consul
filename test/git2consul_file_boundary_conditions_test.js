@@ -14,32 +14,31 @@ describe('KV handling', function() {
 
   var default_repo_config = git_utils.createConfig().repos[0];
 
-  it ('should reject values over 512kB', function(done) {
-
-    var buf = new Buffer(513*1024);
+  var buffer_test = function(size, cb) {
+    var buf = new Buffer(size);
     for (i=0; i<buf.length; ++i) {
       buf[i] = 'A';
     }
 
-    git_utils.addFileToGitRepo("big_file", buf.toString(), "super big value test", function(err) {
-      err.should.not.equal(null);
+    git_utils.addFileToGitRepo("big_file", buf.toString(), "super big value test", cb);
+  };
 
-      // At this point, the git_manager should have populated consul with our sample_key
+  it ('should reject values over 512kB', function(done) {
+
+    buffer_test(513*1024, function(err) {
+      err.should.not.equal(null);
+      // Because the write was rejected, no KV will exist.
       consul_utils.validateValue(default_repo_config.name + '/master/big_file', undefined, function(err) {
         if (err) return done(err);
         done();
       });
     });
+
   });
 
   it ('should accept values <= 512kB', function(done) {
 
-    var buf = new Buffer(512*1024);
-    for (i=0; i<buf.length; ++i) {
-      buf[i] = 'A';
-    }
-
-    git_utils.addFileToGitRepo("big_file", buf.toString(), "super big value test", function(err) {
+    buffer_test(512*1024, function(err) {
       if (err) return done(err);
 
       // At this point, the git_manager should have populated consul with our sample_key
