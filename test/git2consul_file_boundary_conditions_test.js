@@ -1,3 +1,4 @@
+var crypto = require('crypto');
 var should = require('should');
 var _ = require('underscore');
 
@@ -48,6 +49,20 @@ describe('KV handling', function() {
       });
     });
 
+  });
+
+  it ('should handle files with empty values', function(done) {
+    var sample_key = 'sample_new_key';
+    var sample_value = '';
+    var default_repo_config = git_utils.createConfig().repos[0];
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+      // At this point, the git_manager should have populated consul with our sample_key
+      consul_utils.validateValue(default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
+        if (err) return done(err);
+        done();
+      });
+    });
   });
 
 });
