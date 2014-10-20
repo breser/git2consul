@@ -23,19 +23,6 @@ describe('KV handling', function() {
     git_utils.addFileToGitRepo("big_file", buf.toString(), "super big value test", cb);
   };
 
-  it ('should reject values over 512kB', function(done) {
-
-    buffer_test(513*1024, function(err) {
-      err.should.not.equal(null);
-      // Because the write was rejected, no KV will exist.
-      consul_utils.validateValue(default_repo_config.name + '/master/big_file', undefined, function(err) {
-        if (err) return done(err);
-        done();
-      });
-    });
-
-  });
-
   it ('should accept values <= 512kB', function(done) {
 
     buffer_test(512*1024, function(err) {
@@ -48,6 +35,19 @@ describe('KV handling', function() {
         done();
       });
     });
+  });
+
+  it ('should reject values over 512kB', function(done) {
+
+    buffer_test(513*1024, function(err) {
+      err.should.not.equal(null);
+      // Because the write was rejected, no KV will exist.
+      consul_utils.validateValue(default_repo_config.name + '/master/big_file', undefined, function(err) {
+        if (err) return done(err);
+        done();
+      });
+    });
+
   });
 
 });
