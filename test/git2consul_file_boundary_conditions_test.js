@@ -1,4 +1,3 @@
-var crypto = require('crypto');
 var should = require('should');
 var _ = require('underscore');
 
