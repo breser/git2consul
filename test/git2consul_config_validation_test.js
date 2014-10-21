@@ -76,4 +76,11 @@ describe('Config Validation', function() {
       done();
     });
   });
+
+  it ('should handle config validation if multiple repos initialized at the same time', function(done) {
+    git_manager.manageRepos([_.extend(git_utils.createConfig().repos[0], { hooks: [ { 'type': 'unknown' }] })], function(err, gm) {
+      err[0][0].should.startWith('Invalid hook type');
+      done();
+    });
+  });
 });
