@@ -20,7 +20,7 @@ describe('Concurrency protections', function() {
     var sample_key = 'sample_key';
     var sample_value = 'test data';
 
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
 
     return function(done) {
 

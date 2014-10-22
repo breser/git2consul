@@ -12,7 +12,7 @@ var git_commands = require('../lib/utils/git_commands.js');
 
 describe('KV handling', function() {
 
-  var default_repo_config = git_utils.createConfig().repos[0];
+  var default_repo_config = git_utils.createRepoConfig();
 
   var buffer_test = function(size, cb) {
     var buf = new Buffer(size);
@@ -53,7 +53,7 @@ describe('KV handling', function() {
   it ('should handle files with empty values', function(done) {
     var sample_key = 'sample_new_key';
     var sample_value = '';
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
     git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key

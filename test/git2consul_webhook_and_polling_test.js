@@ -46,7 +46,7 @@ var git_utils = require('./utils/git_utils.js');
     var my_hooked_gm;
 
     it ('should reject invalid webhook config', function(done) {
-      var config = git_utils.createConfig().repos[0];
+      var config = git_utils.createRepoConfig();
       config.hooks = hook_config;
 
       git_manager.manageRepo(config, function(err, gm) {
@@ -136,7 +136,7 @@ var git_utils = require('./utils/git_utils.js');
     var my_hooked_gm;
 
     before(function(done) {
-      var config = git_utils.createConfig().repos[0];
+      var config = git_utils.createRepoConfig();
       config.hooks = hook_config;
 
       git_manager.manageRepo(config, function(err, gm) {
@@ -204,7 +204,7 @@ var git_utils = require('./utils/git_utils.js');
     var my_hooked_gm;
 
     it ('should reject invalid polling config', function(done) {
-      var config = git_utils.createConfig().repos[0];
+      var config = git_utils.createRepoConfig();
       config.hooks = hook_config;
 
       git_manager.manageRepo(config, function(err, gm) {
@@ -223,7 +223,7 @@ describe('polling hook', function() {
   var my_hooked_gm;
 
   before(function(done) {
-    var config = git_utils.createConfig().repos[0];
+    var config = git_utils.createRepoConfig();
     config.hooks = [{
       'type': 'polling',
       'interval': '1'

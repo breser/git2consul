@@ -16,12 +16,12 @@ var my_git_manager;
 
 describe('File operations', function() {
 
-  var default_repo_config = git_utils.createConfig().repos[0];
+  var default_repo_config = git_utils.createRepoConfig();
 
   it ('should handle updates to a single file', function(done) {
     var sample_key = 'sample_key';
     var sample_value = 'new test data';
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
     git_utils.addFileToGitRepo(sample_key, sample_value, "Update a file.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key
@@ -35,7 +35,7 @@ describe('File operations', function() {
   it ('should handle additions of new files', function(done) {
     var sample_key = 'sample_new_key';
     var sample_value = 'new value';
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
     git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key
@@ -49,7 +49,7 @@ describe('File operations', function() {
   it ('should handle deletions of existing files', function(done) {
     var sample_key = 'sample_new_key';
     var sample_value = 'new value';
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
     git_utils.addFileToGitRepo(sample_key, sample_value, "Create file to delete.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key
@@ -71,7 +71,7 @@ describe('File operations', function() {
     var sample_key = 'sample_movable_key';
     var sample_moved_key = 'sample_moved_key';
     var sample_value = 'movable value';
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
     git_utils.addFileToGitRepo(sample_key, sample_value, "Create file to move.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key
@@ -97,7 +97,7 @@ describe('File operations', function() {
     var sample_key = 'sample_movable_key';
     var sample_moved_key = 'subfolder/sample_moved_key';
     var sample_value = 'movable value';
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
     git_utils.addFileToGitRepo(sample_key, sample_value, "Create file to move to subfolder.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key
@@ -126,7 +126,7 @@ describe('File operations', function() {
     var sample_key = 'some_day_i_will_by_a_symlink';
     var sample_referrent_file = 'referrent_file';
     var sample_value = 'linked value';
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
     git_utils.addFileToGitRepo(sample_key, sample_value, "Create file for symlinking.", function(err) {
       if (err) return done(err);
       // At this point, the git_manager should have populated consul with our sample_key

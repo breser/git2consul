@@ -16,13 +16,13 @@ describe('Cloning a repo for the first time', function() {
   it ('should handle a multiple file repo', function(done) {
     var sample_key = 'sample_key';
     var sample_value = 'test data';
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
     git_utils.addFileToGitRepo(sample_key, sample_value, "Clone test.", false, function(err) {
       if (err) return done(err);
 
       var sample_key2 = 'sample_key2';
       var sample_value2 = 'test data2';
-      var default_repo_config = git_utils.createConfig().repos[0];
+      var default_repo_config = git_utils.createRepoConfig();
       git_utils.addFileToGitRepo(sample_key2, sample_value2, "Second file for clone test.", function(err) {
         if (err) return done(err);
 
@@ -42,10 +42,9 @@ describe('Cloning a repo for the first time', function() {
 describe('Initializing git2consul', function() {
 
   it ('should handle creating a git_manager tracking multiple branches', function(done) {
-
-    var config = git_utils.createConfig();
     var branches = ['dev', 'test', 'prod'];
-    config.repos[0].branches = branches;
+    var repo_config = git_utils.createRepoConfig();
+    repo_config.branches = branches;
     var branch_tests = [];
     var create_branch_and_add = function(branch_name, done) {
       return function() {
@@ -58,7 +57,7 @@ describe('Initializing git2consul', function() {
             // If we've processed every branch, we are done and are ready to create a git manager around these
             // three branches.
             if (branch_tests.length === 0) {
-              git_manager.manageRepo(config.repos[0], function(err, gm) {
+              git_manager.manageRepo(repo_config, function(err, gm) {
                 if (err) return done(err);
                 done();
               });
@@ -89,7 +88,7 @@ describe('Initializing git2consul', function() {
   });
 
   it ('should handle creating a git_manager around a repo that already exists', function(done) {
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
 
     var sample_key = 'sample_key';
     var sample_value = 'test data';
@@ -108,7 +107,7 @@ describe('Initializing git2consul', function() {
   });
 
   it ('should handle creating a git_manager around a repo that is been emptied', function(done) {
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
 
     // This addFileToGitRepo will automatically create a git_manager in git_utils, so once the callback
     // has fired we know that we are mirroring and managing the master branch locally.
@@ -125,7 +124,7 @@ describe('Initializing git2consul', function() {
   });
 
   it ('should handle populating consul when you create a git_manager around a repo that is already on disk', function(done) {
-    var default_repo_config = git_utils.createConfig().repos[0];
+    var default_repo_config = git_utils.createRepoConfig();
 
     var sample_key = 'sample_key';
     var sample_value = 'test data';
@@ -167,10 +166,13 @@ describe('Initializing git2consul', function() {
   it ('should handle creating multiple git repos', function(done) {
     var sample_key = 'sample_key';
     var sample_value = 'test data';
-    var default_repo_config = git_utils.createConfig();
+    var default_config = {
+      version: '1.0',
+      repos: [git_utils.createRepoConfig()]
+    };
 
     // Add a Github repo to our repo config because we want to initialize multiple repos at once.
-    default_repo_config.repos.push({
+    default_config.repos.push({
       name: 'test_github_repo',
       local_store: git_utils.TEST_GITHUB_WORKING_DIR,
       url: git_utils.TEST_GITHUB_REPO,
@@ -183,7 +185,7 @@ describe('Initializing git2consul', function() {
     git_utils.addFileToGitRepo(sample_key, sample_value, "Multi repo test.", false, function(err) {
       if (err) return done(err);
 
-      git_manager.manageRepos(default_repo_config.repos, function(err, gms) {
+      git_manager.manageRepos(default_config.repos, function(err, gms) {
         if (err) return done(err);
 
         (err == null).should.equal(true);

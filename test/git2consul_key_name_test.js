@@ -12,7 +12,7 @@ var git_commands = require('../lib/utils/git_commands.js');
 
 describe('Key names', function() {
 
-  var default_repo_config = git_utils.createConfig().repos[0];
+  var default_repo_config = git_utils.createRepoConfig();
 
   var test_add = function(key_name, key_value) {
     return function(done) {

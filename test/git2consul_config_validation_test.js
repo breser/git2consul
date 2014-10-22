@@ -64,21 +64,21 @@ describe('Config Validation', function() {
   });
 
   it ('should reject a repo with a broken git url', function(done) {
-    git_manager.manageRepo(_.extend(git_utils.createConfig().repos[0], { local_store:'/tmp/busted', url: 'file:///tmp/nobody_home' }), function(err) {
+    git_manager.manageRepo(_.extend(git_utils.createRepoConfig(), { local_store:'/tmp/busted', url: 'file:///tmp/nobody_home' }), function(err) {
       err.should.startWith('Failed to create manager for branch master');
       done();
     });
   });
 
   it ('should reject an invalid git hook type', function(done) {
-    git_manager.manageRepo(_.extend(git_utils.createConfig().repos[0], { hooks: [ { 'type': 'unknown' }] }), function(err, gm) {
+    git_manager.manageRepo(_.extend(git_utils.createRepoConfig(), { hooks: [ { 'type': 'unknown' }] }), function(err, gm) {
       err[0].should.startWith('Invalid hook type');
       done();
     });
   });
 
   it ('should handle config validation if multiple repos initialized at the same time', function(done) {
-    git_manager.manageRepos([_.extend(git_utils.createConfig().repos[0], { hooks: [ { 'type': 'unknown' }] })], function(err, gm) {
+    git_manager.manageRepos([_.extend(git_utils.createRepoConfig(), { hooks: [ { 'type': 'unknown' }] })], function(err, gm) {
       err[0][0].should.startWith('Invalid hook type');
       done();
     });

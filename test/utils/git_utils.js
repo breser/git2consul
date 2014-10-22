@@ -8,15 +8,12 @@ exports.TEST_GITHUB_REPO = 'https://github.com/ryanbreen/git2consul_data.git';
 exports.TEST_WORKING_DIR = '/tmp/test_workspace/';
 exports.TEST_GITHUB_WORKING_DIR = '/tmp/test_github_workspace/';
 
-exports.createConfig = function() {
+exports.createRepoConfig = function() {
   return {
-    version: '1.0',
-    repos: [{
-      name: 'test_repo',
-      local_store: exports.TEST_WORKING_DIR,
-      url: 'file://' + exports.TEST_REMOTE_REPO,
-      branches: [ 'master' ]
-    }]
+    name: 'test_repo',
+    local_store: exports.TEST_WORKING_DIR,
+    url: 'file://' + exports.TEST_REMOTE_REPO,
+    branches: [ 'master' ]
   };
 };
 
@@ -27,7 +24,7 @@ exports.initRepo = function(name, cb) {
     exports.addFileToGitRepo("readme.md", "Stub file to give us something to commit.", "Init repo.", false, function(err) {
       if (err) return cb(err);
 
-      git_manager.manageRepo(exports.createConfig().repos[0], function(err, gm) {
+      git_manager.manageRepo(exports.createRepoConfig(), function(err, gm) {
         if (err) return cb(err);
 
         exports.GM = gm;
