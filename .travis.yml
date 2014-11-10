@@ -1,14 +1,14 @@
 language: node_js
 before_script:
-  - wget  https://dl.bintray.com/mitchellh/consul/0.4.0_linux_amd64.zip
-  - unzip 0.4.0_linux_amd64.zip
-  - mkdir consul_data
-  - ./consul agent -server -bootstrap -data-dir=consul_data &
-  - sleep 2
-  - git config --global user.email "ryan@ryanbreen.com"
-  - git config --global user.name "Ryan Breen"
+- wget  https://dl.bintray.com/mitchellh/consul/0.4.0_linux_amd64.zip
+- unzip 0.4.0_linux_amd64.zip
+- mkdir consul_data
+- ./consul agent -server -bootstrap -data-dir=consul_data &
+- sleep 2
+- git config --global user.email "ryan@ryanbreen.com"
+- git config --global user.name "Ryan Breen"
 deploy:
   provider: npm
   email: ryan@ryanbreen.com
   api_key:
-    secure: Ye12Q4WMTjuemAC/iexMVD8Y2O2+tJPBqwuNlp8U3u6RhYiFK8ynG/8f56a1T/zhxoELnhitF+2ctzaL+JhSRqTD4rizevzrCxF7phZ0jYo6JYizAzRY/37puvmcBTFOxuzHQ5ShahWLuG+ItCihWD0fnt6QUnKgR1zKEDt80DQ=
+    secure: bwhZIXKniloMQz6+dJUMECUTLbG7j24wPwuG9G/H/YiMd6I7Z9P2roeeIC7TKu/NzXGLjySzqPYDxIZm9VGonx2lY4rOVC0vDkju2iEY3PIzAU8aO2FP9mFdaE03PN5bFwoB1BheHYypyOalPFZ6Zugq+RmM8SftyscdjhhFuRc=
