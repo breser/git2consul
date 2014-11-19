@@ -3,8 +3,6 @@ var config_reader = require('./lib/utils/config_reader.js');
 
 var util = require('util');
 
-var _ = require('underscore');
-
 /**
  * Read config from a specially named Consul resource.  If the config was not seeded
  * (and this should be done using utils/config_seeder.js), git2consul will not boot.
