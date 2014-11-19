@@ -3,6 +3,8 @@ var config_reader = require('./lib/utils/config_reader.js');
 
 var util = require('util');
 
+var _ = require('underscore');
+
 /**
  * Read config from a specially named Consul resource.  If the config was not seeded
  * (and this should be done using utils/config_seeder.js), git2consul will not boot.
@@ -28,6 +30,16 @@ config_reader.read(function(err, config) {
     // Fail startup.
     logger.error("No repos found in configuration.  Halting.")
     process.exit(1);
+  }
+
+  // Process command line switches, if any.  Command-line switches override the settings
+  // loaded from Consul.
+  for (var i=2; i<process.argv.length; ++i) {
+    if (process.argv[i] === '-n') config['no_daemon'] = true;
+  }
+
+  if (config.no_daemon === true) {
+    git_manager.setDaemon(false);
   }
 
   logger.info('git2consul is running');
