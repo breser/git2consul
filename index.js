@@ -30,6 +30,16 @@ config_reader.read(function(err, config) {
     process.exit(1);
   }
 
+  // Process command line switches, if any.  Command-line switches override the settings
+  // loaded from Consul.
+  for (var i=2; i<process.argv.length; ++i) {
+    if (process.argv[i] === '-n') config['no_daemon'] = true;
+  }
+
+  if (config.no_daemon === true) {
+    git_manager.setDaemon(false);
+  }
+
   logger.info('git2consul is running');
 
   process.on('uncaughtException', function(err) {

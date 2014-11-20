@@ -66,6 +66,10 @@ Note that multiple webhooks can share the same port.  The only constraint is tha
 
 The above example also logs to stdout as well as to file.  Logging is handled via [Bunyan](https://github.com/trentm/node-bunyan).  The value of the `logger` property is passed to the Bunyan `createLogger()` method, so any configuration supported by vanilla Bunyan will work out of the box in git2consul.
 
+###### No Daemon Mode
+
+If there are no webhooks or polling watchers configured, git2consul will terminate as soon as all tracked repos and branches have been synced with Consul.  If you would like to force git2consul not to attach any webhooks or polling watchers, you can either pass the command-line switch `-n` or include the field `no_daemon: true` at the top level of your config JSON.
+
 ##### How it works
 
 git2consul uses the name and branches of configured repos to namespace the created KVs.  The goal is to allow multiple teams to use the same Consul agents and KV store to migrate configuration data around a network without needing to worry about data conflicts.  In the above example, a settings file stored at `foo_service/settings.json` in the `development` branch of the repo `vp_config` would be persisted in Consul as `vp_config/development/foo_service/settings.json`.
