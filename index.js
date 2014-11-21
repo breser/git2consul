@@ -33,7 +33,8 @@ config_reader.read(function(err, config) {
   // Process command line switches, if any.  Command-line switches override the settings
   // loaded from Consul.
   for (var i=2; i<process.argv.length; ++i) {
-    if (process.argv[i] === '-n') config['no_daemon'] = true;
+    if (process.argv[i] === '-n' || process.argv[i] === '--no_daemon') config['no_daemon'] = true;
+    if (process.argv[i] === '-r' || process.argv[i] === '--restart_on_config_change') config['restart_on_config_change'] = true;
   }
 
   if (config.no_daemon === true) {
@@ -56,6 +57,15 @@ config_reader.read(function(err, config) {
       }, 2000);
     }
   });
+
+  if (config.restart_on_config_change) {
+
+    setInterval(function() {
+      config_reader.subscribe(function(err, config) {
+
+      });
+    }
+  }
 
 });
 
