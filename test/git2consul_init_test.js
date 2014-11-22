@@ -43,7 +43,8 @@ describe('Initializing git2consul', function() {
 
   it ('should handle creating a git_manager tracking multiple branches', function(done) {
     var branches = ['dev', 'test', 'prod'];
-    var repo_config = git_utils.createRepoConfig();
+    var config = git_utils.createConfig();
+    var repo_config = config.repos[0];
     repo_config.branches = branches;
     var branch_tests = [];
     var create_branch_and_add = function(branch_name, done) {
@@ -57,7 +58,7 @@ describe('Initializing git2consul', function() {
             // If we've processed every branch, we are done and are ready to create a git manager around these
             // three branches.
             if (branch_tests.length === 0) {
-              git_manager.manageRepo(repo_config, function(err, gm) {
+              git_manager.manageRepo(config, repo_config, function(err, gm) {
                 if (err) return done(err);
                 done();
               });
@@ -88,7 +89,7 @@ describe('Initializing git2consul', function() {
   });
 
   it ('should handle creating a git_manager around a repo that already exists', function(done) {
-    var default_repo_config = git_utils.createRepoConfig();
+    var default_config = git_utils.createConfig();
 
     var sample_key = 'sample_key';
     var sample_value = 'test data';
@@ -99,7 +100,7 @@ describe('Initializing git2consul', function() {
 
       // Now we create another git_manager around the same repo with the same local address.  This tells
       // us that a git_manager can be created around an existing repo without issue.
-      git_manager.manageRepo(default_repo_config, function(err, gm) {
+      git_manager.manageRepo(default_config, default_config.repos[0], function(err, gm) {
         (err === null).should.equal(true);
         done();
       });
@@ -107,7 +108,8 @@ describe('Initializing git2consul', function() {
   });
 
   it ('should handle creating a git_manager around a repo that is been emptied', function(done) {
-    var default_repo_config = git_utils.createRepoConfig();
+    var default_config = git_utils.createConfig();
+    var default_repo_config = default_config.repos[0];
 
     // This addFileToGitRepo will automatically create a git_manager in git_utils, so once the callback
     // has fired we know that we are mirroring and managing the master branch locally.
@@ -116,7 +118,7 @@ describe('Initializing git2consul', function() {
 
       // Now we create another git_manager around the same repo with the same local address.  This tells
       // us that a git_manager can be created around an existing repo without issue.
-      git_manager.manageRepo(default_repo_config, function(err, gm) {
+      git_manager.manageRepo(default_config, default_repo_config, function(err, gm) {
         (err === null).should.equal(true);
         done();
       });
@@ -124,7 +126,8 @@ describe('Initializing git2consul', function() {
   });
 
   it ('should handle populating consul when you create a git_manager around a repo that is already on disk', function(done) {
-    var default_repo_config = git_utils.createRepoConfig();
+    var default_config = git_utils.createConfig();
+    var default_repo_config = default_config.repos[0];
 
     var sample_key = 'sample_key';
     var sample_value = 'test data';
@@ -134,7 +137,7 @@ describe('Initializing git2consul', function() {
     var test_git_manager = function(done) {
       // Now we create another git_manager around the same repo with the same local address.  This tells
       // us that a git_manager can be created around an existing repo without issue.
-      git_manager.manageRepo(default_repo_config, function(err, gm) {
+      git_manager.manageRepo(default_config, default_repo_config, function(err, gm) {
         (err === null).should.equal(true);
 
         // At this point, the git_manager should have populated consul with our sample_key
@@ -185,7 +188,7 @@ describe('Initializing git2consul', function() {
     git_utils.addFileToGitRepo(sample_key, sample_value, "Multi repo test.", false, function(err) {
       if (err) return done(err);
 
-      git_manager.manageRepos(default_config.repos, function(err, gms) {
+      git_manager.manageRepos(default_config, function(err, gms) {
         if (err) return done(err);
 
         (err == null).should.equal(true);
