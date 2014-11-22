@@ -21,6 +21,7 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
 
     {
       "version": "1.0",
+      "local_store": "/var/lib/git2consul_cache",
       "logger" : {
         "name" : "git2consul",
         "streams" : [{
@@ -35,7 +36,6 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
       },
       "repos" : [{
         "name" : "vp_config",
-        "local_store": "/tmp/git_cache",
         "url" : "ssh://stash.vistaprint.net/team_configuration_data.git",
         "branches" : ["development", "staging", "production"],
         "hooks": [{
@@ -49,7 +49,6 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
         }]
       },{
         "name" : "github_data",
-        "local_store": "/tmp/git_cache",
         "url" : "git@github.com:ryanbreen/git2consul_data.git",
         "branches" : [ "master" ],
         "hooks": [{
