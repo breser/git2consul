@@ -169,15 +169,11 @@ describe('Initializing git2consul', function() {
   it ('should handle creating multiple git repos', function(done) {
     var sample_key = 'sample_key';
     var sample_value = 'test data';
-    var default_config = {
-      version: '1.0',
-      repos: [git_utils.createRepoConfig()]
-    };
+    var default_config = git_utils.createConfig();
 
     // Add a Github repo to our repo config because we want to initialize multiple repos at once.
     default_config.repos.push({
       name: 'test_github_repo',
-      local_store: git_utils.TEST_GITHUB_WORKING_DIR,
       url: git_utils.TEST_GITHUB_REPO,
       branches: [ 'master' ]
     });
