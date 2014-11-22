@@ -1,11 +1,11 @@
 {
   "name": "git2consul",
   "description": "System for moving data from git to consul",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "contributors": [
     {
       "name": "Ryan Breen",
-      "email": "rbreen@vistaprint.com"
+      "email": "rbreen@cimpress.com"
     }
   ],
   "dependencies": {
