@@ -54,7 +54,7 @@ exports.cleanup = function(cb) {
 // suite is consistent.  Placed here, they will be run before all suites and tests.
 beforeEach(function(done) {
   exports.cleanup(function(err) {
-    git_utils.initRepo(git_utils.TEST_REMOTE_REPO, function(err) {
+    git_utils.initRepo(function(err) {
       if (err) return done(err);
       done();
     });

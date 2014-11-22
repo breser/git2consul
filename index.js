@@ -1,6 +1,9 @@
 var logging = require('./lib/utils/logging.js');
 var config_reader = require('./lib/utils/config_reader.js');
 
+var fs = require('fs');
+var os = require('tmpdir');
+
 var util = require('util');
 
 /**
@@ -34,10 +37,19 @@ config_reader.read(function(err, config) {
   // loaded from Consul.
   for (var i=2; i<process.argv.length; ++i) {
     if (process.argv[i] === '-n' || process.argv[i] === '--no_daemon') config['no_daemon'] = true;
+    if (process.argv[i] === '-d' || process.argv[i] === '--local_store') config['local_store'] = process.argv[i];
   }
 
   if (config.no_daemon === true) {
     git_manager.setDaemon(false);
+  }
+
+  if (!config.local_store) {
+    config.local_store = os.tmpdir();
+  }
+
+  if (!fs.existsSync(config.local_store)) {
+    logger.error("Local store dir %s not found", config.local_store);
   }
 
   logger.info('git2consul is running');
@@ -47,7 +59,7 @@ config_reader.read(function(err, config) {
   });
 
   // Set up the git manager for each repo.
-  git_manager.manageRepos(config.repos, function(err) {
+  git_manager.manageRepos(config, function(err) {
     if (err) {
       logger.error('Failed to create git managers due to %s', err);
       setTimeout(function() {

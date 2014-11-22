@@ -46,10 +46,10 @@ var git_utils = require('./utils/git_utils.js');
     var my_hooked_gm;
 
     it ('should reject invalid webhook config', function(done) {
-      var config = git_utils.createRepoConfig();
-      config.hooks = hook_config;
+      var config = git_utils.createConfig();
+      config.repos[0].hooks = hook_config;
 
-      git_manager.manageRepo(config, function(err, gm) {
+      git_manager.manageRepo(config, config.repos[0], function(err, gm) {
         if (hook_config[0]) {
           err[0].should.equal(hook_config[0].err);
         } else {
@@ -136,10 +136,10 @@ var git_utils = require('./utils/git_utils.js');
     var my_hooked_gm;
 
     before(function(done) {
-      var config = git_utils.createRepoConfig();
-      config.hooks = hook_config;
+      var config = git_utils.createConfig();
+      config.repos[0].hooks = hook_config;
 
-      git_manager.manageRepo(config, function(err, gm) {
+      git_manager.manageRepo(config, config.repos[0], function(err, gm) {
         if (err) return done(err);
 
         my_hooked_gm = gm;
@@ -204,10 +204,10 @@ var git_utils = require('./utils/git_utils.js');
     var my_hooked_gm;
 
     it ('should reject invalid polling config', function(done) {
-      var config = git_utils.createRepoConfig();
-      config.hooks = hook_config;
+      var config = git_utils.createConfig();
+      config.repos[0].hooks = hook_config;
 
-      git_manager.manageRepo(config, function(err, gm) {
+      git_manager.manageRepo(config, config.repos[0], function(err, gm) {
         if (hook_config[0]) {
           err[0].should.equal('Hook configuration failed due to Polling intervals must be positive integers');
         } else {
@@ -223,8 +223,8 @@ describe('polling hook', function() {
   var my_hooked_gm;
 
   before(function(done) {
-    var config = git_utils.createRepoConfig();
-    config.hooks = [{
+    var config = git_utils.createConfig();
+    config.repos[0].hooks = [{
       'type': 'polling',
       'interval': '1'
     }];
@@ -232,7 +232,7 @@ describe('polling hook', function() {
     // Signal that we are in mocking mode to allow for < 1 minute polling
     git_manager.mock();
 
-    git_manager.manageRepo(config, function(err, gm) {
+    git_manager.manageRepo(config, config.repos[0], function(err, gm) {
       if (err) return done(err);
 
       my_hooked_gm = gm;
