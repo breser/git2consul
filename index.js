@@ -2,7 +2,7 @@ var logging = require('./lib/utils/logging.js');
 var config_reader = require('./lib/utils/config_reader.js');
 
 var fs = require('fs');
-var os = require('tmpdir');
+var os = require('os');
 
 var util = require('util');
 

@@ -1,7 +1,7 @@
 {
   "name": "git2consul",
   "description": "System for moving data from git to consul",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "contributors": [
     {
       "name": "Ryan Breen",
