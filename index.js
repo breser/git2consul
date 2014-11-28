@@ -37,7 +37,13 @@ config_reader.read(function(err, config) {
   // loaded from Consul.
   for (var i=2; i<process.argv.length; ++i) {
     if (process.argv[i] === '-n' || process.argv[i] === '--no_daemon') config['no_daemon'] = true;
-    if (process.argv[i] === '-d' || process.argv[i] === '--local_store') config['local_store'] = process.argv[i];
+    if (process.argv[i] === '-d' || process.argv[i] === '--local_store') {
+      if (i+1 > process.argv[length]) {
+        logger.error("No dir provided with --local_store option");
+        process.exit(3);
+      }
+      config['local_store'] = process.argv[i+1];
+    }
   }
 
   if (config.no_daemon === true) {
