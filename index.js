@@ -47,8 +47,15 @@ config_reader.read(function(err, config) {
     }
   }
 
+  // If we are running in no daemon mode, set the git_manager to disable any listeners that would keep
+  // the process running after the initial sync.
   if (config.no_daemon === true) {
     git_manager.setDaemon(false);
+  // If we aren't running in no daemon mode and the configuration calls for halt on change, enable it.
+  // We don't do this if config.no_daemon is enabled as the halt on change listener would keep the process
+  // running.
+  } else if (config.halt_on_change === true) {
+    git_manager.enableHaltOnChange();
   }
 
   if (!config.local_store) {
