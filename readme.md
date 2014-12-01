@@ -71,7 +71,7 @@ If there are no webhooks or polling watchers configured, git2consul will termina
 
 ###### Halt-on-change Mode
 
-If you would like git2consul to shutdown every time its configuration changes, you can enable halt-on-change mode wit the command-line switch `-h` or inclusion of the field `"halt_on_change": true` at the top level of your config JSON.  If this mode is enabled, git2consul will wait for changes in the config (which is itself stored in Consul) and gracefully halt when a change is detected.  It is expected that your git2consul process is configured to run as a service, so restarting git2consul is the responsibility of your service manager.
+If you would like git2consul to shutdown every time its configuration changes, you can enable halt-on-change mode with the command-line switch `-h` or inclusion of the field `"halt_on_change": true` at the top level of your config JSON.  If this mode is enabled, git2consul will wait for changes in the config (which is itself stored in Consul) and gracefully halt when a change is detected.  It is expected that your git2consul process is configured to run as a service, so restarting git2consul is the responsibility of your service manager.
 
 ##### How it works
 
