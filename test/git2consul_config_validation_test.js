@@ -35,9 +35,27 @@ describe('Config Validation', function() {
     });
   });
 
+  it ('should reject a config with no repo name', function(done) {
+    var stock_config = git_utils.createConfig();
+    delete stock_config.repos[0].name;
+    git_manager.manageRepo(stock_config, stock_config.repos[0], function(err) {
+      err.should.equal('No name provided for repo.');
+      done();
+    });
+  });
+
+  it ('should reject a config using an existing repo name', function(done) {
+    var stock_config = git_utils.createConfig();
+    stock_config.repos[0].name = git_utils.GM.getRepoName();
+    git_manager.manageRepo(stock_config, stock_config.repos[0], function(err) {
+      err.should.equal('A repo with that name is already tracked.');
+      done();
+    });
+  });
+
   it ('should reject a repo with no branches', function(done) {
     git_manager.manageRepo(git_utils.createConfig(), {'name': 'busted_repo', 'branches': []}, function(err) {
-      err.should.equal('No branches specified');
+      err.should.equal('No branches specified.');
       done();
     });
   });
