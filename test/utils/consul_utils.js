@@ -13,6 +13,7 @@ exports.getValue = function(key, cb) {
 };
 
 exports.validateValue = function(key, expected_value, cb) {
+  logger.trace('Looking for key %s with value %s', key, expected_value);
   exports.getValue(key, function(err, value) {
     if (err) return cb(err);
     if (!expected_value) (value == undefined).should.equal(true);
@@ -26,6 +27,7 @@ exports.validateValue = function(key, expected_value, cb) {
 
 var create_wait_function = function(wait_for_present) {
   return function(key, cb) {
+    logger.trace('Waiting for key %s', key);
     var check_value = function() {
       exports.getValue(key, function(err, value) {
         if (err) return cb(err);

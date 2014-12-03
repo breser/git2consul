@@ -63,8 +63,6 @@ beforeEach(function(done) {
   // If we are in manual mode, do nothing.
   if (manual_mode) return done();
 
-  console.log('auto mode');
-
   exports.cleanup(function(err) {
     git_utils.initRepo(function(err) {
       if (err) return done(err);

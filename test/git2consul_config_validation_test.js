@@ -8,7 +8,7 @@ var git_manager = require('../lib/git_manager.js');
 var git_utils = require('./utils/git_utils.js');
 
 describe('Config Validation', function() {
-
+  
   it ('should reject a config with no repos', function(done) {
     var count = 3;
     git_manager.manageRepos(null, function(err) {
