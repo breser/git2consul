@@ -16,11 +16,12 @@ describe('Key names', function() {
 
   var test_add = function(key_name, key_value) {
     return function(done) {
+      var repo_name = git_utils.GM.getRepoName();
       git_utils.addFileToGitRepo(key_name, key_value, key_name + " key name test.", function(err) {
         if (err) return done(err);
 
         // At this point, the git_manager should have populated consul with our sample_key
-        consul_utils.validateValue(default_repo_config.name + '/master/' + key_name, key_value, function(err, value) {
+        consul_utils.validateValue(repo_name + '/master/' + key_name, key_value, function(err, value) {
           if (err) return done(err);
           done();
         });

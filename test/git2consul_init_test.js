@@ -14,6 +14,7 @@ var git_commands = require('../lib/utils/git_commands.js');
 describe('Cloning a repo for the first time', function() {
 
   it ('should handle a multiple file repo', function(done) {
+    var repo_name = git_utils.GM.getRepoName();
     var sample_key = 'sample_key';
     var sample_value = 'test data';
     var default_repo_config = git_utils.createRepoConfig();
@@ -27,9 +28,9 @@ describe('Cloning a repo for the first time', function() {
         if (err) return done(err);
 
         // At this point, the git_manager should have populated consul with our sample_key
-        consul_utils.validateValue(default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
+        consul_utils.validateValue(repo_name + '/master/' + sample_key, sample_value, function(err, value) {
           if (err) return done(err);
-          consul_utils.validateValue(default_repo_config.name + '/master/' + sample_key2, sample_value2, function(err, value) {
+          consul_utils.validateValue(repo_name + '/master/' + sample_key2, sample_value2, function(err, value) {
             if (err) return done(err);
             done();
           });
@@ -107,9 +108,12 @@ describe('Initializing git2consul', function() {
     });
   });
 
-  it ('should handle creating a git_manager around a repo that is been emptied', function(done) {
+  it ('should handle creating a git_manager around a repo that has been emptied', function(done) {
+    var repo_name = git_utils.GM.getRepoName();
     var default_config = git_utils.createConfig();
     var default_repo_config = default_config.repos[0];
+    default_repo_config.name = repo_name;
+    git_manager.clearGitManagers();
 
     // This addFileToGitRepo will automatically create a git_manager in git_utils, so once the callback
     // has fired we know that we are mirroring and managing the master branch locally.
@@ -126,8 +130,11 @@ describe('Initializing git2consul', function() {
   });
 
   it ('should handle populating consul when you create a git_manager around a repo that is already on disk', function(done) {
+    var repo_name = git_utils.GM.getRepoName();
     var default_config = git_utils.createConfig();
     var default_repo_config = default_config.repos[0];
+    default_repo_config.name = repo_name;
+    git_manager.clearGitManagers();
 
     var sample_key = 'sample_key';
     var sample_value = 'test data';
@@ -141,7 +148,7 @@ describe('Initializing git2consul', function() {
         (err === null).should.equal(true);
 
         // At this point, the git_manager should have populated consul with our sample_key
-        consul_utils.validateValue(default_repo_config.name + '/master/' + sample_key, sample_value, function(err, value) {
+        consul_utils.validateValue(repo_name + '/master/' + sample_key, sample_value, function(err, value) {
           if (err) return done(err);
           done();
         });

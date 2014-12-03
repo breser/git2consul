@@ -52,7 +52,7 @@ describe('Config Validation', function() {
   it ('should reject a repo with a bogus local_store', function(done) {
     var stock_config = git_utils.createConfig();
     stock_config.local_store = "/var/permdenied";
-    git_manager.manageRepo(stock_config, {'branches': ['master']}, function(err) {
+    git_manager.manageRepo(stock_config, {'name': 'permfail', 'branches': ['master']}, function(err) {
       err.should.startWith('Failed to create root_directory for git manager:');
       done();
     });

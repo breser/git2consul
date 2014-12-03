@@ -3,19 +3,20 @@ var _ = require('underscore');
 var request = require('request');
 
 // We want this above any git2consul module to make sure logging gets configured
-require('./git2consul_bootstrap_test.js');
+var bootstrap = require('./git2consul_bootstrap_test.js');
 
 var consul_utils = require('./utils/consul_utils.js');
 
 var git_manager = require('../lib/git_manager.js');
 var git_utils = require('./utils/git_utils.js');
 
+var logger = require('../lib/utils/logging.js');
+
 /**
  * Test webhooks and polling.  NOTE: This test needs to run last because the polling test case will
  * cause all sorts of race conditions for subsequent tests, and we didn't bother mocking up a way to
  * reach in and disable a polling hook once it starts running.
  */
-
 // Test failing webhook configs
 [[
   undefined
@@ -60,6 +61,8 @@ var git_utils = require('./utils/git_utils.js');
     });
   });
 });
+
+var repo_counter = 0;
 
 [
   // Test webhooks sharing a port
@@ -131,46 +134,66 @@ var git_utils = require('./utils/git_utils.js');
   }]
 ].forEach(function(hook_config) {
 
-  describe('webhook', function() {
-
-    var my_hooked_gm;
+  describe('webhook', function() {    
 
     before(function(done) {
-      var config = git_utils.createConfig();
-      config.repos[0].hooks = hook_config;
 
-      git_manager.manageRepo(config, config.repos[0], function(err, gm) {
+      // Enable manual mode.  We don't want the standard git2consul bootstrap tests to create a git_manager
+      // that is enabled without hooks as this just causes endless confusion.
+      bootstrap.manual_mode(true);
+
+      bootstrap.cleanup(function(err) {
+
         if (err) return done(err);
 
-        my_hooked_gm = gm;
-        done();
+        var config = git_utils.createConfig();
+        config.repos[0].hooks = hook_config;
+        config.repos[0].name = "webhook_test" + repo_counter;
+        ++repo_counter;
+
+        logger.info(config.repos[0].name);
+        logger.info(config);
+
+        git_utils.initRepo(config, config.repos[0], function(err, gm) {
+          if (err) return done(err);
+          done();
+        });
+
       });
     });
+
+    var sample_data_randomizer = 0;
 
     // This creates a function suitable as the predicate of a mocha test.  The function will enclose
     // the config object and use it to send a request to the webhook and validate the response.
     var create_request_validator = function(config) {
       return function(done) {
+        var repo_name = git_utils.GM.getRepoName();
+        //git_utils.GM = my_hooked_gm;
+        console.log("beans:" + repo_name);
         var sample_key = 'sample_key';
-        var sample_value = 'stash test data';
+        var sample_value = 'stash test data ' + sample_data_randomizer;
+        ++sample_data_randomizer;
         git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", false, function(err) {
           if (err) return done(err);
 
           var req_conf = { url: config.fqurl, method: 'POST' };
           if (config.type === 'bitbucket') {
-            //req_conf.headers = {'content-type':'application/x-www-form-urlencoded'};
             req_conf.form = { payload: decodeURIComponent(config.body).replace(/\+/g, ' ') };
           } else req_conf.json = config.body
           
           if (config.type === 'stash') req_conf.headers = {'content-encoding':'UTF-8'};
           request(req_conf, function(err) {
+
+            console.log("buns: " + repo_name);
+            
             if (err) return done(err);
 
             // If this is a test that won't trigger an update, such as a req specifying an untracked branch,
             // short-circuit here and don't test for a KV update.
             if (config.no_change_expected) return done();
 
-            consul_utils.waitForValue('test_repo/master/sample_key', function(err) {
+            consul_utils.waitForValue(repo_name + '/master/sample_key', function(err) {
               if (err) return done(err);
 
               done();
@@ -185,7 +208,7 @@ var git_utils = require('./utils/git_utils.js');
     });
   });
 });
-
+/**
 // Test failing webhook configs
 [[
   undefined
@@ -218,7 +241,7 @@ var git_utils = require('./utils/git_utils.js');
     });
   });
 });
-
+/**
 describe('polling hook', function() {
   var my_hooked_gm;
 
@@ -253,3 +276,4 @@ describe('polling hook', function() {
     });
   });
 });
+**/
