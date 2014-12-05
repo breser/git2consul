@@ -54,15 +54,15 @@ describe('Config Validation', function() {
   });
 
   it ('should reject a repo with no branches', function(done) {
-    git_manager.manageRepo(git_utils.createConfig(), {'name': 'busted_repo', 'branches': []}, function(err) {
+    git_manager.manageRepo(git_utils.createConfig(), {'name': 'busted_no_branch_repo', 'branches': []}, function(err) {
       err.should.equal('No branches specified.');
       done();
     });
   });
 
   it ('should reject a repo with duplicate branches', function(done) {
-    git_manager.manageRepo(git_utils.createConfig(), {'name': 'busted_repo', 'branches': ['master', 'master', 'commander']}, function(err) {
-      err.should.startWith('Duplicate name found in branches for repo busted_repo');
+    git_manager.manageRepo(git_utils.createConfig(), {'name': 'busted_dupe_branch_repo', 'branches': ['master', 'master', 'commander']}, function(err) {
+      err.should.startWith('Duplicate name found in branches for repo busted_dupe_branch_repo');
       done();
     });
   });
