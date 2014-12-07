@@ -1,3 +1,3 @@
 var util = require('util');
 
-var git2consul = require('lib');
+var git2consul = require('./lib');
