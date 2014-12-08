@@ -4,7 +4,7 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 var rimraf = require('rimraf');
 
-var logging = require('../lib/utils/logging.js');
+var logging = require('../lib/logging.js');
 logging.init({
   "logger" : {
     "name" : "git2consul",
@@ -12,10 +12,10 @@ logging.init({
       "level": "trace",
       "type": "rotating-file",
       "path": "./test/logs/test.log"
-    }/**,{
+    },{
       "level": "trace",
       "stream": "process.stdout"
-    }/**/]
+    }]
   }
 });
 

@@ -6,10 +6,10 @@ require('./git2consul_bootstrap_test.js');
 
 var consul_utils = require('./utils/consul_utils.js');
 
-var git_manager = require('../lib/git_manager.js');
+var Repo = require('../lib/git/repo.js');
 var git_utils = require('./utils/git_utils.js');
 
-var git_commands = require('../lib/utils/git_commands.js');
+var git_commands = require('../lib/git/commands.js');
 
 describe('Concurrency protections', function() {
 
@@ -40,19 +40,19 @@ describe('Concurrency protections', function() {
               if (err) done(err);
 
               var second_ref = ref;
-              var bm = git_utils.GM.getBranchManager('master');
+              var branch = git_utils.repo.branches['master'];
 
-              bm.handleRefChange((normal_ref_order ? first_ref : second_ref), function(cb) {
+              branch.handleRefChange((normal_ref_order ? first_ref : second_ref), function(cb) {
                 if (err) return done(err);
               });
 
-              bm.handleRefChange((normal_ref_order ? second_ref : first_ref), function(cb) {
+              branch.handleRefChange((normal_ref_order ? second_ref : first_ref), function(cb) {
                 if (err) return done(err);
                 // At this point, the git_manager should have populated consul with both sample_key
-                consul_utils.validateValue(git_utils.GM.getRepoName() + '/master/' + sample_key, sample_value, function(err, value) {
+                consul_utils.validateValue(git_utils.repo.name + '/master/' + sample_key, sample_value, function(err, value) {
                   if (err) return done(err);
 
-                  consul_utils.validateValue(git_utils.GM.getRepoName() + '/master/' + sample_key2, sample_value2, function(err, value) {
+                  consul_utils.validateValue(git_utils.repo.name + '/master/' + sample_key2, sample_value2, function(err, value) {
                     if (err) return done(err);
                     done();
                   });
