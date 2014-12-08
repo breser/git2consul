@@ -4,11 +4,11 @@ var _ = require('underscore');
 // We want this above any git2consul module to make sure logging gets configured
 require('./git2consul_bootstrap_test.js');
 
-var git_manager = require('../lib/git_manager.js');
+var repo = require('../lib/git/repo.js');
 var git_utils = require('./utils/git_utils.js');
 var consul_utils = require('./utils/consul_utils.js');
 
-var git_commands = require('../lib/utils/git_commands.js');
+var git_commands = require('../lib/git/commands.js');
 
 describe('KV handling', function() {
 
@@ -23,12 +23,12 @@ describe('KV handling', function() {
 
   it ('should accept values <= 512kB', function(done) {
 
-    var repo_name = git_utils.GM.getRepoName();
+    var repo_name = git_utils.repo.name;
 
     buffer_test(512*1024, function(err) {
       if (err) return done(err);
 
-      // At this point, the git_manager should have populated consul with our sample_key
+      // At this point, the repo should have populated consul with our sample_key
       consul_utils.getValue(repo_name + '/master/big_file', function(err, value) {
         if (err) return done(err);
         value.length.should.equal(512*1024);
@@ -39,7 +39,7 @@ describe('KV handling', function() {
 
   it ('should reject values over 512kB', function(done) {
 
-    var repo_name = git_utils.GM.getRepoName();
+    var repo_name = git_utils.repo.name;
 
     buffer_test(513*1024, function(err) {
       err.should.not.equal(null);
@@ -54,13 +54,13 @@ describe('KV handling', function() {
 
   it ('should handle files with empty values', function(done) {
 
-    var repo_name = git_utils.GM.getRepoName();
+    var repo_name = git_utils.repo.name;
     var sample_key = 'sample_new_key';
     var sample_value = '';
     var default_repo_config = git_utils.createRepoConfig();
     git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
       if (err) return done(err);
-      // At this point, the git_manager should have populated consul with our sample_key
+      // At this point, the repo should have populated consul with our sample_key
       consul_utils.validateValue(repo_name + '/master/' + sample_key, sample_value, function(err, value) {
         if (err) return done(err);
         done();
