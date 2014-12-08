@@ -22,18 +22,18 @@ exports.createConfig = function() {
 exports.createRepoConfig = function() {
   ++repo_counter;
   return {
+    local_store: exports.TEST_WORKING_DIR,
     name: 'test_repo' + repo_counter,
     url: 'file://' + exports.TEST_REMOTE_REPO,
     branches: [ 'master' ]
   };
 };
 
-exports.initRepo = function(config, repo_config, cb) {
+exports.initRepo = function(repo_config, cb) {
 
   if (!cb) {
-    cb = config;
-    config = exports.createConfig();
-    repo_config = config.repos[0];
+    cb = repo_config;
+    repo_config = exports.createRepoConfig();
   }
 
   git_commands.init(exports.TEST_REMOTE_REPO, function(err) {

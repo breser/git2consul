@@ -4,11 +4,10 @@ var _ = require('underscore');
 // We want this above any git2consul module to make sure logging gets configured
 require('./git2consul_bootstrap_test.js');
 
-var git_manager = require('../lib/git_manager.js');
 var git_utils = require('./utils/git_utils.js');
 var consul_utils = require('./utils/consul_utils.js');
 
-var git_commands = require('../lib/utils/git_commands.js');
+var git_commands = require('../lib/git/commands.js');
 
 describe('Key names', function() {
 
@@ -16,7 +15,7 @@ describe('Key names', function() {
 
   var test_add = function(key_name, key_value) {
     return function(done) {
-      var repo_name = git_utils.GM.getRepoName();
+      var repo_name = git_utils.repo.name;
       git_utils.addFileToGitRepo(key_name, key_value, key_name + " key name test.", function(err) {
         if (err) return done(err);
 

@@ -7,10 +7,10 @@ var bootstrap = require('./git2consul_bootstrap_test.js');
 
 var consul_utils = require('./utils/consul_utils.js');
 
-var git_manager = require('../lib/git_manager.js');
+var Repo = require('../lib/git/repo.js');
 var git_utils = require('./utils/git_utils.js');
 
-var logger = require('../lib/utils/logging.js');
+var logger = require('../lib/logging.js');
 
 /**
  * Test webhooks and polling.  NOTE: This test needs to run last because the polling test case will
@@ -47,10 +47,11 @@ var logger = require('../lib/utils/logging.js');
     var my_hooked_gm;
 
     it ('should reject invalid webhook config', function(done) {
-      var config = git_utils.createConfig();
-      config.repos[0].hooks = hook_config;
+      var repo_config = git_utils.createRepoConfig();
+      repo_config.hooks = hook_config;
 
-      git_manager.manageRepo(config, config.repos[0], function(err, gm) {
+      var repo = new Repo(repo_config);
+      repo.init(function(err) {
         if (hook_config[0]) {
           err[0].should.equal(hook_config[0].err);
         } else {
@@ -146,12 +147,12 @@ var repo_counter = 0;
 
         if (err) return done(err);
 
-        var config = git_utils.createConfig();
-        config.repos[0].hooks = hook_config;
-        config.repos[0].name = "webhook_test" + repo_counter;
+        var repo_config = git_utils.createRepoConfig();
+        repo_config.hooks = hook_config;
+        repo_config.name = "webhook_test" + repo_counter;
         ++repo_counter;
 
-        git_utils.initRepo(config, config.repos[0], function(err, gm) {
+        git_utils.initRepo(repo_config, function(err, gm) {
           if (err) return done(err);
           done();
         });
@@ -165,7 +166,7 @@ var repo_counter = 0;
     // the config object and use it to send a request to the webhook and validate the response.
     var create_request_validator = function(config) {
       return function(done) {
-        var repo_name = git_utils.GM.getRepoName();
+        var repo_name = git_utils.repo.name;
         var sample_key = 'sample_key';
         var sample_value = 'stash test data ' + sample_data_randomizer;
         ++sample_data_randomizer;
@@ -220,10 +221,11 @@ var repo_counter = 0;
     var my_hooked_gm;
 
     it ('should reject invalid polling config', function(done) {
-      var config = git_utils.createConfig();
-      config.repos[0].hooks = hook_config;
+      var repo_config = git_utils.createRepoConfig();
+      repo_config.hooks = hook_config;
 
-      git_manager.manageRepo(config, config.repos[0], function(err, gm) {
+      var repo = new Repo(repo_config);
+      repo.init(function(err) {
         if (hook_config[0]) {
           err[0].should.equal('Hook configuration failed due to Polling intervals must be positive integers');
         } else {
@@ -242,20 +244,20 @@ describe('polling hook', function() {
     // Enable manual mode.  We don't want the standard git2consul bootstrap tests to create a git_manager
     // that is enabled without hooks as this just causes endless confusion.
     bootstrap.manual_mode(true);
-    git_manager.mock();
+    process.env.MOCK = true;
 
     bootstrap.cleanup(function(err) {
 
       if (err) return done(err);
 
-      var config = git_utils.createConfig();
-      config.repos[0].hooks = [{
+      var repo_config = git_utils.createRepoConfig();
+      repo_config.hooks = [{
         'type': 'polling',
         'interval': '1'
       }];
-      config.repos[0].name = "polling_test";
+      repo_config.name = "polling_test";
 
-      git_utils.initRepo(config, config.repos[0], function(err, gm) {
+      git_utils.initRepo(repo_config, function(err, gm) {
         if (err) return done(err);
         done();
       });
@@ -264,7 +266,7 @@ describe('polling hook', function() {
   });
 
   it ('should handle polling updates', function(done) {
-    var repo_name = git_utils.GM.getRepoName();
+    var repo_name = git_utils.repo.name;
     var sample_key = 'sample_key';
     var sample_value = 'stash test data';
     git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", false, function(err) {
@@ -277,3 +279,4 @@ describe('polling hook', function() {
     });
   });
 });
+

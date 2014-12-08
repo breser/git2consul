@@ -12,10 +12,10 @@ logging.init({
       "level": "trace",
       "type": "rotating-file",
       "path": "./test/logs/test.log"
-    },{
+    }/*,{
       "level": "trace",
       "stream": "process.stdout"
-    }]
+    }*/]
   }
 });
 
