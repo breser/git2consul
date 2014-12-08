@@ -4,46 +4,31 @@ var should = require('should');
 // We want this above any git2consul module to make sure logging gets configured
 require('./git2consul_bootstrap_test.js');
 
-var git_manager = require('../lib/git_manager.js');
+var Repo = require('../lib/git/repo.js');
 var git_utils = require('./utils/git_utils.js');
 
 describe('Config Validation', function() {
   
-  it ('should reject a config with no repos', function(done) {
-    var count = 3;
-    git_manager.manageRepos(null, function(err) {
-      err.should.equal('No config provided');
-      --count;
-      if (count === 0) done();
-    });
-    git_manager.manageRepos({}, function(err) {
-      err.should.equal('No array of repo configs provided');
-      --count;
-      if (count === 0) done();
-    });
-    git_manager.manageRepos([], function(err) {
-      err.should.equal('No array of repo configs provided');
-      --count;
-      if (count === 0) done();
+  it ('should reject a repo with invalid config', function() {
+
+    try {
+      var repo = new Repo();
+      should.fail("Repo with no config should throw an exception");
+    } catch(e) {
+      e.message.should.equal('No configuration provided for repo');
+    }
+
+    [{}, {'name':'incomplete'}, {'name':'incomplete', 'branches': ['master']}].forEach(function(config) {
+      try {
+        var repo = new Repo(config);
+        should.fail("Repo with incomplete config should throw an exception");
+      } catch(e) {
+        e.message.should.equal('A repo must have a url, a name, and a branch array.');
+      }
     });
   });
 
-  it ('should reject a config with duplicate repo names', function(done) {
-    git_manager.manageRepos({repos:[{'name': 'test_repo'}, {'name': 'test_repo'}, {'name': 'github_test_repo'}]}, function(err) {
-      err.should.startWith('Duplicate name found in repos');
-      done();
-    });
-  });
-
-  it ('should reject a config with no repo name', function(done) {
-    var stock_config = git_utils.createConfig();
-    delete stock_config.repos[0].name;
-    git_manager.manageRepo(stock_config, stock_config.repos[0], function(err) {
-      err.should.equal('No name provided for repo.');
-      done();
-    });
-  });
-
+/**
   it ('should reject a config using an existing repo name', function(done) {
     var stock_config = git_utils.createConfig();
     stock_config.repos[0].name = git_utils.GM.getRepoName();
@@ -52,21 +37,18 @@ describe('Config Validation', function() {
       done();
     });
   });
+**/
 
-  it ('should reject a repo with no branches', function(done) {
-    git_manager.manageRepo(git_utils.createConfig(), {'name': 'busted_no_branch_repo', 'branches': []}, function(err) {
-      err.should.equal('No branches specified.');
-      done();
-    });
+  it ('should reject a repo with duplicate branches', function() {
+    try {
+      var repo = new Repo({'name': 'busted_dupe_branch_repo', 'url': 'http://www.github.com/', 'branches': ['master', 'master', 'commander']});
+      should.fail("Repo with duplicate branches should throw an exception");
+    } catch(e) {
+      e.message.should.startWith('Duplicate name found in branches for repo busted_dupe_branch_repo');
+    }
   });
 
-  it ('should reject a repo with duplicate branches', function(done) {
-    git_manager.manageRepo(git_utils.createConfig(), {'name': 'busted_dupe_branch_repo', 'branches': ['master', 'master', 'commander']}, function(err) {
-      err.should.startWith('Duplicate name found in branches for repo busted_dupe_branch_repo');
-      done();
-    });
-  });
-
+  /**
   it ('should reject a repo with a bogus local_store', function(done) {
     var stock_config = git_utils.createConfig();
     stock_config.local_store = "/var/permdenied";
@@ -75,15 +57,17 @@ describe('Config Validation', function() {
       done();
     });
   });
+**/
 
   it ('should reject a repo with a broken git url', function(done) {
-    git_manager.manageRepo(
-      _.extend(git_utils.createConfig(), {local_store:'/tmp/busted'}), _.extend(git_utils.createRepoConfig(), { url: 'file:///tmp/nobody_home' }), function(err) {
-      err.should.startWith('Failed to create manager for branch master');
+    var repo = new Repo(_.extend(git_utils.createRepoConfig(), { url: 'file:///tmp/nobody_home' }));
+    repo.init(function(err) {
+      err.message.should.containEql('does not appear to be a git repository');
       done();
     });
   });
 
+/**
   it ('should reject an invalid git hook type', function(done) {
     git_manager.manageRepo(git_utils.createConfig(), _.extend(git_utils.createRepoConfig(), { hooks: [ { 'type': 'unknown' }] }), function(err, gm) {
       err[0].should.startWith('Invalid hook type');
@@ -101,4 +85,5 @@ describe('Config Validation', function() {
       done();
     });
   });
+**/
 });

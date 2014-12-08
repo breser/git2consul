@@ -2,7 +2,7 @@ var should = require('should');
 
 var consul = require('consul')();
 
-var logger = require('../../lib/utils/logging.js');
+var logger = require('../../lib/logging.js');
 
 exports.getValue = function(key, cb) {
   consul.kv.get({'key': key}, function(err, value) {

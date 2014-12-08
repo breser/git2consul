@@ -1,7 +1,7 @@
 var fs = require('fs');
 
-var git_commands = require('../../lib/utils/git_commands.js');
-var git_manager = require('../../lib/git_manager.js');
+var git_commands = require('../../lib/git/commands.js');
+var Repo = require('../../lib/git/repo.js');
 
 exports.TEST_REMOTE_REPO = '/tmp/test_repo/';
 exports.TEST_GITHUB_REPO = 'https://github.com/ryanbreen/git2consul_data.git';
@@ -22,18 +22,18 @@ exports.createConfig = function() {
 exports.createRepoConfig = function() {
   ++repo_counter;
   return {
+    local_store: exports.TEST_WORKING_DIR,
     name: 'test_repo' + repo_counter,
     url: 'file://' + exports.TEST_REMOTE_REPO,
     branches: [ 'master' ]
   };
 };
 
-exports.initRepo = function(config, repo_config, cb) {
+exports.initRepo = function(repo_config, cb) {
 
   if (!cb) {
-    cb = config;
-    config = exports.createConfig();
-    repo_config = config.repos[0];
+    cb = repo_config;
+    repo_config = exports.createRepoConfig();
   }
 
   git_commands.init(exports.TEST_REMOTE_REPO, function(err) {
@@ -41,10 +41,11 @@ exports.initRepo = function(config, repo_config, cb) {
     exports.addFileToGitRepo("readme.md", "Stub file to give us something to commit.", "Init repo.", false, function(err) {
       if (err) return cb(err);
 
-      git_manager.manageRepo(config, repo_config, function(err, gm) {
+      repo_config.local_store = exports.TEST_WORKING_DIR;
+      exports.repo = new Repo(repo_config);
+      exports.repo.init(function(err) {
         if (err) return cb(err);
 
-        exports.GM = gm;
         cb(null);
       });
     });
@@ -68,7 +69,7 @@ exports.addFileToGitRepo = function(name, content, commit_message, update, cb) {
         if (err) return cb(err);
 
         if (update) {
-          exports.GM.getBranchManager('master').handleRefChange(0, function(err) {
+          exports.repo.branches['master'].handleRefChange(0, function(err) {
             if (err) return cb(err);
             cb();
           });
@@ -94,7 +95,7 @@ exports.deleteFileFromGitRepo = function(name, commit_message, update, cb) {
       if (err) return cb(err);
 
       if (update) {
-        exports.GM.getBranchManager('master').handleRefChange(0, function(err) {
+        exports.repo.branches['master'].handleRefChange(0, function(err) {
           if (err) return cb(err);
           cb();
         });
@@ -118,7 +119,7 @@ exports.moveFileInGitRepo = function(old_name, new_name, commit_message, update,
     git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
       if (err) return cb(err);
       if (update) {
-        exports.GM.getBranchManager('master').handleRefChange(0, function(err) {
+        exports.repo.branches['master'].handleRefChange(0, function(err) {
           if (err) return cb(err);
           cb();
         });
@@ -151,7 +152,7 @@ exports.symlinkFileInGitRepo = function(link, referrent, commit_message, update,
           git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
             if (err) return cb(err);
             if (update) {
-              exports.GM.getBranchManager('master').handleRefChange(0, function(err) {
+              exports.repo.branches['master'].handleRefChange(0, function(err) {
                 if (err) return cb(err);
                 cb();
               });
