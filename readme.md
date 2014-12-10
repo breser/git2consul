@@ -93,7 +93,7 @@ If you are using tokens for ACLs, you can pass a token to git2consul by specifyi
 
 Builds are automatically run by Travis on any push or pull request.
 
-![Travis Status](https://travis-ci.org/ryanbreen/git2consul.svg?branch=master)
+![Travis Status](https://api.travis-ci.org/Cimpress-MCP/git2consul.svg?branch=master)
 
 ##### License
 
