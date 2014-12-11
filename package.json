@@ -14,6 +14,7 @@
     "consul": "^0.10.0",
     "express": "~4.6.1",
     "mkdirp": "0.5.0",
+    "coveralls": "^2.11.2",
     "rimraf": "2.2.8",
     "underscore": "1.6.0"
   },
@@ -25,8 +26,9 @@
     "xunit-file": "0.0.5"
   },
   "scripts": {
-    "cov": "XUNIT_FILE=\"reports/TESTS-xunit.xml\" node_modules/.bin/istanbul cover --root lib --dir ./reports ./node_modules/.bin/_mocha -- --reporter xunit-file -t 10000 test",
-    "test": "./node_modules/.bin/_mocha --reporter spec -t 10000 test"
+    "test": "./node_modules/.bin/_mocha --reporter spec -t 10000 test | bunyan",
+    "cov": "`npm bin`/istanbul cover --root . -x node_modules -x test --dir ./reports `npm bin`/_mocha -- --reporter spec -t 10000 test",
+    "coveralls": "npm run cov && node_modules/coveralls/bin/coveralls.js < reports/lcov.info"
   },
   "licenses": [
     {
