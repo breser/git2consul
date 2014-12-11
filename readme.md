@@ -95,6 +95,10 @@ Builds are automatically run by Travis on any push or pull request.
 
 ![Travis Status](https://api.travis-ci.org/Cimpress-MCP/git2consul.svg?branch=master)
 
+Coverage is run automatically by Travis and uploaded to coveralls.io.
+
+[![Coverage Status](https://img.shields.io/coveralls/Cimpress-MCP/git2consul.svg)](https://coveralls.io/r/Cimpress-MCP/git2consul?branch=master)
+
 ##### License
 
 Apache 2.0
