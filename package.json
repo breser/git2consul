@@ -1,7 +1,7 @@
 {
   "name": "git2consul",
   "description": "System for moving data from git to consul",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "contributors": [
     {
       "name": "Ryan Breen",
@@ -27,7 +27,7 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/_mocha --reporter spec -t 10000 test | bunyan",
-    "cov": "`npm bin`/istanbul cover --root . -x node_modules -x test --dir ./reports `npm bin`/_mocha -- --reporter spec -t 10000 test",
+    "cov": "`npm bin`/istanbul cover --root . -x node_modules -x test --dir ./reports `npm bin`/_mocha -- --reporter spec -t 10000 test | bunyan",
     "coveralls": "npm run cov && node_modules/coveralls/bin/coveralls.js < reports/lcov.info"
   },
   "licenses": [

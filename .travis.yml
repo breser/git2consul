@@ -7,6 +7,8 @@ before_script:
 - sleep 2
 - git config --global user.email "ryan@ryanbreen.com"
 - git config --global user.name "Ryan Breen"
+script:
+- npm run coveralls
 deploy:
   provider: npm
   email: ryan@ryanbreen.com
