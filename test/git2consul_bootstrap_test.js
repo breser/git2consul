@@ -31,23 +31,25 @@ exports.cleanup = function(cb) {
     delete git.repos[key];
   }
 
+  // Delete every key from consul.
   consul_utils.purgeKeys('', function(err) {
   if (err) return cb(err);
+    // Delete the test remote repo
     rimraf(git_utils.TEST_REMOTE_REPO, function(err) {
       if (err) return cb(err);
+
+      // Recreate the test remote repo
       mkdirp(git_utils.TEST_REMOTE_REPO, function(err) {
         if (err) return cb(err);
+
+        // Delete our local working dir
         rimraf(git_utils.TEST_WORKING_DIR, function(err) {
           if (err) return cb(err);
+
+          // Recreate the local working dir
           mkdirp(git_utils.TEST_WORKING_DIR, function(err) {
             if (err) return cb(err);
-            rimraf(git_utils.TEST_GITHUB_WORKING_DIR, function(err) {
-              if (err) return cb(err);
-              mkdirp(git_utils.TEST_GITHUB_WORKING_DIR, function(err) {
-                if (err) return cb(err);
-                cb();
-              });
-            });
+            cb();
           });
         });
       });
