@@ -174,7 +174,6 @@ describe('Initializing git2consul', function() {
 **/
 
   var config = {
-    local_store: git_utils.TEST_WORKING_DIR,
     repos: [{
       name: 'repo1',
       url: 'file://' + git_utils.TEST_REMOTE_REPO,
@@ -186,9 +185,20 @@ describe('Initializing git2consul', function() {
     }]
   };
 
+  it ('should fail to create repos if no local_store is present on the top level config', function(done) {
+    git.createRepos(config, function(err) {
+      err.should.equal('No local_store provided');
+
+      // Now fix config by adding local_store
+      config.local_store = git_utils.TEST_WORKING_DIR;
+      
+      done();
+    });
+  });
+
   var countdown = 2;
 
-  it ('should handle creating multiple git repos', function(done) {
+  it ('should handle an error creating git repos', function(done) {
     git.createRepos(config, function(err) {
       (err === undefined).should.equal(true);
       git.repos.should.have.properties('repo1', 'repo2');

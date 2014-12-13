@@ -10,7 +10,6 @@ var git_utils = require('./utils/git_utils.js');
 describe('Graceful Shutdown', function() {
   
   before(function() {
-    git.mock();
     bootstrap.manual_mode(true);
   });
 
