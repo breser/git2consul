@@ -9,18 +9,18 @@ exports.TEST_GITHUB_REPO = 'https://github.com/ryanbreen/git2consul_data.git';
 exports.TEST_WORKING_DIR = '/tmp/test_workspace/';
 exports.TEST_GITHUB_WORKING_DIR = '/tmp/test_github_workspace/';
 
-var repo_counter = 0;
-
 exports.createRepoConfig = function() {
-  ++repo_counter;
   return {
     local_store: exports.TEST_WORKING_DIR,
-    name: 'test_repo' + repo_counter,
+    name: 'test_repo',
     url: 'file://' + exports.TEST_REMOTE_REPO,
     branches: [ 'master' ]
   };
 };
 
+/**
+ * Initialize a repo and return it in a callback.
+ */
 exports.initRepo = function(repo_config, cb) {
 
   if (!cb) {
@@ -30,27 +30,27 @@ exports.initRepo = function(repo_config, cb) {
 
   git_commands.init(exports.TEST_REMOTE_REPO, function(err) {
     if (err) return cb(err);
-    exports.addFileToGitRepo("readme.md", "Stub file to give us something to commit.", "Init repo.", false, function(err) {
+
+    // When we create a repo, we need it to have an initial commit.  The call to addFile provides that.
+    exports.addFileToGitRepo("readme.md", "Stub file to give us something to commit.", "Init repo.", function(err) {
       if (err) return cb(err);
 
       repo_config.local_store = exports.TEST_WORKING_DIR;
-      exports.repo = new Repo(repo_config);
-      git.repos[repo_config.name] = exports.repo;
-      exports.repo.init(function(err) {
+      var repo = new Repo(repo_config);
+
+      // Register this repo such that graceful shutdown checks in the git module work.
+      git.repos[repo_config.name] = repo;
+
+      repo.init(function(err) {
         if (err) return cb(err);
 
-        cb(null);
+        cb(null, repo);
       });
     });
   });
 };
 
-exports.addFileToGitRepo = function(name, content, commit_message, update, cb) {
-
-  if (!cb) {
-    cb = update;
-    update = true;
-  }
+exports.addFileToGitRepo = function(name, content, commit_message, cb) {
 
   fs.writeFile(exports.TEST_REMOTE_REPO + name, content, function(err) {
     if (err) return cb(err);
@@ -60,75 +60,37 @@ exports.addFileToGitRepo = function(name, content, commit_message, update, cb) {
 
       git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
         if (err) return cb(err);
-
-        if (update) {
-          exports.repo.branches['master'].handleRefChange(0, function(err) {
-            if (err) return cb(err);
-            cb();
-          });
-        } else {
-          cb();
-        }
+        cb();
       });
     });
   });
 };
 
-exports.deleteFileFromGitRepo = function(name, commit_message, update, cb) {
-
-  if (!cb) {
-    cb = update;
-    update = true;
-  }
+exports.deleteFileFromGitRepo = function(name, commit_message, cb) {
 
   git_commands.delete(name, exports.TEST_REMOTE_REPO, function(err) {
     if (err) return cb(err);
 
     git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
       if (err) return cb(err);
-
-      if (update) {
-        exports.repo.branches['master'].handleRefChange(0, function(err) {
-          if (err) return cb(err);
-          cb();
-        });
-      } else {
-        cb();
-      }
+      cb();
     });
   });
 };
 
-exports.moveFileInGitRepo = function(old_name, new_name, commit_message, update, cb) {
-
-  if (!cb) {
-    cb = update;
-    update = true;
-  }
+exports.moveFileInGitRepo = function(old_name, new_name, commit_message, cb) {
 
   git_commands.mv(old_name, new_name, exports.TEST_REMOTE_REPO, function(err) {
     if (err) return cb(err);
 
     git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
       if (err) return cb(err);
-      if (update) {
-        exports.repo.branches['master'].handleRefChange(0, function(err) {
-          if (err) return cb(err);
-          cb();
-        });
-      } else {
-        cb();
-      }
+      cb();
     });
   });
 };
 
-exports.symlinkFileInGitRepo = function(link, referrent, commit_message, update, cb) {
-
-  if (!cb) {
-    cb = update;
-    update = true;
-  }
+exports.symlinkFileInGitRepo = function(link, referrent, commit_message, cb) {
 
   fs.rename(exports.TEST_REMOTE_REPO + link, exports.TEST_REMOTE_REPO + referrent, function(err) {
     if (err) return cb(err);
@@ -144,14 +106,7 @@ exports.symlinkFileInGitRepo = function(link, referrent, commit_message, update,
 
           git_commands.commit(commit_message, exports.TEST_REMOTE_REPO, function(err) {
             if (err) return cb(err);
-            if (update) {
-              exports.repo.branches['master'].handleRefChange(0, function(err) {
-                if (err) return cb(err);
-                cb();
-              });
-            } else {
-              cb();
-            }
+            cb();
           });
         });
       })

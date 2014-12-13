@@ -55,26 +55,12 @@ exports.cleanup = function(cb) {
   });
 };
 
-var manual_mode = false;
-
-/**
- * Provide a mechanism to disable bootstrapping for test cases that want to configure all
- * repo functionality themselves.
- */
-exports.manual_mode = function(manual) {
-  manual_mode = manual;
-};
-
 // These cleanup operations need to run before each test to make sure the state of the
 // suite is consistent.  Placed here, they will be run before all suites and tests.
 beforeEach(function(done) {
-  // If we are in manual mode, do nothing.
-  if (manual_mode) return done();
 
   exports.cleanup(function(err) {
-    git_utils.initRepo(function(err) {
-      if (err) return done(err);
-      done();
-    });
+    if (err) return done(err);
+    done();
   });
 });
