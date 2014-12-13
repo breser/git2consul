@@ -19,7 +19,7 @@ describe('Initializing git2consul', function() {
     // Create a remote git repo with 3 branches and a file per branch.  Then, init a Repo object and validate
     // that all 3 files are in the appropriate place in the Consul KV store.
     git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
-      if (err) return cb(err);
+      if (err) return done(err);
 
       var branches = ['dev', 'test', 'prod'];
       var repo_config = git_utils.createRepoConfig();
