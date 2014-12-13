@@ -190,7 +190,6 @@ describe('Initializing git2consul', function() {
 
   it ('should handle creating multiple git repos', function(done) {
     git.createRepos(config, function(err) {
-      // TODO: This gets called 3 times and should only get called twice.  Puzzle that out.
       (err === undefined).should.equal(true);
       git.repos.should.have.properties('repo1', 'repo2');
 
