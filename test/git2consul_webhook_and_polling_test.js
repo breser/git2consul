@@ -244,7 +244,6 @@ describe('polling hook', function() {
     // Enable manual mode.  We don't want the standard git2consul bootstrap tests to create a git_manager
     // that is enabled without hooks as this just causes endless confusion.
     bootstrap.manual_mode(true);
-    process.env.MOCK = true;
 
     bootstrap.cleanup(function(err) {
 

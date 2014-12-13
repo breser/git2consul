@@ -19,10 +19,18 @@ logging.init({
   }
 });
 
+var git = require('../lib/git');
+
 var git_utils = require('./utils/git_utils.js');
 var consul_utils = require('./utils/consul_utils.js');
 
 exports.cleanup = function(cb) {
+
+  // Delete all tracked repos.
+  for (var key in git.repos) {
+    delete git.repos[key];
+  }
+
   consul_utils.purgeKeys('', function(err) {
   if (err) return cb(err);
     rimraf(git_utils.TEST_REMOTE_REPO, function(err) {
