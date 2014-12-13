@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 var git_commands = require('../../lib/git/commands.js');
+var git = require('../../lib/git');
 var Repo = require('../../lib/git/repo.js');
 
 exports.TEST_REMOTE_REPO = '/tmp/test_repo/';
@@ -43,6 +44,7 @@ exports.initRepo = function(repo_config, cb) {
 
       repo_config.local_store = exports.TEST_WORKING_DIR;
       exports.repo = new Repo(repo_config);
+      git.repos[repo_config.name] = exports.repo;
       exports.repo.init(function(err) {
         if (err) return cb(err);
 

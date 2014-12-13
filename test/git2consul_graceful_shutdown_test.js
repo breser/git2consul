@@ -20,8 +20,6 @@ describe('Graceful Shutdown', function() {
     });
   });
 
-  // TODO: Fix this test.
-/**
   it ('should successfully fire if other stuff is happening', function(done) {
 
     bootstrap.cleanup(function(err) {
@@ -36,14 +34,18 @@ describe('Graceful Shutdown', function() {
         git_utils.addFileToGitRepo(sample_key, sample_value, "Update a file.", false, function(err) {
           if (err) return done(err);
 
+          var ref_change_handled = false;
+
           git_utils.repo.branches['master'].handleRefChange(0, function(err) {
             if (err) return done(err);
             shutdown_seen.should.equal(false);
+            ref_change_handled = true;
           });
 
           // This should not fire until after we've processed the handleRefChange above
           git.gracefulShutdown(function() {
             shutdown_seen = true;
+            ref_change_handled.should.equal(true);
             done();
           });
         });
@@ -51,7 +53,6 @@ describe('Graceful Shutdown', function() {
       });
     });
   });
-*/
 
   after(function() {
     bootstrap.manual_mode(false);
