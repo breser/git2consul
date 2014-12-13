@@ -16,7 +16,6 @@ describe('File operations', function() {
 
   // The current copy of the git master branch.  This is initialized before each test in the suite.
   var branch;
-
   beforeEach(function(done) {
 
     // Each of these tests needs a working repo instance, so create it here and expose it to the suite
@@ -50,6 +49,34 @@ describe('File operations', function() {
         consul_utils.validateValue('test_repo/master/' + sample_key, sample_value, function(err, value) {
           if (err) return done(err);
           done();
+        });
+      });
+    });
+  });
+
+  it ('should handle additions of multiple files', function(done) {
+    var sample_key = 'sample_first_key_to_add';
+    var sample_value = 'i like turtles';
+    var sample_key2 = 'sample_second_key_to_add';
+    var sample_value2 = 'i (still) like turtles';
+
+    // Add the files, call branch.handleRef to sync the commits, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+      git_utils.addFileToGitRepo(sample_key2, sample_value2, "Add another file.", function(err) {
+        if (err) return done(err);
+
+        branch.handleRefChange(0, function(err) {
+          if (err) return done(err);
+          // At this point, the repo should have populated consul with our sample_keys
+          consul_utils.validateValue('test_repo/master/' + sample_key, sample_value, function(err, value) {
+            if (err) return done(err);          
+            // At this point, the repo should have populated consul with our sample_keys
+            consul_utils.validateValue('test_repo/master/' + sample_key2, sample_value2, function(err, value) {
+              if (err) return done(err);
+              done();
+            });
+          });
         });
       });
     });

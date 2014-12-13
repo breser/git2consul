@@ -12,121 +12,70 @@ var git_utils = require('./utils/git_utils.js');
 
 var git_commands = require('../lib/git/commands.js');
 
-describe('Cloning a repo for the first time', function() {
-
-  it ('should handle a multiple file repo', function(done) {
-    var repo_name = git_utils.repo.name;
-    var sample_key = 'sample_key';
-    var sample_value = 'test data';
-    var default_repo_config = git_utils.createRepoConfig();
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Clone test.", false, function(err) {
-      if (err) return done(err);
-
-      var sample_key2 = 'sample_key2';
-      var sample_value2 = 'test data2';
-      var default_repo_config = git_utils.createRepoConfig();
-      git_utils.addFileToGitRepo(sample_key2, sample_value2, "Second file for clone test.", function(err) {
-        if (err) return done(err);
-
-        // At this point, the repo should have populated consul with our sample_key
-        consul_utils.validateValue(repo_name + '/master/' + sample_key, sample_value, function(err, value) {
-          if (err) return done(err);
-          consul_utils.validateValue(repo_name + '/master/' + sample_key2, sample_value2, function(err, value) {
-            if (err) return done(err);
-            done();
-          });
-        });
-      });
-    });
-  });
-});
-
 describe('Initializing git2consul', function() {
 
   it ('should handle creating a repo tracking multiple branches', function(done) {
-    var branches = ['dev', 'test', 'prod'];
-    var repo_config = git_utils.createRepoConfig();
-    repo_config.branches = branches;
-    var branch_tests = [];
-    var create_branch_and_add = function(branch_name, done) {
-      return function() {
-        git_commands.checkout_branch(branch_name, git_utils.TEST_REMOTE_REPO, function(err) {
-          if (err) return done(err);
 
-          git_utils.addFileToGitRepo("readme.md", "Stub file in " + branch_name + " branch", branch_name + " stub.", false, function(err) {
+    // Create a remote git repo with 3 branches and a file per branch.  Then, init a Repo object and validate
+    // that all 3 files are in the appropriate place in the Consul KV store.
+    git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
+      if (err) return cb(err);
+
+      var branches = ['dev', 'test', 'prod'];
+      var repo_config = git_utils.createRepoConfig();
+      var branch_tests = [];
+
+      var create_branch_and_add = function(branch_name, done) {
+        return function() {
+          git_commands.checkout_branch(branch_name, git_utils.TEST_REMOTE_REPO, function(err) {
             if (err) return done(err);
 
-            // If we've processed every branch, we are done and are ready to create a git manager around these
-            // three branches.
-            if (branch_tests.length === 0) {
-              var repo = new Repo(repo_config);
-              repo.init(function(err) {
+            git_utils.addFileToGitRepo("readme.md", "Test file in " + branch_name + " branch", branch_name + " commit", function(err) {
+              if (err) return done(err);
+
+              // If we've processed every branch, we are done and are ready to create a git manager around these
+              // three branches.
+              if (branch_tests.length === 0) {
+                validate_result(done);
+              } else {
+                // If there are more test functions to run, do so.
+                branch_tests.pop()();
+              }
+            });
+          });
+        };
+      };
+
+      // Create a test function for each branch
+      branches.forEach(function(branch_name) {
+        branch_tests.push(create_branch_and_add(branch_name, done));
+      });
+
+      // Once all branches have been populated, validate that the KV is in the right state.
+      var validate_result = function(done) {
+        var repo = new Repo(repo_config);
+        repo.init(function(err) {
+          if (err) return done(err);
+
+          // Check consul for the correct file in each branch.
+          consul_utils.validateValue('test_repo/dev/readme.md',  "Test file in dev branch", function(err, value) {
+            if (err) return done(err);
+            consul_utils.validateValue('test_repo/test/readme.md',  "Test file in test branch", function(err, value) {
+              if (err) return done(err);
+              consul_utils.validateValue('test_repo/prod/readme.md',  "Test file in prod branch", function(err, value) {
                 if (err) return done(err);
                 done();
               });
-            } else {
-              // If there are more test functions to run, do so.
-              branch_tests.pop()();
-            }
+            });
           });
+
+          done();
         });
       };
-    };
-
-    // Create a test function for each branch
-    branches.forEach(function(branch_name) {
-      branch_tests.push(create_branch_and_add(branch_name, done));
-    });
-
-    // Most tests assume that we want a repo already initted, so requiring bootstrap.js provides this.  However,
-    // for this test, we want to start with a clean slate.
-    bootstrap.cleanup(function(err) {
-      if (err) done(err);
-      git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
-        if (err) return done(err);
-        // Run the first test
-        branch_tests.pop()();
-      });
     });
   });
 
-  it ('should handle creating a git_manager around a repo that already exists', function(done) {
-    var repo_config = git_utils.createRepoConfig();
-
-    var sample_key = 'sample_key';
-    var sample_value = 'test data';
-    // This addFileToGitRepo will automatically create a git_manager in git_utils, so once the callback
-    // has fired we know that we are mirroring and managing the master branch locally.
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Create a git repo.", function(err) {
-      if (err) return done(err);
-
-      // Now we create another repo around the same repo with the same local address.  This tells
-      // us that a git_manager can be created around an existing repo without issue.
-      var repo = new Repo(repo_config);
-      repo.init(function(err) {
-        if (err) return done(err);
-        done();
-      });
-    });
-  });
 /**
-  it ('should handle creating a git_manager around a repo that has been emptied', function(done) {
-    var repo_config = git_utils.createRepoConfig();
-
-    // This addFileToGitRepo will automatically create a git_manager in git_utils, so once the callback
-    // has fired we know that we are mirroring and managing the master branch locally.
-    git_utils.deleteFileFromGitRepo('readme.md', "Clearing repo.", function(err) {
-      if (err) return done(err);
-
-      // Now we create another repo around the same repo with the same local address.  This tells
-      // us that a git_manager can be created around an emptied repo without issue.
-      var repo = new Repo(repo_config);
-      repo.init(function(err) {
-        if (err) return done(err);
-        done();
-      });
-    });
-  });
 
   it ('should handle populating consul when you create a git_manager around a repo that is already on disk', function(done) {
     var repo_name = git_utils.repo.name;
