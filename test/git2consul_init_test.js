@@ -21,8 +21,8 @@ describe('Initializing git2consul', function() {
     git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
       if (err) return done(err);
 
-      var branches = ['dev', 'test', 'prod'];
       var repo_config = git_utils.createRepoConfig();
+      repo_config.branches = ['dev', 'test', 'prod'];
       var branch_tests = [];
 
       var create_branch_and_add = function(branch_name, done) {
@@ -47,9 +47,12 @@ describe('Initializing git2consul', function() {
       };
 
       // Create a test function for each branch
-      branches.forEach(function(branch_name) {
+      repo_config.branches.forEach(function(branch_name) {
         branch_tests.push(create_branch_and_add(branch_name, done));
       });
+
+      // Create the first branch test.
+      branch_tests.pop()();
 
       // Once all branches have been populated, validate that the KV is in the right state.
       var validate_result = function(done) {
@@ -58,18 +61,16 @@ describe('Initializing git2consul', function() {
           if (err) return done(err);
 
           // Check consul for the correct file in each branch.
-          consul_utils.validateValue('test_repo/dev/readme.md',  "Test file in dev branch", function(err, value) {
+          consul_utils.validateValue('test_repo/dev/readme.md', "Test file in dev branch", function(err, value) {
             if (err) return done(err);
-            consul_utils.validateValue('test_repo/test/readme.md',  "Test file in test branch", function(err, value) {
+            consul_utils.validateValue('test_repo/test/readme.md', "Test file in test branch", function(err, value) {
               if (err) return done(err);
-              consul_utils.validateValue('test_repo/prod/readme.md',  "Test file in prod branch", function(err, value) {
+              consul_utils.validateValue('test_repo/prod/readme.md', "Test file in prod branch", function(err, value) {
                 if (err) return done(err);
                 done();
               });
             });
           });
-
-          done();
         });
       };
     });
@@ -121,6 +122,28 @@ describe('Initializing git2consul', function() {
     });
   });
 **/
+});
+
+describe('git2consul config', function() {
+
+  beforeEach(function(done) {
+
+    // Each of these tests needs a working repo instance, so create it here and expose it to the suite
+    // namespace.
+    git_utils.initRepo(function(err, repo) {
+      if (err) return done(err);
+
+      // The default repo created by initRepo has a single branch, master.
+      branch = repo.branches['master'];
+
+      // Handle the initial sync of this repo.  Init adds a file to the remote repo, and this line syncs
+      // that to our local cache and to consul.
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        done();
+      });
+    });
+  });
 
   var config = {
     repos: [{
@@ -147,7 +170,7 @@ describe('Initializing git2consul', function() {
 
   var countdown = 2;
 
-  it ('should handle an error creating git repos', function(done) {
+  it ('should handle successfully creating multiple git repos with valid config', function(done) {
     git.createRepos(config, function(err) {
       (err === undefined).should.equal(true);
       git.repos.should.have.properties('repo1', 'repo2');
