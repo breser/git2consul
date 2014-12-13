@@ -6,6 +6,7 @@ var bootstrap = require('./git2consul_bootstrap_test.js');
 
 var consul_utils = require('./utils/consul_utils.js');
 
+var git = require('../lib/git');
 var Repo = require('../lib/git/repo.js');
 var git_utils = require('./utils/git_utils.js');
 
@@ -171,33 +172,32 @@ describe('Initializing git2consul', function() {
       });
     });
   });
+**/
 
-  it ('should handle creating multiple git repos', function(done) {
-    var sample_key = 'sample_key';
-    var sample_value = 'test data';
-    var default_config = git_utils.createConfig();
-
-    // Add a Github repo to our repo config because we want to initialize multiple repos at once.
-    default_config.repos.push({
+  var config = {
+    local_store: git_utils.TEST_WORKING_DIR,
+    repos: [{
+      name: 'repo1',
+      url: 'file://' + git_utils.TEST_REMOTE_REPO,
+      branches: [ 'master' ]
+    },{
       name: 'test_github_repo',
       url: git_utils.TEST_GITHUB_REPO,
       branches: [ 'master' ]
-    });
+    }]
+  };
 
-    // We use 'false' for the auto-commit flag on this call because we don't want a git_manager to be
-    // created in git_utils.  We want the manageRepos call to be the first time we create any repos
-    // in this test.
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Multi repo test.", false, function(err) {
-      if (err) return done(err);
+  var countdown = 2;
 
-      git_manager.manageRepos(default_config, function(err, gms) {
-        if (err) return done(err);
+  it ('should handle creating multiple git repos', function(done) {
+    git.createRepos(config, function(err) {
+      // TODO: This line should be unnecessary.
+      if (countdown === 0) return;
+      (err === undefined).should.equal(true);
+      git.repos.should.have.properties('repo1', 'test_github_repo');
 
-        (err == null).should.equal(true);
-        gms.length.should.equal(2);
-        done();
-      });
+      --countdown;
+      if (countdown === 0) done();
     });
   });
-**/
 });
