@@ -11,15 +11,6 @@ exports.TEST_GITHUB_WORKING_DIR = '/tmp/test_github_workspace/';
 
 var repo_counter = 0;
 
-exports.createConfig = function() {
-  return {
-    local_store: exports.TEST_WORKING_DIR,
-    repos: [
-      exports.createRepoConfig()
-    ]
-  };
-};
-
 exports.createRepoConfig = function() {
   ++repo_counter;
   return {

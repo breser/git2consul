@@ -45,8 +45,7 @@ describe('Initializing git2consul', function() {
 
   it ('should handle creating a repo tracking multiple branches', function(done) {
     var branches = ['dev', 'test', 'prod'];
-    var config = git_utils.createConfig();
-    var repo_config = config.repos[0];
+    var repo_config = git_utils.createRepoConfig();
     repo_config.branches = branches;
     var branch_tests = [];
     var create_branch_and_add = function(branch_name, done) {
@@ -181,8 +180,8 @@ describe('Initializing git2consul', function() {
       url: 'file://' + git_utils.TEST_REMOTE_REPO,
       branches: [ 'master' ]
     },{
-      name: 'test_github_repo',
-      url: git_utils.TEST_GITHUB_REPO,
+      name: 'repo2',
+      url: git_utils.TEST_REMOTE_REPO,
       branches: [ 'master' ]
     }]
   };
@@ -191,10 +190,9 @@ describe('Initializing git2consul', function() {
 
   it ('should handle creating multiple git repos', function(done) {
     git.createRepos(config, function(err) {
-      // TODO: This line should be unnecessary.
-      if (countdown === 0) return;
+      // TODO: This gets called 3 times and should only get called twice.  Puzzle that out.
       (err === undefined).should.equal(true);
-      git.repos.should.have.properties('repo1', 'test_github_repo');
+      git.repos.should.have.properties('repo1', 'repo2');
 
       --countdown;
       if (countdown === 0) done();
