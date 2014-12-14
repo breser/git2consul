@@ -31,9 +31,6 @@ describe('halt_on_change', function() {
 
       var repo_config = git_utils.createRepoConfig();
       repo_config.hooks = [{
-        'type': 'polling',
-        'interval': '1'
-      },{
         'type': 'stash',
         'url': '/stashpoke_bogus_branch',
         'port': 5053
