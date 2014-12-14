@@ -193,7 +193,6 @@ var logger = require('../lib/logging.js');
           // fire in parallel would lead to undefined results.
           var test_config = function() {
             config = hook_config.pop();
-            console.log('Running test with hook:\n%s', require('util').inspect(config));
             test_hook_req(config, function(err) {
               if (err) return done(err);
 
