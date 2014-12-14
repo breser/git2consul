@@ -8,6 +8,7 @@ var bootstrap = require('./git2consul_bootstrap_test.js');
 var consul_utils = require('./utils/consul_utils.js');
 
 var Repo = require('../lib/git/repo.js');
+var git = require('../lib/git');
 var git_commands = require('../lib/git/commands.js');
 var git_utils = require('./utils/git_utils.js');
 
@@ -241,6 +242,8 @@ var logger = require('../lib/logging.js');
 
 describe('polling hook', function() {
 
+  // Create a repo with a polling hook and validate that the KV is updated on a change to the remote
+  // repo contents.
   it ('should handle polling updates', function(done) {
 
     var repo_config = git_utils.createRepoConfig();
@@ -253,6 +256,8 @@ describe('polling hook', function() {
     git_utils.initRepo(repo_config, function(err, repo) {
       if (err) return done(err);
 
+      repo.hooks_active.should.equal(true);
+
       var sample_key = 'sample_key';
       var sample_value = 'stash test data';
       git_utils.addFileToGitRepo(sample_key, sample_value, "Polling hook.", function(err) {
@@ -261,6 +266,51 @@ describe('polling hook', function() {
         consul_utils.waitForValue('polling_test/master/sample_key', function(err) {
           if (err) return done(err);
           done();
+        });
+      });
+    });
+  });
+});
+
+describe('no daemon mode', function() {
+
+  // No daemon mode works by disabling hooks.  Validate that no_daemon mode is enabled by attempting to start
+  // a repo with hooks and checking that no hooks are actually running.
+  it ('should disable hooks', function(done) {
+    var repo_config = git_utils.createRepoConfig();
+    repo_config.hooks = [{
+      'type': 'polling',
+      'interval': '1'
+    },{
+      'type': 'stash',
+      'url': '/stashpoke_bogus_branch',
+      'port': 5253
+    }];
+    repo_config.name = "you_shall_not_hook";
+
+    git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
+      if (err) return done(err);
+
+      var sample_key = 'readme.md';
+      var sample_value = 'stub data';
+      git_utils.addFileToGitRepo(sample_key, sample_value, "Stub commit.", function(err) {
+        if (err) return done(err);
+
+        var config = {
+          repos: [repo_config],
+          local_store: git_utils.TEST_WORKING_DIR,
+          no_daemon: true
+        };
+
+        // Now, create a repo with hooks.  The hooks should not be active due to no_daemon mode.
+        git.createRepos(config, function(err) {
+          (undefined === err).should.equal(true);
+
+          var repo = git.repos['you_shall_not_hook'];
+          (undefined === repo.hooks_active).should.equal(true);
+          
+          done();
+
         });
       });
     });
