@@ -31,6 +31,8 @@ exports.cleanup = function(cb) {
     delete git.repos[key];
   }
 
+  delete git.halt_seen;
+
   // Delete every key from consul.
   consul_utils.purgeKeys('', function(err) {
   if (err) return cb(err);

@@ -19,6 +19,7 @@ var logger = require('../lib/logging.js');
  * cause all sorts of race conditions for subsequent tests, and we didn't bother mocking up a way to
  * reach in and disable a polling hook once it starts running.
  */
+ 
 // Test failing webhook configs
 [[
   undefined

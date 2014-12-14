@@ -75,53 +75,6 @@ describe('Initializing git2consul', function() {
       };
     });
   });
-
-/**
-
-  it ('should handle populating consul when you create a git_manager around a repo that is already on disk', function(done) {
-    var repo_name = git_utils.repo.name;
-    var default_config = git_utils.createConfig();
-    var default_repo_config = default_config.repos[0];
-    default_repo_config.name = repo_name;
-    git_manager.clearGitManagers();
-
-    var sample_key = 'sample_key';
-    var sample_value = 'test data';
-
-    // Create a git_manager and validate that the expected contents are present.  This should only be run
-    // once we know the consul cluster has been purged of the previously cached values.
-    var test_git_manager = function(done) {
-      // Now we create another git_manager around the same repo with the same local address.  This tells
-      // us that a git_manager can be created around an existing repo without issue.
-      git_manager.manageRepo(default_config, default_repo_config, function(err, gm) {
-        (err === null).should.equal(true);
-
-        // At this point, the git_manager should have populated consul with our sample_key
-        consul_utils.validateValue(repo_name + '/master/' + sample_key, sample_value, function(err, value) {
-          if (err) return done(err);
-          done();
-        });
-      });
-    };
-
-    // This addFileToGitRepo will automatically create a git_manager in git_utils, so once the callback
-    // has fired we know that we are mirroring and managing the master branch locally.
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Stale repo test.", function(err) {
-      if (err) return done(err);
-
-      // Now we want to delete the KVs from Consul and create another git_manager with the same configuration.
-      consul_utils.purgeKeys('test_repo', function(err) {
-        if (err) return done(err);
-
-        consul_utils.waitForDelete('test_repo?recurse', function(err) {
-          if (err) return done(err);
-
-          test_git_manager(done);
-        });
-      });
-    });
-  });
-**/
 });
 
 describe('git2consul config', function() {
