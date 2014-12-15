@@ -8,6 +8,10 @@
       "email": "rbreen@cimpress.com"
     }
   ],
+  "repository" : {
+    "type": "git",
+    "url": "git://github.com/Cimpress-MCP/git2consul.git"
+  },
   "dependencies": {
     "body-parser": "~1.4.3",
     "bunyan": "1.1.3",
