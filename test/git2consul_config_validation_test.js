@@ -5,6 +5,7 @@ var should = require('should');
 require('./git2consul_bootstrap_test.js');
 
 var git = require('../lib/git/');
+var git_commands = require('../lib/git/commands.js');
 var Repo = require('../lib/git/repo.js');
 var git_utils = require('./utils/git_utils.js');
 
@@ -48,7 +49,7 @@ describe('Config Validation', function() {
   });
 
   it ('should reject a repo with a bogus local_store', function(done) {
-    git_utils.initRepo(function(err, repo) {
+    git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
       if (err) return done(err);
       var config = {
         local_store: "/var/permdenied",
@@ -80,13 +81,25 @@ describe('Config Validation', function() {
     });
   });
 
-/**
   it ('should reject an invalid git hook type', function(done) {
-    git_manager.manageRepo(git_utils.createConfig(), _.extend(git_utils.createRepoConfig(), { hooks: [ { 'type': 'unknown' }] }), function(err, gm) {
-      err[0].should.startWith('Invalid hook type');
-      done();
+    git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
+      if (err) return done(err);
+      var config = {
+        local_store: git_utils.TEST_WORKING_DIR,
+        repos: [git_utils.createRepoConfig()]
+      };
+
+      config.repos[0].hooks = [{'type':'unknown'}];
+
+      var callback_seen = false;
+      git.createRepos(config, function(err) {
+        err.should.startWith("Failed to load repo test_repo due to");
+        done();
+      });
     });
   });
+
+  /**
 
   it ('should handle config validation if multiple repos initialized at the same time', function(done) {
 

@@ -13,7 +13,6 @@ var git_utils = require('./utils/git_utils.js');
 var git_commands = require('../lib/git/commands.js');
 
 describe('Initializing git2consul', function() {
-
   it ('should handle creating a repo tracking multiple branches', function(done) {
 
     // Create a remote git repo with 3 branches and a file per branch.  Then, init a Repo object and validate
@@ -74,6 +73,14 @@ describe('Initializing git2consul', function() {
         });
       };
     });
+  });
+});
+
+describe ('Error handling', function() {
+  it ('should gracefully handle a repo even when the local branch cache is corrupted', function(done) {
+    // TODO: Add a test that creates a branch cache, trashes it, and then creates it again.  The trashed
+    // cache dir should be deleted and git2consul should restart.
+    done();
   });
 });
 
