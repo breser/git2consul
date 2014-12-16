@@ -4,6 +4,7 @@ var should = require('should');
 // We want this above any git2consul module to make sure logging gets configured
 require('./git2consul_bootstrap_test.js');
 
+var git = require('../lib/git/');
 var Repo = require('../lib/git/repo.js');
 var git_utils = require('./utils/git_utils.js');
 
@@ -28,16 +29,24 @@ describe('Config Validation', function() {
     });
   });
 
-/**
   it ('should reject a config using an existing repo name', function(done) {
-    var stock_config = git_utils.createConfig();
-    stock_config.repos[0].name = git_utils.GM.getRepoName();
-    git_manager.manageRepo(stock_config, stock_config.repos[0], function(err) {
-      err.should.equal('A repo with that name is already tracked.');
-      done();
+
+    git_utils.initRepo(function(err, repo) {
+      if (err) return done(err);
+      var config = {
+        local_store: git_utils.TEST_WORKING_DIR,
+        repos: [git_utils.createRepoConfig(), git_utils.createRepoConfig()]
+      };
+
+      var callback_seen = false;
+      git.createRepos(config, function(err) {
+        err.should.equal("A repo with that name is already tracked.");
+        if (callback_seen) {
+          done();
+        } else callback_seen = true;
+      });
     });
   });
-**/
 
   it ('should reject a repo with duplicate branches', function() {
     try {
