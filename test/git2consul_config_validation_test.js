@@ -30,7 +30,6 @@ describe('Config Validation', function() {
   });
 
   it ('should reject a config using an existing repo name', function(done) {
-
     git_utils.initRepo(function(err, repo) {
       if (err) return done(err);
       var config = {
@@ -48,6 +47,22 @@ describe('Config Validation', function() {
     });
   });
 
+  it ('should reject a repo with a bogus local_store', function(done) {
+    git_utils.initRepo(function(err, repo) {
+      if (err) return done(err);
+      var config = {
+        local_store: "/var/permdenied",
+        repos: [git_utils.createRepoConfig()]
+      };
+
+      var callback_seen = false;
+      git.createRepos(config, function(err) {
+        err.should.startWith("Failed to create local store");
+        done();
+      });
+    });
+  });
+
   it ('should reject a repo with duplicate branches', function() {
     try {
       var repo = new Repo({'name': 'busted_dupe_branch_repo', 'url': 'http://www.github.com/', 'branches': ['master', 'master', 'commander']});
@@ -56,17 +71,6 @@ describe('Config Validation', function() {
       e.message.should.startWith('Duplicate name found in branches for repo busted_dupe_branch_repo');
     }
   });
-
-  /**
-  it ('should reject a repo with a bogus local_store', function(done) {
-    var stock_config = git_utils.createConfig();
-    stock_config.local_store = "/var/permdenied";
-    git_manager.manageRepo(stock_config, {'name': 'permfail', 'branches': ['master']}, function(err) {
-      err.should.startWith('Failed to create root_directory for git manager:');
-      done();
-    });
-  });
-**/
 
   it ('should reject a repo with a broken git url', function(done) {
     var repo = new Repo(_.extend(git_utils.createRepoConfig(), { url: 'file:///tmp/nobody_home' }));
