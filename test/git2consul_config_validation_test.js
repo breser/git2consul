@@ -84,17 +84,23 @@ describe('Config Validation', function() {
   it ('should reject an invalid git hook type', function(done) {
     git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
       if (err) return done(err);
-      var config = {
-        local_store: git_utils.TEST_WORKING_DIR,
-        repos: [git_utils.createRepoConfig()]
-      };
 
-      config.repos[0].hooks = [{'type':'unknown'}];
+      // When we create a repo, we need it to have an initial commit.  The call to addFile provides that.
+      git_utils.addFileToGitRepo("readme.md", "Stub file to give us something to commit.", "Init repo.", function(err) {
 
-      var callback_seen = false;
-      git.createRepos(config, function(err) {
-        err.should.startWith("Failed to load repo test_repo due to");
-        done();
+        if (err) return cb(err);
+        var config = {
+          local_store: git_utils.TEST_WORKING_DIR,
+          repos: [git_utils.createRepoConfig()]
+        };
+
+        config.repos[0].hooks = [{'type':'unknown'}];
+
+        var callback_seen = false;
+        git.createRepos(config, function(err) {
+          err.should.startWith("Failed to load repo test_repo due to Invalid hook type unknown");
+          done();
+        });
       });
     });
   });
