@@ -73,6 +73,15 @@ describe('Config Validation', function() {
     }
   });
 
+  it ('should reject a repo with no branches', function() {
+    try {
+      var repo = new Repo({'name': 'busted_empty_branch_repo', 'url': 'http://www.github.com/', 'branches': []});
+      should.fail("Repo with no branches should be denied.");
+    } catch(e) {
+      e.message.should.equal('No branches specified.');
+    }
+  });
+
   it ('should reject a repo with a broken git url', function(done) {
     var repo = new Repo(_.extend(git_utils.createRepoConfig(), { url: 'file:///tmp/nobody_home' }));
     repo.init(function(err) {
@@ -104,18 +113,4 @@ describe('Config Validation', function() {
       });
     });
   });
-
-  /**
-
-  it ('should handle config validation if multiple repos initialized at the same time', function(done) {
-
-    var stock_config = git_utils.createConfig();
-    _.extend(stock_config.repos[0], { 'hooks': [{ 'type': 'unknown' } ]});
-
-    git_manager.manageRepos(stock_config, function(err, gm) {
-      err[0][0].should.startWith('Invalid hook type');
-      done();
-    });
-  });
-**/
 });
