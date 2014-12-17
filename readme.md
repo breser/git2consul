@@ -37,6 +37,7 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
       "repos" : [{
         "name" : "vp_config",
         "url" : "ssh://stash.vistaprint.net/team_configuration_data.git",
+        "include_branch_name" : false,
         "branches" : ["development", "staging", "production"],
         "hooks": [{
           "type" : "stash",
