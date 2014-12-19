@@ -1,4 +1,5 @@
 language: node_js
+sudo: false
 before_script:
 - wget  https://dl.bintray.com/mitchellh/consul/0.4.0_linux_amd64.zip
 - unzip 0.4.0_linux_amd64.zip
