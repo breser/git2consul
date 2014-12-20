@@ -108,6 +108,30 @@ describe ('Error handling', function() {
   });
 });
 
+describe ('Updates to existing local caches', function() {
+  it ('should start correctly if the local cache already exists', function(done) {
+    // Start off with a working repo instance
+    git_utils.initRepo(function(err, repo) {
+      if (err) return done(err);
+
+      // Now purge the consul store of the uploaded value
+      consul_utils.purgeKeys('test_repo', function(err) {
+        if (err) return done(err);
+
+        // Now try to recreate the repo, simulating a git2consul restart.  This should pull rather than clone the
+        // git repo, but the result should be a correctly populated consul KV entry with the remote repo contents.
+        repo.init(function(err) {
+          (undefined === err).should.equal(true);
+          consul_utils.validateValue('test_repo/master/readme.md', "Stub file to give us something to commit.", function(err, value) {
+            if (err) return done(err);
+            done();
+          });
+        });
+      });
+    });
+  });
+});
+
 describe('git2consul config', function() {
 
   beforeEach(function(done) {
@@ -122,6 +146,7 @@ describe('git2consul config', function() {
 
       // Handle the initial sync of this repo.  Init adds a file to the remote repo, and this line syncs
       // that to our local cache and to consul.
+      // TODO: Is this necessary?
       branch.handleRefChange(0, function(err) {
         if (err) return done(err);
         done();
