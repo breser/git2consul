@@ -1,8 +1,12 @@
 var should = require('should');
 var _ = require('underscore');
 
+var path = require('path');
+
 // We want this above any git2consul module to make sure logging gets configured
-var bootstrap = require('./git2consul_bootstrap_test.js');
+require('./git2consul_bootstrap_test.js');
+
+var rimraf = require('rimraf');
 
 var consul_utils = require('./utils/consul_utils.js');
 
@@ -78,9 +82,23 @@ describe('Initializing git2consul', function() {
 
 describe ('Error handling', function() {
   it ('should gracefully handle a repo even when the local branch cache is corrupted', function(done) {
-    // TODO: Add a test that creates a branch cache, trashes it, and then creates it again.  The trashed
-    // cache dir should be deleted and git2consul should restart.
-    done();
+    // Create an empty git repo
+    git_utils.initRepo(function(err, repo) {
+      if (err) return done(err);
+
+      // Now kill the git root of our working copy of the test repo, and kill it ahrd.
+      rimraf(git_utils.TEST_WORKING_DIR + path.sep + 'test_repo' + path.sep + 'master' + path.sep + '.git', function(err) {
+        if (err) return done(err);
+
+        // Now try to create a new repo around that working dir.
+        var repo = new Repo(git_utils.createRepoConfig());
+        repo.init(function(err) {
+          err.length.should.equal(1);
+          err[0].message.indexOf('Not a git repository').should.not.equal(-1);
+          done();
+        });
+      });
+    });
   });
 });
 

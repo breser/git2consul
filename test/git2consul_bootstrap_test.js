@@ -13,7 +13,7 @@ logging.init({
       "type": "rotating-file",
       "path": "./test/logs/test.log"
     },{
-      "level": "warn",
+      "level": "info",
       "stream": "process.stdout"
     }]
   }
