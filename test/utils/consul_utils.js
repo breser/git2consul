@@ -16,8 +16,9 @@ exports.validateValue = function(key, expected_value, cb) {
   logger.trace('Looking for key %s with value %s', key, expected_value);
   exports.getValue(key, function(err, value) {
     if (err) return cb(err);
-    if (!expected_value) (value == undefined).should.equal(true);
-    else {
+    if (!expected_value) {
+      (value == undefined).should.equal(true);
+    } else {
       (value != undefined).should.equal(true);
       value.should.equal(expected_value);
     }
@@ -32,8 +33,11 @@ var create_wait_function = function(wait_for_present) {
       exports.getValue(key, function(err, value) {
         if (err) return cb(err);
 
-        if (wait_for_present && value === undefined) return setTimeout(check_value, 50);
-        else if (!wait_for_present && value !== undefined) return setTimeout(check_value, 50);
+        if (wait_for_present && value === undefined) {
+          return setTimeout(check_value, 50);
+        } else if (!wait_for_present && value !== undefined) {
+          return setTimeout(check_value, 50);
+        }
 
         // Fire once the wait_for_present criteria is satisfied
         cb();
