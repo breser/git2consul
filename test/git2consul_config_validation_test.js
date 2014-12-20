@@ -85,7 +85,7 @@ describe('Config Validation', function() {
   it ('should reject a repo with a broken git url', function(done) {
     var repo = new Repo(_.extend(git_utils.createRepoConfig(), { url: 'file:///tmp/nobody_home' }));
     repo.init(function(err) {
-      err.message.should.containEql('does not appear to be a git repository');
+      err[0].message.should.containEql('does not appear to be a git repository');
       done();
     });
   });
