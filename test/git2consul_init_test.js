@@ -95,7 +95,13 @@ describe ('Error handling', function() {
         repo.init(function(err) {
           err.length.should.equal(1);
           err[0].message.indexOf('Not a git repository').should.not.equal(-1);
-          done();
+
+          // Now try to recreate the repo, simulating a git2consul restart.  The deliberately sabotaged branch should be out
+          // of the way, so the repo should init successfully.
+          repo.init(function(err) {
+            (undefined === err).should.equal(true);
+            done();
+          });
         });
       });
     });
