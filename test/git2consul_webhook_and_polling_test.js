@@ -186,25 +186,19 @@ var logger = require('../lib/logging.js');
       git_utils.initRepo(repo_config, function(err, repo) {
         if (err) return done(err);
 
-        // Handle the initial sync of this repo.  Init adds a file to the remote repo, and this line syncs
-        // that to our local cache and to consul.
-        repo.branches['master'].handleRefChange(0, function(err) {
-          if (err) return done(err);
+        // Test each hook config, 1 at a time.  Since they are updating the same repo, having all webhooks
+        // fire in parallel would lead to undefined results.
+        var test_config = function() {
+          config = hook_config.pop();
+          test_hook_req(config, function(err) {
+            if (err) return done(err);
 
-          // Test each hook config, 1 at a time.  Since they are updating the same repo, having all webhooks
-          // fire in parallel would lead to undefined results.
-          var test_config = function() {
-            config = hook_config.pop();
-            test_hook_req(config, function(err) {
-              if (err) return done(err);
+            if (hook_config.length > 0) return test_config();
+            done();
+          });
+        };
 
-              if (hook_config.length > 0) return test_config();
-              done();
-            });
-          };
-
-          test_config();
-        });
+        test_config();
       });
     });
   });

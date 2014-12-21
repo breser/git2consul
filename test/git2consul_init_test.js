@@ -167,14 +167,7 @@ describe('git2consul config', function() {
 
       // The default repo created by initRepo has a single branch, master.
       branch = repo.branches['master'];
-
-      // Handle the initial sync of this repo.  Init adds a file to the remote repo, and this line syncs
-      // that to our local cache and to consul.
-      // TODO: Is this necessary?
-      branch.handleRefChange(0, function(err) {
-        if (err) return done(err);
-        done();
-      });
+      done();
     });
   });
 
