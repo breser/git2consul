@@ -86,7 +86,7 @@ var logger = require('../lib/logging.js');
     'type': 'stash',
     'url': '/stashpoke',
     'port': 5252,
-    'body': { refChanges: [{refId: "refs/heads/master", toHash: "0"}]},
+    'body': { refChanges: [{refId: "refs/heads/master", toHash: "0"}, {refId: "refs/heads/master", toHash: "0"}] },
     'fqurl': 'http://localhost:5252/stashpoke'
   },{
     'type': 'bitbucket',
@@ -108,7 +108,7 @@ var logger = require('../lib/logging.js');
     'type': 'stash',
     'url': '/stashpoke_bogus_branch',
     'port': 5253,
-    'body': { refChanges: [{refId: "refs/heads/bogus_branch", toHash: "0"}]},
+    'body': { refChanges: [{refId: "refs/heads/bogus_branch", toHash: "0"}] },
     'fqurl': 'http://localhost:5253/stashpoke_bogus_branch',
     'no_change_expected': true
   },{
@@ -131,7 +131,7 @@ var logger = require('../lib/logging.js');
     'type': 'stash',
     'url': '/stashpoke_bogus_ref',
     'port': 5254,
-    'body': { refChanges: [{refId: "refs/remotes/origin/master", toHash: "0"}]},
+    'body': { refChanges: [{refId: "refs/remotes/origin/master", toHash: "0"}] },
     'fqurl': 'http://localhost:5254/stashpoke_bogus_ref',
     'no_change_expected': true
   },{
@@ -305,7 +305,6 @@ describe('no daemon mode', function() {
           (undefined === repo.hooks_active).should.equal(true);
           
           done();
-
         });
       });
     });
