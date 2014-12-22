@@ -116,7 +116,7 @@ var test_descriptions = [
     'type': 'stash',
     'url': '/stashpoke_bogus_branch',
     'port': 5253,
-    'body': { refChanges: [{refId: "refs/heads/bogus_branch", toHash: "0"}] },
+    'body': { refChanges: [{refId: "refs/heads/bogus_branch", toHash: "deadbeef"}, {refId: "refs/heads/boguser_branch", toHash: "deadbeef"}] },
     'fqurl': 'http://localhost:5253/stashpoke_bogus_branch',
     'no_change_expected': true
   },{
@@ -171,17 +171,20 @@ var test_descriptions = [
 
         request(req_conf, function(err) {
 
-          if (err) return cb(err);
+          setTimeout(function() {
 
-          // If this is a test that won't trigger an update, such as a req specifying an untracked branch,
-          // short-circuit here and don't test for a KV update.
-          if (config.no_change_expected) return cb();
-
-          consul_utils.waitForValue('test_repo/master/' + sample_key, function(err) {
             if (err) return cb(err);
 
-            cb();
-          });
+            // If this is a test that won't trigger an update, such as a req specifying an untracked branch,
+            // short-circuit here and don't test for a KV update.
+            if (config.no_change_expected) return cb();
+
+            consul_utils.waitForValue('test_repo/master/' + sample_key, function(err) {
+              if (err) return cb(err);
+
+              cb();
+            });
+          }, 500);
         });
       });
     };
