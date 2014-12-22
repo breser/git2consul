@@ -74,6 +74,14 @@ var logger = require('../lib/logging.js');
   });
 });
 
+// Give us a mechanism to report on which set of hook params we're testing.
+var test_counter = 0;
+var test_descriptions = [
+  "valid updates",
+  "changes to untracked branches",
+  "changes to non-HEAD refs"    
+];
+
 [
   // Test webhooks sharing a port
   [{
@@ -125,7 +133,7 @@ var logger = require('../lib/logging.js');
     'url': '/githubpoke_bogus_ref',
     'port': 5254,
     'body': { ref: "refs/remotes/origin/master", head_commit: {id: 12345} },
-    'fqurl': 'http://localhost:5254/githubpoke_bogus_branch',
+    'fqurl': 'http://localhost:5254/githubpoke_bogus_ref',
     'no_change_expected': true
   },{
     'type': 'stash',
@@ -144,8 +152,6 @@ var logger = require('../lib/logging.js');
   }]  
 ].forEach(function(hook_config) {
 
-  var repo;
-
   describe('webhook', function() {
 
     // Add a file for the config, commit it, and validate that it has populated properly.
@@ -162,6 +168,7 @@ var logger = require('../lib/logging.js');
         } else req_conf.json = config.body
         
         if (config.type === 'stash') req_conf.headers = {'content-encoding':'UTF-8'};
+
         request(req_conf, function(err) {
 
           if (err) return cb(err);
@@ -179,7 +186,7 @@ var logger = require('../lib/logging.js');
       });
     };
 
-    it ('should handle inbound requests', function(done) {
+    it ('should handle inbound requests with ' + test_descriptions[test_counter], function(done) {
       var repo_config = git_utils.createRepoConfig();
       repo_config.hooks = hook_config;
 
@@ -201,6 +208,8 @@ var logger = require('../lib/logging.js');
         test_config();
       });
     });
+
+    ++test_counter;
   });
 });
 
