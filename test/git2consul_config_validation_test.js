@@ -65,13 +65,13 @@ describe('Config Validation', function() {
     });
   });
 
-  it ('should reject a repo with a non-existent local_store', function() {
+  it ('should reject a repo with a non-existent or invalid local_store', function() {
     try {
       var repo = new Repo({'name': 'non_existent_local_store_repo', 'url': 'http://www.github.com/',
         'local_store':'/var/i_dont_live_here', 'branches': ['master']});
       should.fail("Repo with non-existent local_store should throw an exception");
     } catch(e) {
-      e.message.should.startWith('local_store does not exist');
+      e.message.should.equal('local store /var/i_dont_live_here does not exist');
     }
   });
 
