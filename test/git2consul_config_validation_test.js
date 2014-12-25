@@ -20,12 +20,13 @@ describe('Config Validation', function() {
       e.message.should.equal('No configuration provided for repo');
     }
 
-    [{}, {'name':'incomplete'}, {'name':'incomplete', 'branches': ['master']}].forEach(function(config) {
+    [{}, {'local_store':'/tmp/test_workspace'}, {'local_store':'/tmp/test_workspace', 'name':'incomplete'},
+     {'local_store':'/tmp/test_workspace', 'name':'incomplete', 'branches': ['master']}].forEach(function(config) {
       try {
         var repo = new Repo(config);
         should.fail("Repo with incomplete config should throw an exception");
       } catch(e) {
-        e.message.should.equal('A repo must have a url, a name, and a branch array.');
+        e.message.should.equal('A repo must have a local_store, a url, a name, and a branch array.');
       }
     });
   });
@@ -66,7 +67,8 @@ describe('Config Validation', function() {
 
   it ('should reject a repo with duplicate branches', function() {
     try {
-      var repo = new Repo({'name': 'busted_dupe_branch_repo', 'url': 'http://www.github.com/', 'branches': ['master', 'master', 'commander']});
+      var repo = new Repo({'name': 'busted_dupe_branch_repo', 'url': 'http://www.github.com/',
+        'local_store':'/tmp/test_workspace', 'branches': ['master', 'master', 'commander']});
       should.fail("Repo with duplicate branches should throw an exception");
     } catch(e) {
       e.message.should.startWith('Duplicate name found in branches for repo busted_dupe_branch_repo');
@@ -75,7 +77,8 @@ describe('Config Validation', function() {
 
   it ('should reject a repo with no branches', function() {
     try {
-      var repo = new Repo({'name': 'busted_empty_branch_repo', 'url': 'http://www.github.com/', 'branches': []});
+      var repo = new Repo({'name': 'busted_empty_branch_repo', 'local_store':'/tmp/test_workspace',
+        'url': 'http://www.github.com/', 'branches': []});
       should.fail("Repo with no branches should be denied.");
     } catch(e) {
       e.message.should.equal('No branches specified.');
