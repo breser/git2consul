@@ -72,7 +72,7 @@ describe('Config Validation', function() {
         'local_store':'/var/i_dont_live_here', 'branches': ['master']});
       should.fail("Repo with non-existent local_store should throw an exception");
     } catch(e) {
-      e.message.should.equal('local store /var/i_dont_live_here does not exist');
+      e.message.should.equal('directory /var/i_dont_live_here does not exist');
     }
   });
 
@@ -83,7 +83,7 @@ describe('Config Validation', function() {
         'local_store':'/tmp/not_a_directory', 'branches': ['master']});
       should.fail("Repo with non-writeable local_store should throw an exception");
     } catch(e) {
-      e.message.should.equal('local store /tmp/not_a_directory for repo non_directory_local_store_repo is not a writeable directory');
+      e.message.should.equal('/tmp/not_a_directory is not a directory');
     }
   });
 
