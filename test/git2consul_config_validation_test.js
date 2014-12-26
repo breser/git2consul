@@ -4,6 +4,7 @@ var should = require('should');
 // We want this above any git2consul module to make sure logging gets configured
 require('./git2consul_bootstrap_test.js');
 
+var fs = require('fs');
 var git = require('../lib/git/');
 var git_commands = require('../lib/git/commands.js');
 var Repo = require('../lib/git/repo.js');
@@ -65,13 +66,24 @@ describe('Config Validation', function() {
     });
   });
 
-  it ('should reject a repo with a non-existent or invalid local_store', function() {
+  it ('should reject a repo with a non-existent local_store', function() {
     try {
       var repo = new Repo({'name': 'non_existent_local_store_repo', 'url': 'http://www.github.com/',
         'local_store':'/var/i_dont_live_here', 'branches': ['master']});
       should.fail("Repo with non-existent local_store should throw an exception");
     } catch(e) {
       e.message.should.equal('local store /var/i_dont_live_here does not exist');
+    }
+  });
+
+  it ('should reject a repo with a non-writeable local_store', function() {
+    try {
+      fs.writeFileSync('/tmp/not_a_directory', 'oops');
+      var repo = new Repo({'name': 'non_directory_local_store_repo', 'url': 'http://www.github.com/',
+        'local_store':'/tmp/not_a_directory', 'branches': ['master']});
+      should.fail("Repo with non-writeable local_store should throw an exception");
+    } catch(e) {
+      e.message.should.equal('local store /tmp/not_a_directory for repo non_directory_local_store_repo is not a writeable directory');
     }
   });
 
