@@ -5,6 +5,8 @@ var should = require('should');
 require('./git2consul_bootstrap_test.js');
 
 var fs = require('fs');
+var rimraf = require('rimraf');
+
 var git = require('../lib/git/');
 var git_commands = require('../lib/git/commands.js');
 var Repo = require('../lib/git/repo.js');
@@ -84,6 +86,19 @@ describe('Config Validation', function() {
       should.fail("Repo with non-writeable local_store should throw an exception");
     } catch(e) {
       e.message.should.equal('/tmp/not_a_directory is not a directory');
+    }
+
+    try {
+      rimraf.sync('/tmp/test_directory');
+      fs.mkdirSync('/tmp/test_directory');
+      fs.chmodSync('/tmp/test_directory', parseInt(555, 8));
+      var repo = new Repo({'name': 'unwriteable_directory', 'url': 'http://www.github.com/',
+        'local_store':'/tmp/test_directory', 'branches': ['master']});
+      should.fail("Repo with non-writeable directory should throw an exception");
+    } catch(e) {
+      e.message.should.equal('/tmp/test_directory is not writeable');
+    } finally {
+      rimraf.sync('/tmp/test_directory');
     }
   });
 
