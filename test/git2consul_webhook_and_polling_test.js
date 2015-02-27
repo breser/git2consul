@@ -103,6 +103,13 @@ var test_descriptions = [
     // Seriously, their default POST hook is this ugly
     'body': '%7B%22repository%22%3A+%7B%22website%22%3A+null%2C+%22fork%22%3A+false%2C+%22name%22%3A+%22configuration%22%2C+%22scm%22%3A+%22git%22%2C+%22owner%22%3A+%22ryanbreen%22%2C+%22absolute_url%22%3A+%22%2Fryanbreen%2Fconfiguration%2F%22%2C+%22slug%22%3A+%22configuration%22%2C+%22is_private%22%3A+true%7D%2C+%22truncated%22%3A+false%2C+%22commits%22%3A+%5B%7B%22node%22%3A+%226f086f3d3de7%22%2C+%22files%22%3A+%5B%7B%22type%22%3A+%22modified%22%2C+%22file%22%3A+%22jobs_service%2Fauspice%2Fdemo-consumer-key%22%7D%5D%2C+%22raw_author%22%3A+%22Ryan+Breen+%3Crbreen%40vistaprint.com%3E%22%2C+%22utctimestamp%22%3A+%222014-10-18+23%3A20%3A47%2B00%3A00%22%2C+%22author%22%3A+%22Ryan+Breen%22%2C+%22timestamp%22%3A+%222014-10-19+01%3A20%3A47%22%2C+%22raw_node%22%3A+%226f086f3d3de724b9007934408e023b628a59ea15%22%2C+%22parents%22%3A+%5B%2230c88d68d029%22%5D%2C+%22branch%22%3A+%22master%22%2C+%22message%22%3A+%22Adding+bitbucket+test.%5Cn%22%2C+%22revision%22%3A+null%2C+%22size%22%3A+-1%7D%5D%2C+%22canon_url%22%3A+%22https%3A%2F%2Fbitbucket.org%22%2C+%22user%22%3A+%22ryanbreen%22%7D',
     'fqurl': 'http://localhost:5252/bitbucketpoke'
+  },{
+    'type': 'gitlab',
+    'url': '/gitlabpoke',
+    'port': 5252,
+    'body': { after: "da1560886d4f094c3e6c9ef40349f7d38b5d27d7", ref: "refs/heads/master"},
+    'fqurl': 'http://localhost:5252/gitlabpoke',
+    'no_change_expected': true
   }],
   // Test no-op changes to an incorrect branch
   [{
@@ -126,6 +133,13 @@ var test_descriptions = [
     'body': '%7B%22repository%22%3A+%7B%22website%22%3A+null%2C+%22fork%22%3A+false%2C+%22name%22%3A+%22configuration%22%2C+%22scm%22%3A+%22git%22%2C+%22owner%22%3A+%22ryanbreen%22%2C+%22absolute_url%22%3A+%22%2Fryanbreen%2Fconfiguration%2F%22%2C+%22slug%22%3A+%22configuration%22%2C+%22is_private%22%3A+true%7D%2C+%22truncated%22%3A+false%2C+%22commits%22%3A+%5B%7B%22node%22%3A+%226f086f3d3de7%22%2C+%22files%22%3A+%5B%7B%22type%22%3A+%22modified%22%2C+%22file%22%3A+%22jobs_service%2Fauspice%2Fdemo-consumer-key%22%7D%5D%2C+%22raw_author%22%3A+%22Ryan+Breen+%3Crbreen%40vistaprint.com%3E%22%2C+%22utctimestamp%22%3A+%222014-10-18+23%3A20%3A47%2B00%3A00%22%2C+%22author%22%3A+%22Ryan+Breen%22%2C+%22timestamp%22%3A+%222014-10-19+01%3A20%3A47%22%2C+%22raw_node%22%3A+%226f086f3d3de724b9007934408e023b628a59ea15%22%2C+%22parents%22%3A+%5B%2230c88d68d029%22%5D%2C+%22branch%22%3A+%22dev%22%2C+%22message%22%3A+%22Adding+bitbucket+test.%5Cn%22%2C+%22revision%22%3A+null%2C+%22size%22%3A+-1%7D%5D%2C+%22canon_url%22%3A+%22https%3A%2F%2Fbitbucket.org%22%2C+%22user%22%3A+%22ryanbreen%22%7D',
     'fqurl': 'http://localhost:5253/bitbucket_bogus_branch',
     'no_change_expected': true
+  },{
+    'type': 'gitlab',
+    'url': '/gitlab_bogus_branch',
+    'port': 5253,
+    'body': { after: "da1560886d4f094c3e6c9ef40349f7d38b5d27d7", ref: "refs/heads/bogus_branch"},
+    'fqurl': 'http://localhost:5253/gitlab_bogus_branch',
+    'no_change_expected': true
   }],
   // Test no-op changes with non-HEAD refs
   [{
@@ -148,6 +162,13 @@ var test_descriptions = [
     'port': 5254,
     'body': '',
     'fqurl': 'http://localhost:5254/bitbucket_bogus_ref',
+    'no_change_expected': true
+  },{
+    'type': 'gitlab',
+    'url': '/gitlab_bogus_ref',
+    'port': 5254,
+    'body': { after: "da1560886d4f094c3e6c9ef40349f7d38b5d27d7", ref: "refs/remotes/origin/master"},
+    'fqurl': 'http://localhost:5254/gitlab_bogus_ref',
     'no_change_expected': true
   }]  
 ].forEach(function(hook_config) {
