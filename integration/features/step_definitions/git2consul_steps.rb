@@ -18,7 +18,7 @@ end
 def commit_file(file, content, message)
   write_file(file, content)
   system("git add #{file}")
-  system("git commit -m \"#{message}\"")
+  system("git commit -a -m \"#{message}\"")
 end
 
 Given /The git integration repo is initialized/ do
@@ -26,9 +26,14 @@ Given /The git integration repo is initialized/ do
   Dir.mkdir 'integration_test_repo'
   Dir.chdir 'integration_test_repo' do
     system("git init")
+    http = Net::HTTP.new("consulserver1", 8500)
+    # Make sure to purge any existing git2consul results from the KV
+    http.request(Net::HTTP::Delete.new("/v1/kv/integration?recurse"))
+    commit_file("readme.md", "stubby", "stub commit to master")
     ['dev','test','prod'].each { |env|
       system("git checkout -b #{env}")
       commit_file("readme.md", "#{env} readme", "Initial commit to #{env}")
+      system("git checkout master")
     }
   end
 end
@@ -47,6 +52,7 @@ end
 
 Then /The (.*) box is running git2consul/ do |box_name|
   run_command("vagrant ssh -c \"sudo service git2consul stop ; sudo rm -rf /tmp/git_cache && sudo service git2consul start\" #{box_name}")
+  sleep 1
   out = run_command("vagrant ssh -c \"service git2consul status\" #{box_name}")
   expect(out).to include("running")
 end
