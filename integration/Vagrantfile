@@ -52,7 +52,7 @@ EOF
 # Create init script for git2consul
 cat <<EOF >/etc/init/git2consul.conf
 # git2consul Agent (Upstart unit)
-description "Consul Agent"
+description "git2consul service"
 start on runlevel [2345]
 stop on runlevel [!2345]
 chdir /usr/local/lib/node_modules
@@ -62,7 +62,6 @@ respawn limit 10 10
 kill timeout 10
 
 script
-  export GOMAXPROCS=`nproc`
   exec node git2consul
 end script
 EOF

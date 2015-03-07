@@ -15,6 +15,12 @@ def write_file(path, body)
   File.open(path, 'w') { |file| file.write(body) }
 end
 
+def commit_file(file, content, message)
+  write_file(file, content)
+  system("git add #{file}")
+  system("git commit -m \"#{message}\"")
+end
+
 Given /The git integration repo is initialized/ do
   FileUtils.rm_rf 'integration_test_repo'
   Dir.mkdir 'integration_test_repo'
@@ -22,22 +28,19 @@ Given /The git integration repo is initialized/ do
     system("git init")
     ['dev','test','prod'].each { |env|
       system("git checkout -b #{env}")
-      write_file("readme.md", "#{env} readme")
-      system("git add readme.md")
-      system("git commit -m \"Initial commit to #{env}\"")
+      commit_file("readme.md", "#{env} readme", "Initial commit to #{env}")
     }
   end
 end
 
 Given /The (.*) box is online/ do |server|
   system("vagrant up #{server}")
-  #system("vagrant provision #{server}")
+  system("vagrant provision #{server}") if ENV.has_key? 'VAGRANT_REPROVISION'
 end
 
 Then /The (.*) box has a git2consul config/ do |server|
   req = Net::HTTP::Put.new('/v1/kv/git2consul/config', initheader = { 'Content-Type' => 'application/json'})
   req.body = File.open("config.json", "rb").read
-  puts "Sending #{req.body} to #{server}"
   response = Net::HTTP.new(server, 8500).start {|http| http.request(req) }
   puts response.code
 end
