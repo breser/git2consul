@@ -19,7 +19,8 @@ cat <<EOF >/etc/consul.d/config.json
   "bootstrap_expect": 3,
   "server": true,
   "data_dir": "/var/run/consul",
-  "bind_addr": "ADDRESS"
+  "bind_addr": "ADDRESS",
+  "client_addr": "0.0.0.0"
 }
 EOF
 
@@ -54,6 +55,7 @@ cat <<EOF >/etc/init/git2consul.conf
 description "Consul Agent"
 start on runlevel [2345]
 stop on runlevel [!2345]
+chdir /usr/local/lib/node_modules
 
 respawn
 respawn limit 10 10
