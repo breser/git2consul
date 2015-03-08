@@ -20,7 +20,7 @@ Feature: Ensure that proper infrastructure for the tests is setup
 
   Scenario Outline: A config change should restart the git2consul service
     Given We know git2consul service status for <box_name>
-    And Given A configuration change to git2consul for <box_name>
+    And Given A configuration change to git2consul
     Then The <box_name> box should restart the git2consul service
     Examples:
       | box_name        |

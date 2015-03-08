@@ -18,7 +18,7 @@ end
 def commit_file(file, content, message)
   write_file(file, content)
   system("git add #{file}")
-  system("git commit -a -m \"#{message}\"")
+  system("git commit -m \"#{message}\"")
 end
 
 def configure_git2consul(server, body)
@@ -83,7 +83,7 @@ Given /We know git2consul service status for (.*)$/ do |box_name|
 end
 
 Given /A configuration change to git2consul/ do
-  configure_git2consul('consulserver1', File.open("config.json", "rb").read.gsub(/git_cache/, 'new_git_cache'))
+  configure_git2consul('consulserver1', File.open("config.json", "rb").read.gsub(/frob/, 'frobbed'))
   # Give the change time to propagate
   sleep 1
 end
