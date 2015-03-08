@@ -1,0 +1,3 @@
+---
+default: features --color 
+wip: --tags @wip:3 --wip features --color
