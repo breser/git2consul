@@ -1,7 +1,8 @@
-require 'rspec'
+require 'git'
 require 'net/http'
-require 'uri'
 require 'open3'
+require 'rspec'
+require 'uri'
 
 RSpec.configure {|c| c.fail_fast = true}
 
@@ -17,8 +18,10 @@ end
 
 def commit_file(file, content, message)
   write_file(file, content)
-  system("git add #{file}")
-  system("git commit -m \"#{message}\"")
+  #system("git add #{file}")
+  @git.add file
+  @git.commit message
+  #system("git commit -m \"#{message}\"")
 end
 
 def configure_git2consul(server, body)
@@ -31,15 +34,18 @@ Given /The git integration repo is initialized/ do
   FileUtils.rm_rf 'integration_test_repo'
   Dir.mkdir 'integration_test_repo'
   Dir.chdir 'integration_test_repo' do
-    system("git init")
+    #system("git init")
+    @git = Git.init
     http = Net::HTTP.new("consulserver1", 8500)
     # Make sure to purge any existing git2consul results from the KV
     http.request(Net::HTTP::Delete.new("/v1/kv/integration?recurse")).code
     commit_file("readme.md", "stubby", "stub commit to master")
     ['dev','test','prod'].each { |env|
-      system("git checkout -b #{env}")
+      #system("git checkout -b #{env}")
+      @git.branch(env).checkout
       commit_file("readme.md", "#{env} readme", "Initial commit to #{env}")
-      system("git checkout master")
+      #system("git checkout master")
+      @git.checkout 'master'
     }
   end
 end
