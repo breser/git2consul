@@ -1,7 +1,8 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-system("wget -q -O consul.zip https://dl.bintray.com/mitchellh/consul/0.5.0_linux_amd64.zip") unless File.exists? "consul.zip"
+system("wget -q -O integration/consul.zip https://dl.bintray.com/mitchellh/consul/0.5.0_linux_amd64.zip") unless
+  File.exists?("integration/consul.zip") || File.exists?("consul.zip")
 
 @script = <<SCRIPT
 # Install node and friends.
@@ -10,7 +11,10 @@ apt-get install -y build-essential git-core nodejs npm unzip
 
 ln -sf /usr/bin/nodejs /usr/bin/node
 
-npm install --silent -g git2consul
+# We want to use the local git2consul, not the npm git2consul, so that we can iterate on changes
+#npm install --silent -g git2consul
+mkdir -p /usr/local/lib/node_modules
+ln -sf /vagrant /usr/local/lib/node_modules/git2consul
 
 # Install consul.d config
 mkdir -p /etc/consul.d
@@ -27,7 +31,7 @@ EOF
 mkdir -p /var/run/consul
 
 # Install Consul
-cp /vagrant/consul.zip /usr/local/bin/
+cp /vagrant/integration/consul.zip /usr/local/bin/
 cd /usr/local/bin/
 unzip -qo consul.zip
 
