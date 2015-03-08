@@ -18,7 +18,7 @@ end
 def commit_file(file, content, message)
   write_file(file, content)
   system("git add #{file}")
-  system("git commit -a -m \"#{message}\"")
+  system("git commit -m \"#{message}\"")
 end
 
 def configure_git2consul(server, body)
@@ -45,11 +45,13 @@ Given /The git integration repo is initialized/ do
 end
 
 Given /The (.*) box is online/ do |server|
-  system("vagrant up #{server}")
-  system("vagrant provision #{server}") if ENV.has_key? 'VAGRANT_REPROVISION'
+  Dir.chdir '../' do
+    system("vagrant up #{server}")
+    system("vagrant provision #{server}") if ENV.has_key? 'VAGRANT_REPROVISION'
 
-  # Stop a running git2consul process and delete the existing cache dir
-  run_command("vagrant ssh -c \"sudo service git2consul stop ; sudo rm -rf /tmp/git_cache\" #{server}")
+    # Stop a running git2consul process and delete the existing cache dir
+    run_command("vagrant ssh -c \"sudo service git2consul stop ; sudo rm -rf /tmp/git_cache\" #{server}")
+  end
 end
 
 Then /The (.*) box has a git2consul config/ do |server|
@@ -57,30 +59,38 @@ Then /The (.*) box has a git2consul config/ do |server|
 end
 
 Then /The (.*) box is running git2consul/ do |box_name|
-  run_command("vagrant ssh -c \"sudo service git2consul start\" #{box_name}")
-  sleep 1
-  out = run_command("vagrant ssh -c \"service git2consul status\" #{box_name}")
-  expect(out).to include("running")
+  Dir.chdir '../' do
+    run_command("vagrant ssh -c \"sudo service git2consul start\" #{box_name}")
+    sleep 1
+    out = run_command("vagrant ssh -c \"service git2consul status\" #{box_name}")
+    expect(out).to include("running")
+  end
 end
 
 Then /The (.*) box has 2 known peers/ do |server|
-  out = run_command("vagrant ssh -c \"consul info\" #{server}")
-  expect(out).to include("num_peers = 2")
+  Dir.chdir '../' do
+    out = run_command("vagrant ssh -c \"consul info\" #{server}")
+    expect(out).to include("num_peers = 2")
+  end
 end
 
 git2consul_processes = {}
 
 Given /We know git2consul service status for (.*)$/ do |box_name|
-  git2consul_processes[box_name] = run_command("vagrant ssh -c \"service git2consul status\" #{box_name}").strip
+  Dir.chdir '../' do
+    git2consul_processes[box_name] = run_command("vagrant ssh -c \"service git2consul status\" #{box_name}").strip
+  end
 end
 
 Given /A configuration change to git2consul/ do
-  configure_git2consul("consulserver1", File.open("config.json", "rb").read.gsub(/git_cache/, 'new_git_cache'))
+  configure_git2consul('consulserver1', File.open("config.json", "rb").read.gsub(/frob/, 'frobbed'))
   # Give the change time to propagate
   sleep 1
 end
 
-Then /The (.*) box should restart the git2consul service/ do |box_name|
-  out = run_command("vagrant ssh -c \"service git2consul status\" #{box_name}").strip
-  expect(out).not_to eq(git2consul_processes[box_name])
+Then /The (.*) box should restart the git2consul service/ do |box_name|  
+  Dir.chdir '../' do
+    out = run_command("vagrant ssh -c \"service git2consul status\" #{box_name}").strip
+    expect(out).not_to eq(git2consul_processes[box_name])
+  end
 end

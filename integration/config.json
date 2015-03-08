@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "local_store": "/tmp/git_cache",
+  "halt_on_change": true,
+  "meaningless_entry": "frob",
+  "logger" : {
+    "name" : "git2consul",
+    "streams" : [{
+      "level": "trace",
+      "stream": "process.stdout"
+    }]
+  },
+  "repos" : [{
+    "name" : "integration",
+    "url" : "file:///vagrant/integration/integration_test_repo",
+    "branches" : ["dev", "test", "prod"],
+    "hooks": [{
+      "type" : "stash",
+      "port" : "80",
+      "url" : "/gitpoke"
+    },
+    {
+      "type" : "polling",
+      "interval" : "1"
+    }]
+  }]
+}

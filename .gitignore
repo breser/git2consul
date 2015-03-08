@@ -1,6 +1,4 @@
-node_modules
-config.json
-.DS_Store
-
-reports
+.vagrant
 coverage
+reports
+node_modules
