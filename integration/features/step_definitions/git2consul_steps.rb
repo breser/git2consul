@@ -66,9 +66,9 @@ Then /The final result in the KV should be predictable/ do
   git_fuzzer.files.keys.each do |env|
     puts "Validating #{env}"
     env_files = git_fuzzer.files[env]
+    puts "Validating #{env_files.size} KVs in branch #{env}"
     env_files.each do |file, content|
-      puts "Validating #{env} #{file} with value #{content}"
-      body = `curl -s http://consulserver1:8500/v1/kv/integration/#{env}/#{file}?raw`
+      body = Net::HTTP.get(URI.parse("http://consulserver1:8500/v1/kv/integration/#{env}/#{file}?raw"))
       expect(body).to eq(content)
     end
   end
