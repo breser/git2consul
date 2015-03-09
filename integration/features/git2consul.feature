@@ -18,6 +18,10 @@ Feature: Ensure that proper infrastructure for the tests is setup
       | consulserver2   |
       | consulserver3   |
 
+  Scenario: A stream of random commits should lead to a consistent result
+    Given A stream of random commits
+    Then The final result in the KV should be predictable
+
   Scenario Outline: A config change should restart the git2consul service
     Given We know git2consul service status for <box_name>
     And Given A configuration change to git2consul

@@ -1,7 +1,9 @@
-require 'rspec'
 require 'net/http'
-require 'uri'
 require 'open3'
+require 'rspec'
+require 'uri'
+
+require_relative 'git_fuzzer'
 
 RSpec.configure {|c| c.fail_fast = true}
 
@@ -11,37 +13,16 @@ def run_command(cmd)
   end
 end
 
-def write_file(path, body)
-  File.open(path, 'w') { |file| file.write(body) }
-end
-
-def commit_file(file, content, message)
-  write_file(file, content)
-  system("git add #{file}")
-  system("git commit -m \"#{message}\"")
-end
-
 def configure_git2consul(server, body)
   req = Net::HTTP::Put.new('/v1/kv/git2consul/config', initheader = { 'Content-Type' => 'application/json'})
   req.body = body
   response = Net::HTTP.new(server, 8500).start {|http| http.request(req) }
 end
 
+git_fuzzer = nil
+
 Given /The git integration repo is initialized/ do
-  FileUtils.rm_rf 'integration_test_repo'
-  Dir.mkdir 'integration_test_repo'
-  Dir.chdir 'integration_test_repo' do
-    system("git init")
-    http = Net::HTTP.new("consulserver1", 8500)
-    # Make sure to purge any existing git2consul results from the KV
-    http.request(Net::HTTP::Delete.new("/v1/kv/integration?recurse")).code
-    commit_file("readme.md", "stubby", "stub commit to master")
-    ['dev','test','prod'].each { |env|
-      system("git checkout -b #{env}")
-      commit_file("readme.md", "#{env} readme", "Initial commit to #{env}")
-      system("git checkout master")
-    }
-  end
+  git_fuzzer = GitFuzzer.new
 end
 
 Given /The (.*) box is online/ do |server|
@@ -71,6 +52,25 @@ Then /The (.*) box has 2 known peers/ do |server|
   Dir.chdir '../' do
     out = run_command("vagrant ssh -c \"consul info\" #{server}")
     expect(out).to include("num_peers = 2")
+  end
+end
+
+Given /A stream of random commits/ do
+  git_fuzzer.fuzz(10, 10, 5, 3)
+
+  # Give git2consul a few seconds grace period to ingest and sync
+  sleep 3
+end
+
+Then /The final result in the KV should be predictable/ do
+  git_fuzzer.files.keys.each do |env|
+    puts "Validating #{env}"
+    env_files = git_fuzzer.files[env]
+    puts "Validating #{env_files.size} KVs in branch #{env}"
+    env_files.each do |file, content|
+      body = Net::HTTP.get(URI.parse("http://consulserver1:8500/v1/kv/integration/#{env}/#{file}?raw"))
+      expect(body).to eq(content)
+    end
   end
 end
 
