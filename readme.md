@@ -19,7 +19,7 @@ Let's start off with a simple example to show you how it works.  You can use thi
 
 I've created a [simple repo with a few sample configuration files of different types](https://github.com/ryanbreen/git2consul_data).  Of course, I could have used thousands of files with arbitrarily nested directories, but this is a quick start guide.
 
-The most minimalistic viable git2consul configuration mirrors a single git repo into the KV store.  Here's how that would look mirroring the master branch at `https://github.com/ryanbreen/git2consul_data.git` to KV prefix `sample_configuration`:
+The most minimalistic viable git2consul configuration mirrors a single git repo into the KV store.  Please refer to the [full documentation for configuration](#Configuration) for more details on your configuration options.  Here's how that would look mirroring the dev branch at `https://github.com/ryanbreen/git2consul_data.git` into the Consul K/V store with prefix `sample_configuration`:
 
 ```javascript
 {
@@ -36,8 +36,6 @@ The most minimalistic viable git2consul configuration mirrors a single git repo 
 }
 ```
 
-Please refer to the [full documentation for configuration](#Configuration) for more details on your configuration options.
-
 Put that configuration in a file called `/tmp/git2consul.json`.  From the git2consul directory, upload that JSON file into the KV as your git2consul config:
 
 ```
@@ -50,7 +48,7 @@ Start git2consul:
 node .
 ```
 
-git2consul will now poll the dev branch git2consul_data.git repo once per minute.  On first run, it will mirror the 3 files in the dev branch into your local Consul KV as keys:
+git2consul will now poll the "dev" branch of the "git2consul_data.git" repo once per minute.  On first run, it will mirror the 3 files into your Consul K/V with keys:
 
 ```
 /sample_configuration/dev/sample.conf
@@ -58,9 +56,9 @@ git2consul will now poll the dev branch git2consul_data.git repo once per minute
 /sample_configuration/dev/sample.yaml
 ```
 
-The Values of those Keys are the contents of the respective files.  Changing the contents of that git branch will change the mapped files in your Consul KV store within 1 minute.
+The Values of those Keys are the contents of the respective files.  Changing the contents of that git branch will change the corresponding KVs within 1 minute.
 
-You can run git2consul as a daemon either in a `screen` session or via an init script of whatever type is appropriate on your platform.
+Once you are happy with your configuration, you can run git2consul as a daemon either in a `screen` session or via an init script of whatever type is appropriate on your platform.
 
 ##### Configuration
 
