@@ -17,7 +17,7 @@ git2consul takes one or many git repositories and mirrors them into [Consul](htt
 
 Let's start off with a simple example to show you how it works.  You can use this as a starting point and then tailor it to your use-case.
 
-I've created a [simple repo with a few sample configuration files of different types](https://github.com/ryanbreen/git2consul_data).  Of course, I could have used thousands of files with arbitrarily nested directories, but this is a quick start guide.
+I've created a [simple repo with a few sample configuration files of different types](https://github.com/ryanbreen/git2consul_data/tree/dev).  Of course, I could have used thousands of files with arbitrarily nested directories, but this is a quick start guide.
 
 The most minimalistic viable git2consul configuration mirrors a single git repo into the KV store.  Please refer to the [full documentation for configuration](#configuration) for more details on your configuration options.  Here's how that would look mirroring the dev branch at `https://github.com/ryanbreen/git2consul_data.git` into the Consul K/V store with prefix `sample_configuration`:
 
