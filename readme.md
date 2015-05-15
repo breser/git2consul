@@ -13,52 +13,103 @@ git2consul takes one or many git repositories and mirrors them into [Consul](htt
 * git2consul requires write access to the KV store of its Consul agent.
 * git2consul has only been tested on Unix.
 
+##### Quick Start Guide
+
+Let's start off with a simple example to show you how it works.  You can use this as a starting point and then tailor it to your use-case.
+
+I've created a [simple repo with a few sample configuration files of different types](https://github.com/ryanbreen/git2consul_data).  Of course, I could have used thousands of files with arbitrarily nested directories, but this is a quick start guide.
+
+The most minimalistic viable git2consul configuration mirrors a single git repo into the KV store.  Here's how that would look mirroring the master branch at `https://github.com/ryanbreen/git2consul_data.git` to KV prefix `sample_configuration`:
+
+```javascript
+{
+  "version": "1.0",
+  "repos" : [{
+    "name" : "sample_configuration",
+    "url" : "https://github.com/ryanbreen/git2consul_data.git",
+    "branches" : ["dev"],
+    {
+      "type" : "polling",
+      "interval" : "1"
+    }]
+  }]
+}
+```
+
+Please refer to the [full documentation for configuration](#Configuration) for more details on your configuration options.
+
+Put that configuration in a file called `/tmp/git2consul.json`.  From the git2consul directory, upload that JSON file into the KV as your git2consul config:
+
+```
+node utils/config_seeder.js /tmp/git2consul.json
+```
+
+Start git2consul:
+
+```
+node .
+```
+
+git2consul will now poll the dev branch git2consul_data.git repo once per minute.  On first run, it will mirror the 3 files in the dev branch into your local Consul KV as keys:
+
+```
+/sample_configuration/dev/sample.conf
+/sample_configuration/dev/sample.json
+/sample_configuration/dev/sample.yaml
+```
+
+The Values of those Keys are the contents of the respective files.  Changing the contents of that git branch will change the mapped files in your Consul KV store within 1 minute.
+
+You can run git2consul as a daemon either in a `screen` session or via an init script of whatever type is appropriate on your platform.
+
 ##### Configuration
 
-git2consul expects to be run on the same node as a Consul agent.  git2consul expects its own configuration to be stored as a JSON object in '/git2consul/config' in your Consul KV.  The utility `utils/config_seeder.js` will take a JSON file and place it in the correct location for you.
+git2consul expects to be run on the same node as a Consul agent.  git2consul expects its own configuration to be stored as a JSON object in '/git2consul/config' in your Consul KV.  The utility `utils/config_seeder.js` will take a JSON file and set `/git2consul/config` to contain its contents.
 
 ###### Configuration Format
 
+```javascript
+{
+  "version": "1.0",
+  "local_store": "/var/lib/git2consul_cache",
+  "logger" : {
+    "name" : "git2consul",
+    "streams" : [{
+      "level": "trace",
+      "stream": "process.stdout"
+    },
     {
-      "version": "1.0",
-      "local_store": "/var/lib/git2consul_cache",
-      "logger" : {
-        "name" : "git2consul",
-        "streams" : [{
-          "level": "trace",
-          "stream": "process.stdout"
-        },
-        {
-          "level": "debug",
-          "type": "rotating-file",
-          "path": "/var/log/git2consul/git2consul.log"
-        }]
-      },
-      "repos" : [{
-        "name" : "vp_config",
-        "url" : "ssh://stash.mydomain.com/team_configuration_data.git",
-        "include_branch_name" : false,
-        "branches" : ["development", "staging", "production"],
-        "hooks": [{
-          "type" : "stash",
-          "port" : "5050",
-          "url" : "/gitpoke"
-        },
-        {
-          "type" : "polling",
-          "interval" : "1"
-        }]
-      },{
-        "name" : "github_data",
-        "url" : "git@github.com:ryanbreen/git2consul_data.git",
-        "branches" : [ "master" ],
-        "hooks": [{
-          "type" : "github",
-          "port" : "5151",
-          "url" : "/gitpoke"
-        }]
-      }]
-    }
+      "level": "debug",
+      "type": "rotating-file",
+      "path": "/var/log/git2consul/git2consul.log"
+    }]
+  },
+  "repos" : [{
+    "name" : "vp_config",
+    "url" : "ssh://stash.mydomain.com/team_configuration_data.git",
+    "include_branch_name" : false,
+    "branches" : ["development", "staging", "production"],
+    "hooks": [{
+      "type" : "stash",
+      "port" : "5050",
+      "url" : "/gitpoke"
+    },
+    {
+      "type" : "polling",
+      "interval" : "1"
+    }]
+  },{
+    "name" : "github_data",
+    "url" : "git@github.com:ryanbreen/git2consul_data.git",
+    "branches" : [ "master" ],
+    "hooks": [{
+      "type" : "github",
+      "port" : "5151",
+      "url" : "/gitpoke"
+    }]
+  }]
+}
+```
 
 The above example illustrates a 2 repo git2consul setup: one repo lives in an on-premises Git solution and the other is hosted at github.  The hooks array under each repository defines how git2consul will be notified of changes.  git2consul supports [Atlassian Stash](https://confluence.atlassian.com/display/STASH/POST+service+webhook+for+Stash), [Atlassian Bitbucket](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management), [GitHub](https://developer.github.com/v3/repos/hooks/), and [Gitlab](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md) webhooks as well as a basic polling model.
 
