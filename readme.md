@@ -19,7 +19,7 @@ Let's start off with a simple example to show you how it works.  You can use thi
 
 I've created a [simple repo with a few sample configuration files of different types](https://github.com/ryanbreen/git2consul_data/tree/dev).  Of course, I could have used thousands of files with arbitrarily nested directories, but this is a quick start guide.
 
-The most minimalistic viable git2consul configuration mirrors a single git repo into the KV store.  Please refer to the [full documentation for configuration](#configuration) for more details on your configuration options.  Here's how that would look mirroring the dev branch at `https://github.com/ryanbreen/git2consul_data.git` into the Consul K/V store with prefix `sample_configuration`:
+The most minimalistic viable git2consul configuration mirrors a single git repo into the KV store with a given prefix.  Please refer to the [full documentation for configuration](#configuration) for more details on your configuration options.  Here's how that would look mirroring the dev branch at `https://github.com/ryanbreen/git2consul_data.git` into the Consul K/V store with prefix `sample_configuration`:
 
 ```javascript
 {
