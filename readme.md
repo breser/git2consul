@@ -6,6 +6,10 @@ git2consul takes one or many git repositories and mirrors them into [Consul](htt
 
 `npm install git2consul`
 
+##### Mailing List
+
+[Google Groups](https://groups.google.com/group/git2consul-tool/)
+
 ##### Requirements / Caveats
 
 * git2consul does most of its Git work by shelling out to git.  Git must be installed and on your path.
