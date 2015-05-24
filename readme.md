@@ -32,7 +32,7 @@ The most minimalistic viable git2consul configuration mirrors a single git repo 
     "name" : "sample_configuration",
     "url" : "https://github.com/ryanbreen/git2consul_data.git",
     "branches" : ["dev"],
-    {
+    "hooks": [{
       "type" : "polling",
       "interval" : "1"
     }]
