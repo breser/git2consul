@@ -153,4 +153,33 @@ describe('Expand keys', function() {
       });
     });
   });
+
+  it ('should handle JSON files with special characters', function(done) {
+    var sample_key = 'special.json';
+    var sample_value = {
+      "fuzzy" : {
+        "second level": "ain\'t no one got time for that",
+        "second/level": {
+          "ok?": "yes"
+        }
+      }
+    };
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, JSON.stringify(sample_value), "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/special/fuzzy/second%20level', sample_value['fuzzy']['second level'], function(err, value) {
+          // At this point, the repo should have populated consul with our sample_key
+          consul_utils.validateValue('test_repo/master/special/fuzzy/second%2Flevel/ok%3F', sample_value['fuzzy']['second/level']['ok?'], function(err, value) {
+            if (err) return done(err);
+            done();
+          });
+        });
+      });
+    });
+  });
 });
