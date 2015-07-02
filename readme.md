@@ -140,7 +140,7 @@ If you would like git2consul to shutdown every time its configuration changes, y
 
 ###### expand_keys
 
-If you would like git2consul to treat JSON documents in your repo as fully formed subtrees, you can enable expand_keys mode via inclusion of the field `"expand_keys": true` at the top level the repo's configuration.  If this mode is enabled, git2consul will treat any valid JSON file (that is, any file with extension ".json" that parses to an object) as if it contains a subtree of Consul KVs.  For example, if you have the file `root.json` in repo `expando_keys` with the following contents:
+If you would like git2consul to treat JSON documents in your repo as fully formed subtrees, you can enable expand_keys mode via inclusion of the field `"expand_keys": true` at the top level of the repo's configuration.  If this mode is enabled, git2consul will treat any valid JSON file (that is, any file with extension ".json" that parses to an object) as if it contains a subtree of Consul KVs.  For example, if you have the file `root.json` in repo `expando_keys` with the following contents:
 
 ```javascript
 {
@@ -160,7 +160,7 @@ git2consul in expand_keys mode will generate the following KV:
 /expando_keys/root.json/first_level/second_level/third_level/you%20get%20the%20picture
 ```
 
-The value of that KV will be `right?`.
+The value in that KV pair will be `right?`.
 
 A few notes on how this behaves:
 
@@ -168,7 +168,7 @@ A few notes on how this behaves:
 
 * Expanded keys are URI-encoded.  The spaces in "you get the picture" are thus converted into `%20`.
 
-* Any non-JSON files, including files with the extension ".json" but that contain invalid JSON, are stored in your KV as if expand_keys mode was not enabled.
+* Any non-JSON files, including files with the extension ".json" that contain invalid JSON, are stored in your KV as if expand_keys mode was not enabled.
 
 ##### Clients
 
