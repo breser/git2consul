@@ -20,7 +20,7 @@ describe('Expand keys', function() {
 
     // Each of these tests needs a working repo instance, so create it here and expose it to the suite
     // namespace.  These are all tests of expand_keys mode, so set that here.
-    git_utils.initRepo(_.extend(git_utils.createRepoConfig(), {'mode': 'expand_keys'}), function(err, repo) {
+    git_utils.initRepo(_.extend(git_utils.createRepoConfig(), {'expand_keys': true}), function(err, repo) {
       if (err) return done(err);
 
       // The default repo created by initRepo has a single branch, master.
@@ -41,7 +41,7 @@ describe('Expand keys', function() {
       branch.handleRefChange(0, function(err) {
         if (err) return done(err);
         // At this point, the repo should have populated consul with our sample_key
-        consul_utils.validateValue('test_repo/master/simple/first_level/second_level', 'is_all_we_need', function(err, value) {
+        consul_utils.validateValue('test_repo/master/simple.json/first_level/second_level', 'is_all_we_need', function(err, value) {
           if (err) return done(err);
           done();
         });
@@ -60,7 +60,7 @@ describe('Expand keys', function() {
       branch.handleRefChange(0, function(err) {
         if (err) return done(err);
         // At this point, the repo should have populated consul with our sample_key
-        consul_utils.validateValue('test_repo/master/changeme/first_level', 'is_all_we_need', function(err, value) {
+        consul_utils.validateValue('test_repo/master/changeme.json/first_level', 'is_all_we_need', function(err, value) {
           if (err) return done(err);
 
           // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
@@ -71,7 +71,7 @@ describe('Expand keys', function() {
               if (err) return done(err);
 
               // At this point, the repo should have populated consul with our sample_key
-              consul_utils.validateValue('test_repo/master/changeme/first_level', 'is super different', function(err, value) {
+              consul_utils.validateValue('test_repo/master/changeme.json/first_level', 'is super different', function(err, value) {
                 if (err) return done(err);
 
                 done();
@@ -94,7 +94,7 @@ describe('Expand keys', function() {
       branch.handleRefChange(0, function(err) {
         if (err) return done(err);
         // At this point, the repo should have populated consul with our sample_key
-        consul_utils.validateValue('test_repo/master/busted', sample_value, function(err, value) {
+        consul_utils.validateValue('test_repo/master/busted.json', sample_value, function(err, value) {
           if (err) return done(err);
 
           // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
@@ -105,7 +105,7 @@ describe('Expand keys', function() {
               if (err) return done(err);
 
               // At this point, the repo should have populated consul with our sample_key
-              consul_utils.validateValue('test_repo/master/busted/not_busted', 'json', function(err, value) {
+              consul_utils.validateValue('test_repo/master/busted.json/not_busted', 'json', function(err, value) {
                 if (err) return done(err);
 
                 done();
@@ -138,7 +138,7 @@ describe('Expand keys', function() {
             if (err) return done(err);
 
             // At this point, the repo should have populated consul with our sample_key
-            consul_utils.validateValue('test_repo/master/happy/happy', 'json', function(err, value) {
+            consul_utils.validateValue('test_repo/master/happy.json/happy', 'json', function(err, value) {
               if (err) return done(err);
 
               // At this point, the repo should have populated consul with our sample_key
@@ -172,9 +172,9 @@ describe('Expand keys', function() {
       branch.handleRefChange(0, function(err) {
         if (err) return done(err);
         // At this point, the repo should have populated consul with our sample_key
-        consul_utils.validateValue('test_repo/master/special/fuzzy/second%20level', sample_value['fuzzy']['second level'], function(err, value) {
+        consul_utils.validateValue('test_repo/master/special.json/fuzzy/second%20level', sample_value['fuzzy']['second level'], function(err, value) {
           // At this point, the repo should have populated consul with our sample_key
-          consul_utils.validateValue('test_repo/master/special/fuzzy/second%2Flevel/ok%3F', sample_value['fuzzy']['second/level']['ok?'], function(err, value) {
+          consul_utils.validateValue('test_repo/master/special.json/fuzzy/second%2Flevel/ok%3F', sample_value['fuzzy']['second/level']['ok?'], function(err, value) {
             if (err) return done(err);
             done();
           });

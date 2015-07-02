@@ -102,6 +102,7 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
     }]
   },{
     "name" : "github_data",
+    "mode" : "expand_keys",
     "url" : "git@github.com:ryanbreen/git2consul_data.git",
     "branches" : [ "master" ],
     "hooks": [{
@@ -119,14 +120,6 @@ Note that multiple webhooks can share the same port.  The only constraint is tha
 
 The above example also logs to stdout as well as to file.  Logging is handled via [Bunyan](https://github.com/trentm/node-bunyan).  The value of the `logger` property is passed to the Bunyan `createLogger()` method, so any configuration supported by vanilla Bunyan will work out of the box in git2consul.
 
-###### No Daemon Mode
-
-If there are no webhooks or polling watchers configured, git2consul will terminate as soon as all tracked repos and branches have been synced with Consul.  If you would like to force git2consul not to attach any webhooks or polling watchers, you can either pass the command-line switch `-n` or include the field `"no_daemon": true` at the top level of your config JSON.
-
-###### Halt-on-change Mode
-
-If you would like git2consul to shutdown every time its configuration changes, you can enable halt-on-change mode with the command-line switch `-h` or inclusion of the field `"halt_on_change": true` at the top level of your config JSON.  If this mode is enabled, git2consul will wait for changes in the config (which is itself stored in Consul) and gracefully halt when a change is detected.  It is expected that your git2consul process is configured to run as a service, so restarting git2consul is the responsibility of your service manager.
-
 ##### How it works
 
 git2consul uses the name and branches of configured repos to namespace the created KVs.  The goal is to allow multiple teams to use the same Consul agents and KV store to migrate configuration data around a network without needing to worry about data conflicts.  In the above example, a settings file stored at `foo_service/settings.json` in the `development` branch of the repo `vp_config` would be persisted in Consul as `vp_config/development/foo_service/settings.json`.
@@ -134,6 +127,48 @@ git2consul uses the name and branches of configured repos to namespace the creat
 If you are using a more [Twelve-Factor](http://12factor.net/) approach, where you wish to configure your applications via environment variables, you would store these settings as files in Git whose name is the key and whose body is the value.  For example, we could create the file `foo_service/log_level` with the body `trace` in the `development` branch of the `foo_service` repo and git2consul will create the KV `vp_config/development/foo_service/log_level` with the value `trace`.
 
 As changes are detected in the specified Git repos, git2consul determines which files have been added, updated, or deleted and replicates those changes to the KV.  Because only changed branches and files are analyzed, git2consul should have a very slim profile on hosting systems.
+
+##### Alternative Modes of Operation
+
+###### No Daemon
+
+If there are no webhooks or polling watchers configured, git2consul will terminate as soon as all tracked repos and branches have been synced with Consul.  If you would like to force git2consul not to attach any webhooks or polling watchers, you can either pass the command-line switch `-n` or include the field `"no_daemon": true` at the top level of your config JSON.
+
+###### Halt-on-change
+
+If you would like git2consul to shutdown every time its configuration changes, you can enable halt-on-change with the command-line switch `-h` or inclusion of the field `"halt_on_change": true` at the top level of your config JSON.  If this switch is enabled, git2consul will wait for changes in the config (which is itself stored in Consul) and gracefully halt when a change is detected.  It is expected that your git2consul process is configured to run as a service, so restarting git2consul is the responsibility of your service manager.
+
+###### expand_keys
+
+If you would like git2consul to treat JSON documents in your repo as fully formed subtrees, you can enable expand_keys mode via inclusion of the field `"expand_keys": true` at the top level the repo's configuration.  If this mode is enabled, git2consul will treat any valid JSON file (that is, any file with extension ".json" that parses to an object) as if it contains a subtree of Consul KVs.  For example, if you have the file `root.json` in repo `expando_keys` with the following contents:
+
+```javascript
+{
+  'first_level' : {
+    'second_level' : {
+      'third_level' : {
+        'you get the picture' : 'right?'
+      }
+    }
+  }
+}
+```
+
+git2consul in expand_keys mode will generate the following KV:
+
+```
+/expando_keys/root.json/first_level/second_level/third_level/you%20get%20the%20picture
+```
+
+The value of that KV will be `right?`.
+
+A few notes on how this behaves:
+
+* Any arrays in your JSON file are ignored.  Only objects and primitives are transformed into keys.
+
+* Expanded keys are URI-encoded.  The spaces in "you get the picture" are thus converted into `%20`.
+
+* Any non-JSON files, including files with the extension ".json" but that contain invalid JSON, are stored in your KV as if expand_keys mode was not enabled.
 
 ##### Clients
 
