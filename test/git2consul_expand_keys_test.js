@@ -83,4 +83,38 @@ describe('Expand keys', function() {
     });
   });
 
+  it ('should handle busted JSON files', function(done) {
+    var sample_key = 'busted.json';
+    var sample_value = '{ "busted" ; "json" }';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/busted', sample_value, function(err, value) {
+          if (err) return done(err);
+
+          // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+          git_utils.addFileToGitRepo(sample_key, '{ "not_busted" : "json" }', "Change a file.", function(err) {
+            if (err) return done(err);
+
+            branch.handleRefChange(0, function(err) {
+              if (err) return done(err);
+
+              // At this point, the repo should have populated consul with our sample_key
+              consul_utils.validateValue('test_repo/master/busted/not_busted', 'json', function(err, value) {
+                if (err) return done(err);
+
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
 });
