@@ -49,4 +49,38 @@ describe('Expand keys', function() {
     });
   });
 
+  it ('should handle changing JSON files', function(done) {
+    var sample_key = 'changeme.json';
+    var sample_value = '{ "first_level" : "is_all_we_need" }';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/changeme/first_level', 'is_all_we_need', function(err, value) {
+          if (err) return done(err);
+
+          // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+          git_utils.addFileToGitRepo(sample_key, '{ "first_level" : "is super different" }', "Change a file.", function(err) {
+            if (err) return done(err);
+
+            branch.handleRefChange(0, function(err) {
+              if (err) return done(err);
+
+              // At this point, the repo should have populated consul with our sample_key
+              consul_utils.validateValue('test_repo/master/changeme/first_level', 'is super different', function(err, value) {
+                if (err) return done(err);
+
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
 });
