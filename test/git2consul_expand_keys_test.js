@@ -117,4 +117,40 @@ describe('Expand keys', function() {
     });
   });
 
+  it ('should handle JSON files comingled with non-JSON files', function(done) {
+    var json_key = 'happy.json';
+    var json_value = '{ "happy" : "json" }';
+    var sample_key = 'not_a_json_key';
+    var sample_value = 'password: calvin12345';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(json_key, json_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+
+        // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+        git_utils.addFileToGitRepo(sample_key, sample_value, "Add another file.", function(err) {
+          if (err) return done(err);
+
+          branch.handleRefChange(0, function(err) {
+            if (err) return done(err);
+
+            // At this point, the repo should have populated consul with our sample_key
+            consul_utils.validateValue('test_repo/master/happy/happy', 'json', function(err, value) {
+              if (err) return done(err);
+
+              // At this point, the repo should have populated consul with our sample_key
+              consul_utils.validateValue('test_repo/master/not_a_json_key', sample_value, function(err, value) {
+                if (err) return done(err);
+
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
 });
