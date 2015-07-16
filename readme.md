@@ -171,6 +171,16 @@ A few notes on how this behaves:
 
 * Any non-JSON files, including files with the extension ".json" that contain invalid JSON, are stored in your KV as if expand_keys mode was not enabled.
 
+##### Options
+
+###### include_branch_name (default: true)
+
+`include_branch_name` is a repo-level option instructing git2consul to use the branch name as part of the key prefix.  Setting this option to false will omit the branch name.
+
+###### mountpoint (default: undefined)
+
+A `mountpoint` is a string that is prepended to the key prefix.  By default, git2consul creates keys at the root of the KV store with the repo name being a top-level key. By setting a mountpoint, you define a prefix of arbitrary depth that will serve as the root for your key names. When building the key name, git2consul will concatenate mountpoint, repo name, branch name (assuming `include_branch_name` is true), and the path of the file in your git repo.
+
 ##### Clients
 
 A client system should query Consul for the subset of the KV containing the data relevant to its operation.  To extend the above example, our `foo_service` on the development network might subscribe to the KV root `vp_config/development/foo_service` and emit any changes to disk (via something like [fsconsul](https://github.com/ryanbreen/fsconsul)) or environment variables (via something like [envconsul](https://github.com/hashicorp/envconsul)).
