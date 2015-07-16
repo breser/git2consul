@@ -68,6 +68,24 @@ describe('Config Validation', function() {
     });
   });
 
+  it ('should reject a repo with a bogus mountpoint', function() {
+    try {
+      var repo = new Repo({'name': 'busted_mountpoint_repo', 'url': 'http://www.github.com/',
+        'local_store':'/tmp/', 'branches': ['master'], 'mountpoint': '/oops'});
+      should.fail("mountpoint must not start or end with /.");
+    } catch(e) {
+      e.message.should.equal('mountpoint must not start or end with /.');
+    }
+
+    try {
+      var repo = new Repo({'name': 'busted_mountpoint_repo', 'url': 'http://www.github.com/',
+        'local_store':'/tmp/', 'branches': ['master'], 'mountpoint': 'oops/'});
+      should.fail("mountpoint must not start or end with /.");
+    } catch(e) {
+      e.message.should.equal('mountpoint must not start or end with /.');
+    }
+  });
+
   it ('should reject a repo with a non-existent local_store', function() {
     try {
       var repo = new Repo({'name': 'non_existent_local_store_repo', 'url': 'http://www.github.com/',
