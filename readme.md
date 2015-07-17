@@ -90,7 +90,7 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
     "name" : "vp_config",
     "url" : "ssh://stash.mydomain.com/team_configuration_data.git",
     "include_branch_name" : false,
-    "mountpoint": "/nested/root/for/keys",
+    "mountpoint": "nested/root/for/keys",
     "branches" : ["development", "staging", "production"],
     "hooks": [{
       "type" : "stash",
