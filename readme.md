@@ -90,6 +90,7 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
     "name" : "vp_config",
     "url" : "ssh://stash.mydomain.com/team_configuration_data.git",
     "include_branch_name" : false,
+    "mountpoint": "/nested/root/for/keys",
     "branches" : ["development", "staging", "production"],
     "hooks": [{
       "type" : "stash",
@@ -114,7 +115,7 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
 }
 ```
 
-The above example illustrates a 2 repo git2consul setup: one repo lives in an on-premises Git solution and the other is hosted at github.  The hooks array under each repository defines how git2consul will be notified of changes.  git2consul supports [Atlassian Stash](https://confluence.atlassian.com/display/STASH/POST+service+webhook+for+Stash), [Atlassian Bitbucket](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management), [GitHub](https://developer.github.com/v3/repos/hooks/), and [Gitlab](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md) webhooks as well as a basic polling model.
+The above example illustrates a 2 repo git2consul setup: one repo lives in an on-premises Git solution and the other is hosted at Github.  The hooks array under each repository defines how git2consul will be notified of changes.  git2consul supports [Atlassian Stash](https://confluence.atlassian.com/display/STASH/POST+service+webhook+for+Stash), [Atlassian Bitbucket](https://confluence.atlassian.com/display/BITBUCKET/POST+hook+management), [GitHub](https://developer.github.com/v3/repos/hooks/), and [Gitlab](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md) webhooks as well as a basic polling model.
 
 Note that multiple webhooks can share the same port.  The only constraint is that webhooks for different repos do not share the same port and path.
 
@@ -169,6 +170,18 @@ A few notes on how this behaves:
 * Expanded keys are URI-encoded.  The spaces in "you get the picture" are thus converted into `%20`.
 
 * Any non-JSON files, including files with the extension ".json" that contain invalid JSON, are stored in your KV as if expand_keys mode was not enabled.
+
+##### Options
+
+###### include_branch_name (default: true)
+
+`include_branch_name` is a repo-level option instructing git2consul to use the branch name as part of the key prefix.  Setting this option to false will omit the branch name.
+
+###### mountpoint (default: undefined)
+
+A `mountpoint` is a repo-level option instructing git2consul to prepend a string to the key name.  By default, git2consul creates keys at the root of the KV store with the repo name being a top-level key. By setting a mountpoint, you define a prefix of arbitrary depth that will serve as the root for your key names. When building the key name, git2consul will concatenate mountpoint, repo name, branch name (assuming `include_branch_name` is true), and the path of the file in your git repo.
+
+*Note*: mountpoints can neither begin or end in with the character '/'.  git2consul will reject your repo config if that's the case.
 
 ##### Clients
 
