@@ -17,9 +17,6 @@ deploy:
     tags: true
     all_branches: true
   api_key:
-    secure: bwhZIXKniloMQz6+dJUMECUTLbG7j24wPwuG9G/H/YiMd6I7Z9P2roeeIC7TKu/NzXGLjySzqPYDxIZm9VGonx2lY4rOVC0vDkju2iEY3PIzAU8aO2FP9mFdaE03PN5bFwoB1BheHYypyOalPFZ6Zugq+RmM8SftyscdjhhFuRc=
+    secure: LQSP9xxSRd8wca1TfwmQzfNIksvNEVw+dFLWduuEmj9vvd6mQth+wJVLWH16alSo0FzKlR0CRMQ3iA1Srw4oL48NvPo/impanZBrKS7uIKf8iqF6kEnmgRRcJ5F96jorbv3wTAYMPiaq2pivwX/VRAPmZiCYYJI1TnSNKPReTxc=
 after_success:
 - node_modules/coveralls/bin/coveralls.js < reports/lcov.info
-env:
-  global:
-    secure: ncf1hEizJHdE52a0o45I16y+fsMtAgGModsYsgnDH0am5xRAWOJNZIQTUL5MbmUZ9ZiIeUG8nY2maGdKCIMi3fFDq1SrgxJERRbaoUe9CsBSa6wffH65+yKE7+niAzFEQicpVLYLJVi8BWyoByiym8xK6BknyIRiJZOfxBrYqlY=
