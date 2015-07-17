@@ -20,3 +20,6 @@ deploy:
     secure: bwhZIXKniloMQz6+dJUMECUTLbG7j24wPwuG9G/H/YiMd6I7Z9P2roeeIC7TKu/NzXGLjySzqPYDxIZm9VGonx2lY4rOVC0vDkju2iEY3PIzAU8aO2FP9mFdaE03PN5bFwoB1BheHYypyOalPFZ6Zugq+RmM8SftyscdjhhFuRc=
 after_success:
 - node_modules/coveralls/bin/coveralls.js < reports/lcov.info
+env:
+  global:
+    secure: ncf1hEizJHdE52a0o45I16y+fsMtAgGModsYsgnDH0am5xRAWOJNZIQTUL5MbmUZ9ZiIeUG8nY2maGdKCIMi3fFDq1SrgxJERRbaoUe9CsBSa6wffH65+yKE7+niAzFEQicpVLYLJVi8BWyoByiym8xK6BknyIRiJZOfxBrYqlY=
