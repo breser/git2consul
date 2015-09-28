@@ -41,6 +41,6 @@ if (process.argv.length === 3) {
   }
 
   exports.setConfig(config, function(err) {
-    if (err) return console.error("Failed to write config");
+    if (err) return console.error("Failed to write config: %s", err);
   });
 }
