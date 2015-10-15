@@ -41,7 +41,7 @@ var run_command = function(cmd, cwd, cb) {
 };
 
 describe('git2consul error recovery', function() {
-/**
+
   it ('should gracefully handle a pull of a branch polluted by a merge conflict', function(done) {
 
     // Create a remote git repo.  Then, force a push to really make that repo unhappy.
@@ -91,7 +91,7 @@ describe('git2consul error recovery', function() {
         });
       });
     });
-  });**/
+  });
 
   it ('should gracefully handle init of a branch polluted by a merge conflict', function(done) {
 

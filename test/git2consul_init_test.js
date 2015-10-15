@@ -105,7 +105,7 @@ describe('Initializing git2consul', function() {
 });
 
 describe ('Error handling', function() {
-  it ('should gracefully handle a repo even when the local branch cache is corrupted', function(done) {
+  it ('should gracefully handle a rebuild even when the local branch cache is corrupted', function(done) {
     // Create an empty git repo
     git_utils.initRepo(function(err, repo) {
       if (err) return done(err);
@@ -117,15 +117,8 @@ describe ('Error handling', function() {
         // Now try to create a new repo around that working dir.
         var repo = new Repo(git_utils.createRepoConfig());
         repo.init(function(err) {
-          err.length.should.equal(1);
-          err[0].message.indexOf('Not a git repository').should.not.equal(-1);
-
-          // Now try to recreate the repo, simulating a git2consul restart.  The deliberately sabotaged branch should be out
-          // of the way, so the repo should init successfully.
-          repo.init(function(err) {
-            (undefined === err).should.equal(true);
-            done();
-          });
+          (undefined === err).should.equal(true);
+          done();
         });
       });
     });
