@@ -41,8 +41,8 @@ var run_command = function(cmd, cwd, cb) {
 };
 
 describe('git2consul error recovery', function() {
-
-  it ('should gracefully handle a branch polluted by a merge conflict', function(done) {
+/**
+  it ('should gracefully handle a pull of a branch polluted by a merge conflict', function(done) {
 
     // Create a remote git repo.  Then, force a push to really make that repo unhappy.
     git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
@@ -81,6 +81,57 @@ describe('git2consul error recovery', function() {
                       branch.handleRefChange(0, function(err) {
                         if (err) return done(err);
                         done();                    
+                     });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });**/
+
+  it ('should gracefully handle init of a branch polluted by a merge conflict', function(done) {
+
+    // Create a remote git repo.  Then, force a push to really make that repo unhappy.
+    git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
+      if (err) return done(err);
+
+      git_utils.addFileToGitRepo("readme.md", "Test file in a known state", "Test commit.", function(err) {
+        if (err) return done(err);
+
+        var repo_config = git_utils.createRepoConfig();
+        var repo = new Repo(repo_config);
+
+        repo.init(function(err) {
+
+          // The default repo created by initRepo has a single branch, master.
+          branch = repo.branches['master'];
+
+          consul_utils.validateValue('test_repo/master/readme.md', "Test file in a known state", function(err, value) {
+            if (err) return done(err);
+  
+            git_utils.addFileToGitRepo("readme.md", "Test file in an even more known state", "Test commit.", function(err) {
+
+              branch.handleRefChange(0, function(err) {
+                if (err) return done(err);
+                consul_utils.validateValue('test_repo/master/readme.md', "Test file in an even more known state", function(err, value) {
+                  if (err) return done(err);
+
+                  // Now revert to a previous commit and commit a new change.
+                  run_command('git reset --hard HEAD~1', git_utils.TEST_REMOTE_REPO, function(err) {
+                    if (err) return done(err);
+
+                    git_utils.addFileToGitRepo("readme.md", "Force merge conflict", "Test commit.", function(err) {
+
+                      // This ref change will attempt to pull the new state of TEST_REMOTE_REPO, but
+                      // this will fail since it's impossible to do a clean merge.  git2consul should
+                      // detect this and rebuild the branch.
+                      repo.init(function(err) {
+                        if (err) return done(err);
+                        done();
                      });
                     });
                   });
