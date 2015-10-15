@@ -26,7 +26,7 @@ describe('halt_on_change', function() {
 
   it ('should halt git2consul when config changes', function(done) {
 
-    consul.kv.set({'key': "git2consul/config", value: {'fake':'config'}, token: token}, function(err) {
+    consul.kv.set({'key': "git2consul/config", value: '{"fake":"config"}', token: token}, function(err) {
       if (err) done(err);
 
       var repo_config = git_utils.createRepoConfig();
@@ -59,7 +59,7 @@ describe('halt_on_change', function() {
             repo.hooks_active.should.equal(true);
 
             // Now update config and validate that a halt is seen.
-            consul.kv.set({'key': "git2consul/config", value: {'fake':'config2electricboogaloo'}, token: token}, function(err) {
+            consul.kv.set({'key': "git2consul/config", value: '{"fake":"config2electricboogaloo"}', token: token}, function(err) {
               if (err) done(err);
 
               var check_halt = function() {
