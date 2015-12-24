@@ -298,6 +298,44 @@ describe('polling hook', function() {
       });
     });
   });
+
+  it('should handle polling updates for tags', function (done) {
+
+    var repo_config = git_utils.createRepoConfig();
+    repo_config.hooks = [{
+      'type': 'polling',
+      'interval': '1',
+      'poll_tags': true
+    }];
+    repo_config.name = "polling_test_tags";
+
+    git_utils.initRepo(repo_config, function (err, repo) {
+      if (err) return done(err);
+
+      repo.hooks_active.should.equal(true);
+
+      var sample_key = 'sample_key';
+      var sample_value = 'stash test data';
+      git_utils.addFileToGitRepo(sample_key, sample_value, "Polling hook.", function (err) {
+        if (err) return done(err);
+
+        var version = "v1";
+        git_commands.tag(version, "first release", git_utils.TEST_REMOTE_REPO, function (err) {
+          if (err) return done(err);
+
+          consul_utils.waitForValue(repo_config.name + '/master/' + sample_key, function (err) {
+            if (err) return done(err);
+
+            consul_utils.waitForValue(repo_config.name + '/' + version + '/' + sample_key, function (err) {
+              if (err) return done(err);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
 });
 
 describe('no daemon mode', function() {
