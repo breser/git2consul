@@ -192,6 +192,37 @@ A `source_root` is a repo-level option instructing git2consul to navigate to a s
 
 If you have a repo configured with the source_root `config/for/this/datacenter`, the file `config/for/this/datacenter/web/config.json` would be mapped to the KV as `/web/config.json`.
 
+###### poll_tags (default: undefined)
+
+A `poll_tags` is a hook-level option instructing git2consul to treat tags as if they were branches. Tags will be dynamically polled by the hook as "branches that don't change".
+
+This is useful if you want to version your property changes. It allows to create this kind of structure in consul :
+
+    sample-config
+       v1 -> first version
+       v2 -> second version
+       v3 -> third version
+       master -> master branch aka latest version
+
+
+usage example :
+
+```javascript
+{
+  "version": "1.0",
+  "repos" : [{
+    "name" : "sample_configuration",
+    "url" : "https://github.com/ryanbreen/git2consul_data.git",
+    "branches" : ["dev"],
+    "hooks": [{
+      "type" : "polling",
+      "interval" : "1"
+      "poll_tags": true
+    }]
+  }]
+}
+```
+
 ##### Clients
 
 A client system should query Consul for the subset of the KV containing the data relevant to its operation.  To extend the above example, our `foo_service` on the development network might subscribe to the KV root `vp_config/development/foo_service` and emit any changes to disk (via something like [fsconsul](https://github.com/ryanbreen/fsconsul)) or environment variables (via something like [envconsul](https://github.com/hashicorp/envconsul)).
