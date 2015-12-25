@@ -192,9 +192,9 @@ A `source_root` is a repo-level option instructing git2consul to navigate to a s
 
 If you have a repo configured with the source_root `config/for/this/datacenter`, the file `config/for/this/datacenter/web/config.json` would be mapped to the KV as `/web/config.json`.
 
-###### poll_tags (default: undefined)
+###### support_tags (default: undefined)
 
-A `poll_tags` is a hook-level option instructing git2consul to treat tags as if they were branches. Tags will be dynamically polled by the hook as "branches that don't change".
+A `support_tags` is a hook-level option instructing git2consul to treat tags as if they were branches. Tags will be dynamically polled by the hook as "branches that don't change".
 
 This is useful if you want to version your property changes. It allows to create this kind of structure in consul :
 
@@ -213,11 +213,11 @@ usage example :
   "repos" : [{
     "name" : "sample_configuration",
     "url" : "https://github.com/ryanbreen/git2consul_data.git",
+    "support_tags" : true,
     "branches" : ["dev"],
     "hooks": [{
       "type" : "polling",
       "interval" : "1"
-      "poll_tags": true
     }]
   }]
 }
