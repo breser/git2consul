@@ -74,6 +74,31 @@ var logger = require('../lib/logging.js');
   });
 });
 
+// Add a file for the config, commit it, and validate that it has populated properly.
+function create_tag_and_check_consul(version, repo_name, sample_key, done) {
+  git_commands.tag(version, "first release", git_utils.TEST_REMOTE_REPO, function (err) {
+      if (err) return done(err);
+
+      consul_utils.waitForValue(repo_name + '/master/' + sample_key, function (err) {
+        if (err) return done(err);
+
+        consul_utils.waitForValue(repo_name + '/' + version + '/' + sample_key, function (err) {
+          if (err) return done(err);
+          done();
+        });
+      });
+    });
+}
+function extractReqInfo(config) {
+  var req_conf = {url: config.fqurl, method: 'POST'};
+  if (config.type === 'bitbucket') {
+      req_conf.form = { payload: decodeURIComponent(config.body).replace(/\+/g, ' ') };
+    } else req_conf.json = config.body
+
+  if (config.type === 'stash') req_conf.headers = {'content-encoding': 'UTF-8'};
+  return req_conf;
+}
+
 // Give us a mechanism to report on which set of hook params we're testing.
 var test_counter = 0;
 var test_descriptions = [
@@ -183,12 +208,7 @@ var test_descriptions = [
       git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", function(err) {
         if (err) return cb(err);
 
-        var req_conf = { url: config.fqurl, method: 'POST' };
-        if (config.type === 'bitbucket') {
-          req_conf.form = { payload: decodeURIComponent(config.body).replace(/\+/g, ' ') };
-        } else req_conf.json = config.body
-        
-        if (config.type === 'stash') req_conf.headers = {'content-encoding':'UTF-8'};
+        var req_conf = extractReqInfo(config);
 
         request(req_conf, function(err) {
 
@@ -234,6 +254,55 @@ var test_descriptions = [
     });
 
     ++test_counter;
+  });
+});
+
+
+describe('webhook with support_tags', function() {
+
+
+  var test_hook_req_with_tag = function (config, cb) {
+    var sample_key = 'webhook_key_' + config.type;
+    var sample_value = config.type + ' test data';
+
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Webhook.", function (err) {
+      if (err) return cb(err);
+
+      var req_conf = extractReqInfo(config);
+
+      request(req_conf, function (err) {
+        setTimeout(function () {
+          var version = "v1";
+          config.body = {ref: "refs/tag/" + version, head_commit: {id: 12345}};
+          var req_conf_for_tag = extractReqInfo(config);
+          create_tag_and_check_consul(version, 'test_repo', sample_key, cb);
+          request(req_conf_for_tag, function (err) {
+            if (err) return cb(err);
+          });
+        }, 500);
+      });
+    });
+  };
+
+  it ('should handle support_tags with hooks', function(done) {
+
+    var repo_config = git_utils.createRepoConfig();
+    repo_config.support_tags = true;
+    repo_config.hooks = [{
+      'type': 'github',
+      'url': '/githubpoke_with_tags',
+      'port': 2345,
+      'body': { ref: "refs/heads/master", head_commit: {id: 12345} },
+      'fqurl': 'http://localhost:2345/githubpoke_with_tags'
+    }];
+    git_utils.initRepo(repo_config, function(err, repo) {
+      if (err) return done(err);
+
+      test_hook_req_with_tag(repo_config.hooks[0], function(err) {
+        if (err) return done(err);
+        done();
+      });
+    });
   });
 });
 
@@ -302,10 +371,10 @@ describe('polling hook', function() {
   it('should handle polling updates for tags', function (done) {
 
     var repo_config = git_utils.createRepoConfig();
+    repo_config.support_tags = true;
     repo_config.hooks = [{
       'type': 'polling',
       'interval': '1',
-      'poll_tags': true
     }];
     repo_config.name = "polling_test_tags";
 
@@ -318,20 +387,8 @@ describe('polling hook', function() {
       var sample_value = 'stash test data';
       git_utils.addFileToGitRepo(sample_key, sample_value, "Polling hook.", function (err) {
         if (err) return done(err);
-
         var version = "v1";
-        git_commands.tag(version, "first release", git_utils.TEST_REMOTE_REPO, function (err) {
-          if (err) return done(err);
-
-          consul_utils.waitForValue(repo_config.name + '/master/' + sample_key, function (err) {
-            if (err) return done(err);
-
-            consul_utils.waitForValue(repo_config.name + '/' + version + '/' + sample_key, function (err) {
-              if (err) return done(err);
-              done();
-            });
-          });
-        });
+        create_tag_and_check_consul(version, repo_config.name, sample_key, done);
       });
     });
   });
