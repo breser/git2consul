@@ -194,7 +194,7 @@ If you have a repo configured with the source_root `config/for/this/datacenter`,
 
 ###### support_tags (default: undefined)
 
-A `support_tags` is a hook-level option instructing git2consul to treat tags as if they were branches. Tags will be dynamically polled by the hook as "branches that don't change".
+A `support_tags` is a repo-level option instructing git2consul to treat tags as if they were branches. Tags will be dynamically polled by the hook as "branches that don't change".
 
 This is useful if you want to version your property changes. It allows to create this kind of structure in consul :
 
