@@ -1,25 +1,25 @@
-#### git2consul
+### git2consul
 
 [![Join the chat at https://gitter.im/Cimpress-MCP/git2consul](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Cimpress-MCP/git2consul?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 git2consul takes one or many git repositories and mirrors them into [Consul](http://www.consul.io/) KVs.  The goal is for organizations of any size to use git as the backing store, audit trail, and access control mechanism for configuration changes and Consul as the delivery mechanism.
 
-##### Installation
+#### Installation
 
 `npm install git2consul`
 
-##### Mailing List
+#### Mailing List
 
 [Google Groups](https://groups.google.com/group/git2consul-tool/)
 
-##### Requirements / Caveats
+#### Requirements / Caveats
 
 * git2consul does most of its Git work by shelling out to git.  Git must be installed and on your path.
 * git2consul does the rest of its work by calling Consul's REST API.  A Consul agent must be running on localhost.
 * git2consul requires write access to the KV store of its Consul agent.
 * git2consul has only been tested on Unix.
 
-##### Quick Start Guide
+#### Quick Start Guide
 
 Let's start off with a simple example to show you how it works.  You can use this as a starting point and then tailor it to your use-case.
 
@@ -66,11 +66,11 @@ The Values of those Keys are the contents of the respective files.  Changing the
 
 Once you are happy with your configuration, you can run git2consul as a daemon either in a `screen` session or via an init script of whatever type is appropriate on your platform.
 
-##### Configuration
+#### Configuration
 
 git2consul expects to be run on the same node as a Consul agent.  git2consul expects its own configuration to be stored as a JSON object in '/git2consul/config' in your Consul KV.  The utility `utils/config_seeder.js` will take a JSON file and set `/git2consul/config` to contain its contents.
 
-###### Configuration Format
+##### Configuration Format
 
 ```javascript
 {
@@ -124,7 +124,7 @@ Note that multiple webhooks can share the same port.  The only constraint is tha
 
 The above example also logs to stdout as well as to file.  Logging is handled via [Bunyan](https://github.com/trentm/node-bunyan).  The value of the `logger` property is passed to the Bunyan `createLogger()` method, so any configuration supported by vanilla Bunyan will work out of the box in git2consul.
 
-##### How it works
+#### How it works
 
 git2consul uses the name and branches of configured repos to namespace the created KVs.  The goal is to allow multiple teams to use the same Consul agents and KV store to migrate configuration data around a network without needing to worry about data conflicts.  In the above example, a settings file stored at `foo_service/settings.json` in the `development` branch of the repo `vp_config` would be persisted in Consul as `vp_config/development/foo_service/settings.json`.
 
@@ -132,17 +132,19 @@ If you are using a more [Twelve-Factor](http://12factor.net/) approach, where yo
 
 As changes are detected in the specified Git repos, git2consul determines which files have been added, updated, or deleted and replicates those changes to the KV.  Because only changed branches and files are analyzed, git2consul should have a very slim profile on hosting systems.
 
-##### Alternative Modes of Operation
+#### Alternative Modes of Operation
 
-###### No Daemon
+##### No Daemon
 
 If there are no webhooks or polling watchers configured, git2consul will terminate as soon as all tracked repos and branches have been synced with Consul.  If you would like to force git2consul not to attach any webhooks or polling watchers, you can either pass the command-line switch `-n` or include the field `"no_daemon": true` at the top level of your config JSON.
 
-###### Halt-on-change
+##### Halt-on-change
 
 If you would like git2consul to shutdown every time its configuration changes, you can enable halt-on-change with the command-line switch `-h` or inclusion of the field `"halt_on_change": true` at the top level of your config JSON.  If this switch is enabled, git2consul will wait for changes in the config (which is itself stored in Consul) and gracefully halt when a change is detected.  It is expected that your git2consul process is configured to run as a service, so restarting git2consul is the responsibility of your service manager.
 
-###### expand_keys
+##### expand_keys
+
+###### JSON
 
 If you would like git2consul to treat JSON documents in your repo as fully formed subtrees, you can enable expand_keys mode via inclusion of the field `"expand_keys": true` at the top level of the repo's configuration.  If this mode is enabled, git2consul will treat any valid JSON file (that is, any file with extension ".json" that parses to an object) as if it contains a subtree of Consul KVs.  For example, if you have the file `root.json` in repo `expando_keys` with the following contents:
 
@@ -161,7 +163,7 @@ If you would like git2consul to treat JSON documents in your repo as fully forme
 git2consul in expand_keys mode will generate the following KV:
 
 ```
-/expando_keys/root.json/first_level/second_level/third_level/you%20get%20the%20picture
+/expand_keys/root.json/first_level/second_level/third_level/you%20get%20the%20picture
 ```
 
 The value in that KV pair will be `right?`.
@@ -174,25 +176,56 @@ A few notes on how this behaves:
 
 * Any non-JSON files, including files with the extension ".json" that contain invalid JSON, are stored in your KV as if expand_keys mode was not enabled.
 
-##### Options
+###### .properties
 
-###### include_branch_name (default: true)
+Similarly to JSON, git2consul can also treat [Java .properties](http://docs.oracle.com/javase/7/docs/api/java/util/Properties.html#load%28java.io.Reader%29) as a simple k/v format.
+
+This is useful for teams willing to keep using legacy .properties files or don't want to use consul locally.
+
+Additionally, It has support for local variable :
+
+```
+bar=bar
+foo=${bar}
+```
+
+Note: 
+- the tokens **#** and **!** are parsed as comment tokens.
+- the tokens **=**, **whitespace** and **:** are parsed as separator tokens.
+
+Example, if you have a file `simple.properties` :
+
+`bar=foo`
+
+git2consul will generate 
+
+```
+/expand_keys/simple.json/foo
+```
+
+returning `bar`
+
+You can combine .properties files with the [common_properties option](#common_properties-default-undefined), if you need a way to inject shared/common properties into other files.
+
+#### Options
+
+##### include_branch_name (default: true)
 
 `include_branch_name` is a repo-level option instructing git2consul to use the branch name as part of the key prefix.  Setting this option to false will omit the branch name.
 
-###### mountpoint (default: undefined)
+##### mountpoint (default: undefined)
 
 A `mountpoint` is a repo-level option instructing git2consul to prepend a string to the key name.  By default, git2consul creates keys at the root of the KV store with the repo name being a top-level key. By setting a mountpoint, you define a prefix of arbitrary depth that will serve as the root for your key names. When building the key name, git2consul will concatenate mountpoint, repo name, branch name (assuming `include_branch_name` is true), and the path of the file in your git repo.
 
 *Note*: mountpoints can neither begin or end in with the character '/'.  git2consul will reject your repo config if that's the case.
 
-###### source_root (default: undefined)
+##### source_root (default: undefined)
 
 A `source_root` is a repo-level option instructing git2consul to navigate to a subdirectory in the git repo before mapping files to KVs.  By default, git2consul mirrors the entire repo into Consul KVs.
 
 If you have a repo configured with the source_root `config/for/this/datacenter`, the file `config/for/this/datacenter/web/config.json` would be mapped to the KV as `/web/config.json`.
 
-###### support_tags (default: undefined)
+##### support_tags (default: undefined)
 
 A `support_tags` is a repo-level option instructing git2consul to treat tags as if they were branches. Tags will be dynamically polled by the hook as "branches that don't change".
 
@@ -223,15 +256,60 @@ usage example :
 }
 ```
 
-##### Clients
+##### common_properties (default: undefined)
+
+a `common_properties` is a repo-level option instructing git2consul to inject common/shared properties as variables into other .properties files.
+This option is active only if you use the [expand_keys mode with properties](#properties).
+
+Usage example :
+
+```javascript
+{
+  "version": "1.0",
+  "repos" : [{
+    "name" : "sample_configuration",
+    "url" : "https://github.com/ryanbreen/git2consul_data.git",
+    "expand_keys": true,
+    "common_properties" : "common.properties",
+    "branches" : ["dev"],
+    "hooks": [{
+      "type" : "polling",
+      "interval" : "1"
+    }]
+  }]
+}
+```
+
+If you have a file `common.properties` :
+
+`foo=bar`
+
+and `simple.properties` :
+
+`foo=${foo}`
+
+git2consul will generate 
+           
+```
+/expand_keys/simple.json/foo
+```
+           
+returning `bar`.
+
+Note :
+
+- If a variable is missing or unset, git2consul will store the file as a flat file without considering it as a k/v format.
+- If the path to common_properties is incorrect or corrupted, git2consul will ignore it and won't inject any properties.
+
+#### Clients
 
 A client system should query Consul for the subset of the KV containing the data relevant to its operation.  To extend the above example, our `foo_service` on the development network might subscribe to the KV root `vp_config/development/foo_service` and emit any changes to disk (via something like [fsconsul](https://github.com/ryanbreen/fsconsul)) or environment variables (via something like [envconsul](https://github.com/hashicorp/envconsul)).
 
-##### Tokens
+#### Tokens
 
 If you are using tokens for ACLs, you can pass a token to git2consul by specifying the `TOKEN` environment variable.  git2consul requires read/write access to your KV.  The purpose of git2consul is to treat git as the single source of truth for KVs, so it typically makes the most sense to give all other users a read-only token to the KV.
 
-##### CI
+#### CI
 
 Builds are automatically run by Travis on any push or pull request.
 
@@ -241,6 +319,6 @@ Coverage is run automatically by Travis and uploaded to coveralls.io.
 
 [![Coverage Status](https://img.shields.io/coveralls/Cimpress-MCP/git2consul.svg)](https://coveralls.io/r/Cimpress-MCP/git2consul?branch=master)
 
-##### License
+#### License
 
 Apache 2.0
