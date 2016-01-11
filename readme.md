@@ -298,7 +298,7 @@ returning `bar`.
 
 Note :
 
-- If a variable is missing or unset, git2consul will store the file as a flat file without considering it as a k/v format.
+- If a variable is missing or unset, git2consul will partially parse the properties and leave the placeholders as strings.
 - If the path to common_properties is incorrect or corrupted, git2consul will ignore it and won't inject any properties.
 
 #### Clients
