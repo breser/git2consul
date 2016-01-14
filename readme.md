@@ -163,7 +163,7 @@ If you would like git2consul to treat JSON documents in your repo as fully forme
 git2consul in expand_keys mode will generate the following KV:
 
 ```
-/expand_keys/root.json/first_level/second_level/third_level/you%20get%20the%20picture
+/expando_keys/root.json/first_level/second_level/third_level/you%20get%20the%20picture
 ```
 
 The value in that KV pair will be `right?`.
