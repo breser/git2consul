@@ -30,6 +30,7 @@ describe('Expand keys', function() {
     });
   });
 
+  /*JSON*/
   it ('should handle additions of new JSON files', function(done) {
     var sample_key = 'simple.json';
     var sample_value = '{ "first_level" : { "second_level": "is_all_we_need" } }';
@@ -117,43 +118,6 @@ describe('Expand keys', function() {
     });
   });
 
-  it ('should handle JSON files comingled with non-JSON files', function(done) {
-    var json_key = 'happy.json';
-    var json_value = '{ "happy" : "json" }';
-    var sample_key = 'not_a_json_key';
-    var sample_value = 'password: calvin12345';
-
-    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
-    git_utils.addFileToGitRepo(json_key, json_value, "Add a file.", function(err) {
-      if (err) return done(err);
-
-      branch.handleRefChange(0, function(err) {
-        if (err) return done(err);
-
-        // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
-        git_utils.addFileToGitRepo(sample_key, sample_value, "Add another file.", function(err) {
-          if (err) return done(err);
-
-          branch.handleRefChange(0, function(err) {
-            if (err) return done(err);
-
-            // At this point, the repo should have populated consul with our sample_key
-            consul_utils.validateValue('test_repo/master/happy.json/happy', 'json', function(err, value) {
-              if (err) return done(err);
-
-              // At this point, the repo should have populated consul with our sample_key
-              consul_utils.validateValue('test_repo/master/not_a_json_key', sample_value, function(err, value) {
-                if (err) return done(err);
-
-                done();
-              });
-            });
-          });
-        });
-      });
-    });
-  });
-
   it ('should handle JSON files with special characters', function(done) {
     var sample_key = 'special.json';
     var sample_value = {
@@ -182,4 +146,288 @@ describe('Expand keys', function() {
       });
     });
   });
+
+  /*properties*/
+
+  it ('should handle additions of new properties files', function(done) {
+    var sample_key = 'simple.properties';
+    var sample_value = 'foo=bar';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/simple.properties/foo', 'bar', function(err, value) {
+          if (err) return done(err);
+          done();
+        });
+      });
+    });
+  });
+
+  it ('should handle changing properties files', function(done) {
+    var sample_key = 'changeme.properties';
+    var sample_value = 'foo=bar';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/changeme.properties/foo', 'bar', function(err, value) {
+          if (err) return done(err);
+
+          // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+          git_utils.addFileToGitRepo(sample_key, 'foo=different_bar', "Change a file.", function(err) {
+            if (err) return done(err);
+
+            branch.handleRefChange(0, function(err) {
+              if (err) return done(err);
+
+              // At this point, the repo should have populated consul with our sample_key
+              consul_utils.validateValue('test_repo/master/changeme.properties/foo', 'different_bar', function(err, value) {
+                if (err) return done(err);
+
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it ('should handle busted properties files', function(done) {
+    var sample_key = 'busted.properties';
+     //the parser is quite tolerant to syntax.
+     //the best way to test this case is by using an unset variable, which will throw an error when accessed.
+    var sample_value = 'foo=${bar}';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/busted.properties', sample_value, function(err, value) {
+          if (err) return done(err);
+
+          // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+          git_utils.addFileToGitRepo(sample_key, 'foo=bar', "Change a file.", function(err) {
+            if (err) return done(err);
+
+            branch.handleRefChange(0, function(err) {
+              if (err) return done(err);
+
+              // At this point, the repo should have populated consul with our sample_key
+              consul_utils.validateValue('test_repo/master/busted.properties/foo', 'bar', function(err, value) {
+                if (err) return done(err);
+
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  /* common */
+  it ('should handle different files commingled together', function(done) {
+    var json_key = 'happy.json';
+    var json_value = '{ "happy" : "json" }';
+    var property_key = 'simple.properties';
+    var property_value = 'foo=bar';
+    var sample_key = 'not_a_json_key';
+    var sample_value = 'password: calvin12345';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(json_key, json_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+
+        // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+        git_utils.addFileToGitRepo(sample_key, sample_value, "Add another file.", function(err) {
+          if (err) return done(err);
+
+          branch.handleRefChange(0, function(err) {
+            if (err) return done(err);
+
+            // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+            git_utils.addFileToGitRepo(property_key, property_value, "Add another file.", function(err) {
+              if (err) return done(err);
+
+              branch.handleRefChange(0, function(err) {
+                if (err) return done(err);
+
+                // At this point, the repo should have populated consul with our sample_key
+                consul_utils.validateValue('test_repo/master/happy.json/happy', 'json', function(err, value) {
+                  if (err) return done(err);
+
+                  // At this point, the repo should have populated consul with our sample_key
+                  consul_utils.validateValue('test_repo/master/simple.properties/foo', 'bar', function(err, value) {
+                    if (err) return done(err);
+
+                    // At this point, the repo should have populated consul with our sample_key
+                    consul_utils.validateValue('test_repo/master/not_a_json_key', sample_value, function(err, value) {
+                      if (err) return done(err);
+
+                      done();
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
+describe('Expand keys with common properties', function() {
+
+  // The current copy of the git master branch.  This is initialized before each test in the suite.
+  var branch;
+  beforeEach(function(done) {
+
+    // Each of these tests needs a working repo instance, so create it here and expose it to the suite
+    // namespace.  These are all tests of expand_keys mode, so set that here.
+    git_utils.initRepo(_.extend(git_utils.createRepoConfig(), {'expand_keys': true, 'common_properties': "common.properties"}), function(err, repo) {
+      if (err) return done(err);
+
+      // The default repo created by initRepo has a single branch, master.
+      branch = repo.branches['master'];
+
+      done();
+    });
+  });
+
+  it('should handle simple common-properties injection', function(done) {
+    var common_key = 'common.properties';
+    var common_value = 'bar=bar';
+    var sample_key = 'simple.properties';
+    var sample_value = 'foo=${bar}';
+
+    git_utils.addFileToGitRepo(common_key, common_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+
+        git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+          if (err) return done(err);
+
+          branch.handleRefChange(0, function(err) {
+            if (err) return done(err);
+
+            consul_utils.validateValue('test_repo/master/simple.properties/foo', 'bar', function(err, value) {
+              if (err) return done(err);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it('should store as flat file if unset property', function(done) {
+    var common_key = 'common.properties';
+    var common_value = 'bar=bar';
+    var sample_key = 'simple.properties';
+    var sample_value = 'foo=${unset}';
+
+    git_utils.addFileToGitRepo(common_key, common_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+
+        git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+          if (err) return done(err);
+
+          branch.handleRefChange(0, function(err) {
+            if (err) return done(err);
+
+            consul_utils.validateValue('test_repo/master/simple.properties', sample_value, function(err, value) {
+              if (err) return done(err);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it('should store as flat file if common properties file is invalid / not found', function(done) {
+    var sample_key = 'simple.properties';
+    var sample_value = 'foo=${unset}';
+
+        git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+          if (err) return done(err);
+
+          branch.handleRefChange(0, function(err) {
+            if (err) return done(err);
+
+            consul_utils.validateValue('test_repo/master/simple.properties', sample_value, function(err, value) {
+              if (err) return done(err);
+              done();
+            });
+      });
+    });
+  });
+
+});
+
+describe('Expand keys with invalid common properties path ', function() {
+
+  // The current copy of the git master branch.  This is initialized before each test in the suite.
+  var branch;
+  beforeEach(function(done) {
+
+    // Each of these tests needs a working repo instance, so create it here and expose it to the suite
+    // namespace.  These are all tests of expand_keys mode, so set that here.
+    git_utils.initRepo(_.extend(git_utils.createRepoConfig(), {'expand_keys': true, 'common_properties': "wrong/path/common.properties"}), function(err, repo) {
+      if (err) return done(err);
+
+      // The default repo created by initRepo has a single branch, master.
+      branch = repo.branches['master'];
+
+      done();
+    });
+  });
+
+  it('should store as flat file if invalid path in config', function(done) {
+    var common_key = 'common.properties';
+    var common_value = 'bar=bar';
+    var sample_key = 'simple.properties';
+    var sample_value = 'foo=${bar}';
+
+    git_utils.addFileToGitRepo(common_key, common_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+
+        git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+          if (err) return done(err);
+
+          branch.handleRefChange(0, function(err) {
+            if (err) return done(err);
+
+            consul_utils.validateValue('test_repo/master/simple.properties', sample_value, function(err, value) {
+              if (err) return done(err);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
 });
