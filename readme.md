@@ -15,7 +15,7 @@ git2consul takes one or many git repositories and mirrors them into [Consul](htt
 #### Requirements / Caveats
 
 * git2consul does most of its Git work by shelling out to git.  Git must be installed and on your path.
-* git2consul does the rest of its work by calling Consul's REST API.  A Consul agent must be running on localhost.
+* git2consul does the rest of its work by calling Consul's REST API.
 * git2consul requires write access to the KV store of its Consul agent.
 * git2consul has only been tested on Unix.
 
@@ -42,16 +42,28 @@ The most minimalistic viable git2consul configuration mirrors a single git repo 
 }
 ```
 
-Put that configuration in a file called `/tmp/git2consul.json`.  From the git2consul directory, upload that JSON file into the KV as your git2consul config:
+Put that configuration in a file called `/tmp/git2consul.json`.  From the git2consul directory, upload that JSON file into the local KV as your git2consul config:
 
 ```
 node utils/config_seeder.js /tmp/git2consul.json
+```
+
+or for remote Consul endpoint:
+
+```
+node utils/config_seeder.js --endpoint remote.consul.host --port 80 /tmp/git2consul.json
 ```
 
 Start git2consul:
 
 ```
 node .
+```
+
+or for remote Consul endpoint:
+
+```
+node . --endpoint remote.consul.host --port 80
 ```
 
 git2consul will now poll the "dev" branch of the "git2consul_data.git" repo once per minute.  On first run, it will mirror the 3 files into your Consul K/V with keys:
