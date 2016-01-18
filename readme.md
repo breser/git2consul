@@ -182,7 +182,7 @@ Similarly to JSON, git2consul can also treat [Java .properties](http://docs.orac
 
 This is useful for teams willing to keep using legacy .properties files or don't want to use consul locally.
 
-Additionally, It has support for local variable :
+Additionally, it has support for local variable :
 
 ```
 bar=bar
@@ -200,10 +200,10 @@ Example, if you have a file `simple.properties` :
 git2consul will generate 
 
 ```
-/expand_keys/simple.json/foo
+/expand_keys/simple.json/bar
 ```
 
-returning `bar`
+returning `foo`
 
 You can combine .properties files with the [common_properties option](#common_properties-default-undefined), if you need a way to inject shared/common properties into other files.
 
@@ -291,7 +291,7 @@ and `simple.properties` :
 git2consul will generate 
            
 ```
-/expand_keys/simple.json/foo
+/expand_keys/simple.properties/foo
 ```
            
 returning `bar`.
