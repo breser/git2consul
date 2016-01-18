@@ -1,0 +1,5 @@
+${name} (${version}.${build_number}) experimental; urgency=low
+
+  * Initial release. (Closes: #XXXXXX)
+
+ -- ${maintainer.name} <${maintainer.email}>  ${date}
