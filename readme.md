@@ -48,6 +48,12 @@ Put that configuration in a file called `/tmp/git2consul.json`.  From the git2co
 node utils/config_seeder.js /tmp/git2consul.json
 ```
 
+If you need to specify custom arguments(endpoint, port, secure, etc), you can alternatively use `config_seeder_opts.js`.
+
+```
+node utils/config_seeder_opts.js -e 196.10.54.8 -p 8514 -s true -c path/to/config.json
+```
+
 Start git2consul:
 
 ```
