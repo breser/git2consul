@@ -15,7 +15,7 @@ git2consul takes one or many git repositories and mirrors them into [Consul](htt
 #### Requirements / Caveats
 
 * git2consul does most of its Git work by shelling out to git.  Git must be installed and on your path.
-* git2consul does the rest of its work by calling Consul's REST API.  A Consul agent must be running on localhost.
+* git2consul does the rest of its work by calling Consul's REST API.
 * git2consul requires write access to the KV store of its Consul agent.
 * git2consul has only been tested on Unix.
 
@@ -46,6 +46,12 @@ Put that configuration in a file called `/tmp/git2consul.json`.  From the git2co
 
 ```
 node utils/config_seeder.js /tmp/git2consul.json
+```
+
+If you need to specify custom arguments(endpoint, port, secure, etc), you can alternatively use `config_seeder_opts.js`.
+
+```
+node utils/config_seeder_opts.js -e 196.10.54.8 -p 8514 -c path/to/config.json
 ```
 
 Start git2consul:

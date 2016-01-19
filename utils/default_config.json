@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "repos" : [{
+    "name" : "sample_configuration",
+    "url" : "https://github.com/ryanbreen/git2consul_data.git",
+    "branches" : ["dev"],
+    "hooks": [{
+      "type" : "polling",
+      "interval" : "1"
+    }]
+  }]
+}
