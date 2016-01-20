@@ -1,4 +1,4 @@
-module.exports = function(grunt){
+module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -24,19 +24,25 @@ module.exports = function(grunt){
           },
           dependencies: "nodejs"
         },
-        files: [{
-          expand: true,
-          src: [
-            'lib/**',
-            'utils/**',
-            'node_modules/**'
-          ],
-          dest: '/usr/share/git2consul/'
-        },
+        files: [
+          {
+            expand: true,
+            src: [
+              'lib/**',
+              'utils/**',
+              'node_modules/**'
+            ],
+            dest: '/usr/share/git2consul/'
+          },
           {
             src: 'debian_package/git2consul.service',
-            dest: '/etc/systemd/system/'
-          }]
+            dest: '/usr/lib/systemd/system/'
+          },
+          {
+            src: 'debian_package/default_config.json',
+            dest: '/etc/git2consul/config.json'
+          }
+        ]
       }
     }
   });
