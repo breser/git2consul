@@ -319,6 +319,7 @@ Note :
 git2consul can be packaged in .deb file. Simply run `grunt debian_package`.
 
 - The git2consul files will be installed in `/usr/share/git2consul/`
+- a new git2consul user will be created under `/var/lib/git2consul`
 - A new `git2consul.service` will be installed in `/usr/lib/systemd/system/`
 - The config file will be installed in `/etc/git2consul/config.json`
 
@@ -329,9 +330,11 @@ Usage example :
 - `systemctl status git2consul` to check that the service is running properly.
 
 
-The logs are stored in syslog by default, to check logs just do `journalctl -u git2consul`
+The logs are stored in syslog by default, to check the logs just do `journalctl -u git2consul`
 
-The service assumes that consul is running on the machine with the default port(8500). 
+The service assumes that consul is running on the machine with the default port(8500).
+
+Tested only on jessie.
 
 #### Clients
 
