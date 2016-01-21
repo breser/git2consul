@@ -313,6 +313,26 @@ Note :
 - If a variable is missing or unset, git2consul will store the file as a flat file without considering it as a k/v format.
 - If the path to common_properties is incorrect or corrupted, git2consul will ignore it and won't inject any properties.
 
+
+#### Debian packaging
+
+git2consul can be packaged in .deb file. Simply run `grunt debian_package`.
+
+- The git2consul files will be installed in `/usr/share/git2consul/`
+- A new `git2consul.service` will be installed in `/usr/lib/systemd/system/`
+- The config file will be installed in `/etc/git2consul/config.json`
+
+Usage example :
+
+- Update the `/etc/git2consul/config.json` to use your own configuration
+- `systemctl restart git2consul` to load the new config
+- `systemctl status git2consul` to check that the service is running properly.
+
+
+The logs are stored in syslog by default, to check logs just do `journalctl -u git2consul`
+
+The service assumes that consul is running on the machine with the default port(8500). 
+
 #### Clients
 
 A client system should query Consul for the subset of the KV containing the data relevant to its operation.  To extend the above example, our `foo_service` on the development network might subscribe to the KV root `vp_config/development/foo_service` and emit any changes to disk (via something like [fsconsul](https://github.com/ryanbreen/fsconsul)) or environment variables (via something like [envconsul](https://github.com/hashicorp/envconsul)).
