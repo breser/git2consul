@@ -15,7 +15,7 @@ module.exports = function(grunt) {
           " audit trail, and access control mechanism for configuration changes and Consul as the delivery mechanism.",
           target_architecture: "all",
           category: "misc",
-          custom_template: "/git2consul/custom_template/",
+          custom_template: "custom_template/",
           preinst: {
             src: 'debian_package/preinst'
           },
