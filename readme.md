@@ -212,7 +212,7 @@ Example, if you have a file `simple.properties` :
 git2consul will generate 
 
 ```
-/expand_keys/simple.json/bar
+/expand_keys/simple.properties/bar
 ```
 
 returning `foo`
