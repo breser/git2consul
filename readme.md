@@ -318,6 +318,15 @@ Note :
 
 git2consul can be packaged in .deb file. Simply run `grunt debian_package`.
 
+If you don't have grunt `sudo npm install -g grunt-cli`.
+
+This task use the [grunt-debian-package](https://www.npmjs.com/package/grunt-debian-package) and depends on two debian tools :
+
+```
+sudo apt-get install devscripts
+sudo apt-get install debhelper
+```
+
 - The git2consul files will be installed in `/usr/share/git2consul/`
 - a new git2consul user will be created under `/var/lib/git2consul`
 - A new `git2consul.service` will be installed in `/usr/lib/systemd/system/`
