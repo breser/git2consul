@@ -316,9 +316,15 @@ Note :
 
 #### Debian packaging
 
-git2consul can be packaged in .deb file. Simply run `grunt debian_package`.
-
 If you don't have grunt `sudo npm install -g grunt-cli`.
+
+git2consul can be packaged in .deb file. Simply run
+ 
+ ```
+ npm install
+ grunt debian_package
+ ```
+
 
 This task use the [grunt-debian-package](https://www.npmjs.com/package/grunt-debian-package) and depends on two debian tools :
 
