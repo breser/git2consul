@@ -313,6 +313,48 @@ Note :
 - If a variable is missing or unset, git2consul will store the file as a flat file without considering it as a k/v format.
 - If the path to common_properties is incorrect or corrupted, git2consul will ignore it and won't inject any properties.
 
+
+#### Debian packaging
+
+If you don't have grunt `sudo npm install -g grunt-cli`.
+
+git2consul can be packaged in .deb file. Simply run
+ 
+ ```
+ npm install
+ grunt debian_package
+ ```
+
+
+This task uses the [grunt-debian-package](https://www.npmjs.com/package/grunt-debian-package) and depends on two debian tools :
+
+```
+sudo apt-get install devscripts
+sudo apt-get install debhelper
+```
+
+- The git2consul files will be installed in `/usr/share/git2consul/`
+- a new git2consul user will be created under `/var/lib/git2consul`
+- A new `git2consul.service` will be installed in `/usr/lib/systemd/system/`
+- The config file will be installed in `/etc/git2consul/config.json`
+
+Usage example :
+
+- Update the `/etc/git2consul/config.json` to use your own configuration
+- `systemctl restart git2consul` to load the new config
+- `systemctl status git2consul` to check that the service is running properly.
+
+
+The logs are stored in syslog by default, to check the logs just do `journalctl -u git2consul`
+
+The service assumes that consul is running on the machine with the default port(8500).
+
+The generated debian depends on `nodejs` and `git`.
+
+If you want to use a custom configuration you can find the debian config in the `Gruntfile.js` file and the `debian_package` directory.
+
+Tested only on jessie.
+
 #### Clients
 
 A client system should query Consul for the subset of the KV containing the data relevant to its operation.  To extend the above example, our `foo_service` on the development network might subscribe to the KV root `vp_config/development/foo_service` and emit any changes to disk (via something like [fsconsul](https://github.com/ryanbreen/fsconsul)) or environment variables (via something like [envconsul](https://github.com/hashicorp/envconsul)).

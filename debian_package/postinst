@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+. /usr/share/debconf/confmodule
+
+if [ -n "$DEBUG" ]; then
+    echo "now debugging $0 $@"
+    set -x
+fi
+
+case "$1" in
+    configure)
+        # Ensure systemd unit file is loaded
+        systemctl --system daemon-reload
+    ;;
+esac
+
+# vim:ft=sh:ts=4:sw=4:et:

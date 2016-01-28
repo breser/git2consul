@@ -1,0 +1,19 @@
+[Unit]
+Description=git2consul
+After=syslog.target
+After=network.target
+ConditionPathExists=/usr/share/git2consul
+
+[Service]
+Type=simple
+User=git2consul
+Group=git2consul
+ExecStartPre=/usr/bin/nodejs /usr/share/git2consul/utils/config_seeder.js --endpoint 127.0.0.1 --port 8500 /etc/git2consul/config.json
+ExecStart=/usr/bin/nodejs /usr/share/git2consul/lib/index.js --endpoint 127.0.0.1 --port 8500
+TimeoutStopSec=59
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=git2consul
+
+[Install]
+WantedBy=multi-user.target

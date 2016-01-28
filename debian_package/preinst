@@ -1,0 +1,25 @@
+#!/bin/sh
+
+set -e
+. /usr/share/debconf/confmodule
+
+if [ -n "$DEBUG" ]; then
+    echo "now debugging $0 $@"
+    set -x
+fi
+
+case "$1" in
+    install|upgrade)
+        # Add git2consul user and group if necessary
+        if ! getent passwd git2consul >/dev/null; then
+            echo 'Adding system-user for git2consul' 1>&2
+            adduser --system --uid 498 --group --quiet --home /var/lib/git2consul \
+                --no-create-home --disabled-login git2consul
+        fi
+
+        #fixes permissions.
+        install -d -ogit2consul -ggit2consul -gadm -m750 /var/lib/git2consul
+    ;;
+esac
+
+# vim:ft=sh:ts=4:sw=4:et:
