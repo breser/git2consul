@@ -326,7 +326,7 @@ git2consul can be packaged in .deb file. Simply run
  ```
 
 
-This task use the [grunt-debian-package](https://www.npmjs.com/package/grunt-debian-package) and depends on two debian tools :
+This task uses the [grunt-debian-package](https://www.npmjs.com/package/grunt-debian-package) and depends on two debian tools :
 
 ```
 sudo apt-get install devscripts
