@@ -349,6 +349,10 @@ The logs are stored in syslog by default, to check the logs just do `journalctl 
 
 The service assumes that consul is running on the machine with the default port(8500).
 
+The generated debian depends on `nodejs` and `git`.
+
+If you want to use a custom configuration you can find the debian config in the `Gruntfile.js` file and the `debian_package` directory.
+
 Tested only on jessie.
 
 #### Clients
