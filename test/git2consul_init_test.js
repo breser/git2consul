@@ -199,3 +199,37 @@ describe('git2consul config', function() {
     });
   });
 });
+
+describe('git2consul config alternate location', function() {
+
+  var config = {
+    local_store: git_utils.TEST_WORKING_DIR,
+    repos: [{
+      name: 'repo1',
+      url: 'file://' + git_utils.TEST_REMOTE_REPO,
+      branches: [ 'master' ]
+    },{
+      name: 'repo2',
+      url: git_utils.TEST_REMOTE_REPO,
+      branches: [ 'master' ]
+    }]
+  };
+
+  consul_utils.setValue('git2consul/alternate_config', JSON.stringify(config), function(err) {
+    (err == undefined).should.equal(true);
+
+    var config_reader = require('../lib/config_reader.js');
+    config_reader.read({key: 'git2consul/alternate_config'}, function(err, config) {
+      (err == undefined).should.equal(true);
+
+      it ('should handle successfully creating multiple git repos with valid config loaded elsewhere', function(done) {
+        git.createRepos(config, function(err) {
+          (err === undefined).should.equal(true);
+          git.repos.should.have.properties('repo1', 'repo2');
+
+          done();
+        });
+      });
+    });
+  });
+});

@@ -12,6 +12,13 @@ exports.getValue = function(key, cb) {
   });
 };
 
+exports.setValue = function(key, value, cb) {
+  consul.kv.set({'key': key, 'value': value}, function(err, value) {
+    if (err) return cb(err);
+    cb();
+  });
+};
+
 exports.validateValue = function(key, expected_value, cb) {
   logger.trace('Looking for key %s with value %s', key, expected_value);
   exports.getValue(key, function(err, value) {
