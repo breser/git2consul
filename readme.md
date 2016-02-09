@@ -146,6 +146,14 @@ As changes are detected in the specified Git repos, git2consul determines which 
 
 #### Alternative Modes of Operation
 
+##### Alternate Config Locations
+
+By default, git2consul looks for its configuration at the Consul Key `git2consul/config`.  You can override this with a `-c` of `--config_key` command line switch, like so:
+
+```sh
+node . -c git2consul/alternative_config
+```
+
 ##### No Daemon
 
 If there are no webhooks or polling watchers configured, git2consul will terminate as soon as all tracked repos and branches have been synced with Consul.  If you would like to force git2consul not to attach any webhooks or polling watchers, you can either pass the command-line switch `-n` or include the field `"no_daemon": true` at the top level of your config JSON.
