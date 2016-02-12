@@ -347,6 +347,49 @@ describe('Expand keys with common properties', function() {
     });
   });
 
+
+  it('should update the dependent properties file if common is updated', function(done) {
+    var common_file = 'common.properties';
+    var common_kv = 'bar=bar';
+
+    var sample_file = 'simple.properties';
+    var sample_kv = 'foo=${bar}';
+
+    var updated_common_kv = 'bar=bar_updated';
+
+    git_utils.addFileToGitRepo(common_file, common_kv, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+
+        git_utils.addFileToGitRepo(sample_file, sample_kv, "Add a file.", function(err) {
+          if (err) return done(err);
+
+          branch.handleRefChange(0, function(err) {
+            if (err) return done(err);
+
+            consul_utils.validateValue('test_repo/master/simple.properties/foo', 'bar', function(err, value) {
+              if (err) return done(err);
+
+              git_utils.addFileToGitRepo(common_file, updated_common_kv, "Add a file.", function(err) {
+                if (err) return done(err);
+
+                branch.handleRefChange(0, function(err) {
+                  if (err) return done(err);
+
+                  consul_utils.validateValue('test_repo/master/simple.properties/foo', 'bar_updated', function(err, value) {
+                    if (err) return done(err);
+                    done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
 });
 
 describe('Expand keys with invalid common properties path ', function() {
