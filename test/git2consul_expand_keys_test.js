@@ -202,42 +202,6 @@ describe('Expand keys', function() {
     });
   });
 
-  it ('should handle busted properties files', function(done) {
-    var sample_key = 'busted.properties';
-     //the parser is quite tolerant to syntax.
-     //the best way to test this case is by using an unset variable, which will throw an error when accessed.
-    var sample_value = 'foo=${bar}';
-
-    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
-    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
-      if (err) return done(err);
-
-      branch.handleRefChange(0, function(err) {
-        if (err) return done(err);
-        // At this point, the repo should have populated consul with our sample_key
-        consul_utils.validateValue('test_repo/master/busted.properties', sample_value, function(err, value) {
-          if (err) return done(err);
-
-          // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
-          git_utils.addFileToGitRepo(sample_key, 'foo=bar', "Change a file.", function(err) {
-            if (err) return done(err);
-
-            branch.handleRefChange(0, function(err) {
-              if (err) return done(err);
-
-              // At this point, the repo should have populated consul with our sample_key
-              consul_utils.validateValue('test_repo/master/busted.properties/foo', 'bar', function(err, value) {
-                if (err) return done(err);
-
-                done();
-              });
-            });
-          });
-        });
-      });
-    });
-  });
-
   /* common */
   it ('should handle different files commingled together', function(done) {
     var json_key = 'happy.json';
@@ -338,7 +302,7 @@ describe('Expand keys with common properties', function() {
     });
   });
 
-  it('should store as flat file if unset property', function(done) {
+  it('should store be tolerant if a property is unset', function(done) {
     var common_key = 'common.properties';
     var common_value = 'bar=bar';
     var sample_key = 'simple.properties';
@@ -355,7 +319,7 @@ describe('Expand keys with common properties', function() {
           branch.handleRefChange(0, function(err) {
             if (err) return done(err);
 
-            consul_utils.validateValue('test_repo/master/simple.properties', sample_value, function(err, value) {
+            consul_utils.validateValue('test_repo/master/simple.properties/foo', '${unset}', function(err, value) {
               if (err) return done(err);
               done();
             });
@@ -365,7 +329,7 @@ describe('Expand keys with common properties', function() {
     });
   });
 
-  it('should store as flat file if common properties file is invalid / not found', function(done) {
+  it('should be tolerant if common properties file is invalid / not found', function(done) {
     var sample_key = 'simple.properties';
     var sample_value = 'foo=${unset}';
 
@@ -375,7 +339,7 @@ describe('Expand keys with common properties', function() {
           branch.handleRefChange(0, function(err) {
             if (err) return done(err);
 
-            consul_utils.validateValue('test_repo/master/simple.properties', sample_value, function(err, value) {
+            consul_utils.validateValue('test_repo/master/simple.properties/foo', '${unset}', function(err, value) {
               if (err) return done(err);
               done();
             });
@@ -403,7 +367,7 @@ describe('Expand keys with invalid common properties path ', function() {
     });
   });
 
-  it('should store as flat file if invalid path in config', function(done) {
+  it('should be tolerant if invalid path in config', function(done) {
     var common_key = 'common.properties';
     var common_value = 'bar=bar';
     var sample_key = 'simple.properties';
@@ -420,7 +384,7 @@ describe('Expand keys with invalid common properties path ', function() {
           branch.handleRefChange(0, function(err) {
             if (err) return done(err);
 
-            consul_utils.validateValue('test_repo/master/simple.properties', sample_value, function(err, value) {
+            consul_utils.validateValue('test_repo/master/simple.properties/foo', '${bar}', function(err, value) {
               if (err) return done(err);
               done();
             });
