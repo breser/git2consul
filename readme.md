@@ -15,6 +15,7 @@ git2consul takes one or many git repositories and mirrors them into [Consul](htt
 #### Requirements / Caveats
 
 * git2consul does most of its Git work by shelling out to git.  Git must be installed and on your path.
+* Remote git repos must be world-readable or you need to use an ssh URL: git2consul has no mechanism to present HTTP credentials to git.
 * git2consul does the rest of its work by calling Consul's REST API.
 * git2consul requires write access to the KV store of its Consul agent.
 * git2consul has only been tested on Unix.
