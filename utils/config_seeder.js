@@ -5,9 +5,9 @@ var fs = require('fs');
  * If so, use it to seed the config.
  */
 
-var endpoint = "127.0.0.1";
-var port = 8500;
-var secure = false;
+var endpoint = process.env.CONSUL_ENDPOINT || "127.0.0.1";
+var port = process.env.CONSUL_PORT || 8500;
+var secure = process.env.CONSUL_SECURE || false;
 for (var i=2; i<process.argv.length; ++i) {
     if(process.argv[i] === '-s' || process.argv[i] === '--secure') secure = true;
     if(process.argv[i] === '-e' || process.argv[i] === '--endpoint') {
