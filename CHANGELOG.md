@@ -1,3 +1,11 @@
+v0.12.5
+
+* Configuration file can be directly seeded from within git2consul without calling utils/config_seeder.js
+
+v0.12.4
+
+* Flags can be optionally passed as environment variables
+
 v0.12.3
 
 * Fixes a bug where a repo could stop updating if `source_root` was used, really this time.

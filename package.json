@@ -1,7 +1,8 @@
 {
   "name": "git2consul",
   "description": "System for moving data from git to consul",
-  "version": "0.12.4",
+  "license": "Apache-2.0",
+  "version": "0.12.5",
   "contributors": [
     {
       "name": "Ryan Breen",

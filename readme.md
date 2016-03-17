@@ -28,7 +28,10 @@ I've created a [simple repo with a few sample configuration files of different t
 
 The most minimalistic viable git2consul configuration mirrors a single git repo into the KV store with a given prefix.  Here's how that would look mirroring the dev branch at `https://github.com/ryanbreen/git2consul_data.git` into the Consul K/V store with prefix `sample_configuration`:
 
-```javascript
+
+
+```bash
+cat <<EOF > /tmp/git2consul.json
 {
   "version": "1.0",
   "repos" : [{
@@ -41,30 +44,19 @@ The most minimalistic viable git2consul configuration mirrors a single git repo 
     }]
   }]
 }
-```
-
-Put that configuration in a file called `/tmp/git2consul.json`.  From the git2consul directory, upload that JSON file into the local KV as your git2consul config:
-
-```
-node utils/config_seeder.js /tmp/git2consul.json
-```
-
-or for remote Consul endpoint:
-
-```
-node utils/config_seeder.js --endpoint remote.consul.host --port 80 /tmp/git2consul.json
+EOF
 ```
 
 Start git2consul:
 
 ```
-node .
+node . --seed /tmp/git2consul.json
 ```
 
 or for remote Consul endpoint:
 
 ```
-node . --endpoint remote.consul.host --port 80
+node . --endpoint remote.consul.host --port 80 --seed /tmp/git2consul.json
 ```
 
 git2consul will now poll the "dev" branch of the "git2consul_data.git" repo once per minute.  On first run, it will mirror the 3 files into your Consul K/V with keys:
@@ -145,6 +137,16 @@ If you are using a more [Twelve-Factor](http://12factor.net/) approach, where yo
 
 As changes are detected in the specified Git repos, git2consul determines which files have been added, updated, or deleted and replicates those changes to the KV.  Because only changed branches and files are analyzed, git2consul should have a very slim profile on hosting systems.
 
+#### Environment variables
+
+There are environment variable equivalents for the parameters that git2consul accept
+
+* `CONSUL_ENDPOINT` maps to `-e` or `--endpoint`
+* `CONSUL_PORT` maps to `-p` or `--port`
+* `CONSUL_SECURE` maps to `-s` or `--secure`
+* `TOKEN` maps to `-t` or `--token`
+
+
 #### Alternative Modes of Operation
 
 ##### Alternate Config Locations
@@ -210,7 +212,7 @@ bar=bar
 foo=${bar}
 ```
 
-Note: 
+Note:
 - the tokens **#** and **!** are parsed as comment tokens.
 - the tokens **=**, **whitespace** and **:** are parsed as separator tokens.
 
@@ -218,7 +220,7 @@ Example, if you have a file `simple.properties` :
 
 `bar=foo`
 
-git2consul will generate 
+git2consul will generate
 
 ```
 /expand_keys/simple.properties/bar
@@ -309,12 +311,12 @@ and `simple.properties` :
 
 `foo=${foo}`
 
-git2consul will generate 
-           
+git2consul will generate
+
 ```
 /expand_keys/simple.properties/foo
 ```
-           
+
 returning `bar`.
 
 Note :
@@ -328,7 +330,7 @@ Note :
 If you don't have grunt `sudo npm install -g grunt-cli`.
 
 git2consul can be packaged in .deb file. Simply run
- 
+
  ```
  npm install
  grunt debian_package
