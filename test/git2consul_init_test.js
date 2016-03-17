@@ -201,38 +201,19 @@ describe('git2consul config', function() {
   });
 });
 
-describe('git2consul config seeder', function() {
-  var config = {
-    local_store: git_utils.TEST_WORKING_DIR,
-    repos: [{
-      name: 'repo1',
-      url: 'file://' + git_utils.TEST_REMOTE_REPO,
-      branches: [ 'master' ]
-    },{
-      name: 'repo2',
-      url: git_utils.TEST_REMOTE_REPO,
-      branches: [ 'master' ]
-    }]
-  };
+describe('Configuration seeding for git2consul', function() {
+  beforeEach(function(done) {
 
-  fs.writeFileSync('/tmp/test_config.json', JSON.stringify(config));
+    // Each of these tests needs a working repo instance, so create it here and expose it to the suite
+    // namespace.
+    git_utils.initRepo(function(err, repo) {
+      if (err) return done(err);
 
-  var config_seeder = require('../lib/config_seeder.js');
-  config_seeder.set('git2consul/config', '/tmp/test_config.json', function(err) {
-    (err == undefined).should.equal(true);
-
-    it ('should handle successfully creating multiple git repos with valid config loaded', function(done) {
-      git.createRepos(config, function(err) {
-        (err === undefined).should.equal(true);
-        git.repos.should.have.properties('repo1', 'repo2');
-
-        done();
-      });
+      // The default repo created by initRepo has a single branch, master.
+      branch = repo.branches['master'];
+      done();
     });
   });
-});
-
-describe('git2consul config alternate location', function() {
 
   var config = {
     local_store: git_utils.TEST_WORKING_DIR,
@@ -247,20 +228,24 @@ describe('git2consul config alternate location', function() {
     }]
   };
 
-  consul_utils.setValue('git2consul/alternate_config', JSON.stringify(config), function(err) {
-    (err == undefined).should.equal(true);
+  it ('should handle successfully creating config KV with config_seeder.set()', function(done) {
+    fs.writeFileSync('/tmp/test_config.json', JSON.stringify(config));
 
-    var config_reader = require('../lib/config_reader.js');
-    config_reader.read({key: 'git2consul/alternate_config'}, function(err, config) {
+    var config_seeder = require('../lib/config_seeder.js');
+    config_seeder.set('git2consul/config', '/tmp/test_config.json', function(err) {
+      (err == undefined).should.equal(true);
+      done();
+    });
+  });
+
+  it ('should handle successfully creating config KV in alternate location', function(done) {
+    consul_utils.setValue('git2consul/alternate_config', JSON.stringify(config), function(err) {
       (err == undefined).should.equal(true);
 
-      it ('should handle successfully creating multiple git repos with valid config loaded elsewhere', function(done) {
-        git.createRepos(config, function(err) {
-          (err === undefined).should.equal(true);
-          git.repos.should.have.properties('repo1', 'repo2');
-
-          done();
-        });
+      var config_reader = require('../lib/config_reader.js');
+      config_reader.read({key: 'git2consul/alternate_config'}, function(err, config) {
+        (err == undefined).should.equal(true);
+        done();
       });
     });
   });
