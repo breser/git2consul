@@ -1,5 +1,6 @@
 var should = require('should');
 var _ = require('underscore');
+var fs = require('fs');
 
 var path = require('path');
 
@@ -182,7 +183,7 @@ describe('git2consul config', function() {
 
       // Now fix config by adding local_store
       config.local_store = git_utils.TEST_WORKING_DIR;
-      
+
       done();
     });
   });
@@ -196,6 +197,37 @@ describe('git2consul config', function() {
 
       --countdown;
       if (countdown === 0) done();
+    });
+  });
+});
+
+describe('git2consul config seeder', function() {
+  var config = {
+    local_store: git_utils.TEST_WORKING_DIR,
+    repos: [{
+      name: 'repo1',
+      url: 'file://' + git_utils.TEST_REMOTE_REPO,
+      branches: [ 'master' ]
+    },{
+      name: 'repo2',
+      url: git_utils.TEST_REMOTE_REPO,
+      branches: [ 'master' ]
+    }]
+  };
+
+  fs.writeFileSync('/tmp/test_config.json', JSON.stringify(config));
+
+  var config_seeder = require('../lib/config_seeder.js');
+  config_seeder.set('git2consul/config', '/tmp/test_config.json', function(err) {
+    (err == undefined).should.equal(true);
+
+    it ('should handle successfully creating multiple git repos with valid config loaded', function(done) {
+      git.createRepos(config, function(err) {
+        (err === undefined).should.equal(true);
+        git.repos.should.have.properties('repo1', 'repo2');
+
+        done();
+      });
     });
   });
 });
