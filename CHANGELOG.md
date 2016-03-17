@@ -1,6 +1,6 @@
 v0.12.5
 
-* Configuration file can be directly seeded from within git2consul without calling untils/config_seeder.js
+* Configuration file can be directly seeded from within git2consul without calling utils/config_seeder.js
 
 v0.12.4
 
