@@ -50,13 +50,13 @@ EOF
 Start git2consul:
 
 ```
-node . --seed /tmp/git2consul.json
+node . --seed-file /tmp/git2consul.json
 ```
 
 or for remote Consul endpoint:
 
 ```
-node . --endpoint remote.consul.host --port 80 --seed /tmp/git2consul.json
+node . --endpoint remote.consul.host --port 80 --seed-file /tmp/git2consul.json
 ```
 
 git2consul will now poll the "dev" branch of the "git2consul_data.git" repo once per minute.  On first run, it will mirror the 3 files into your Consul K/V with keys:
