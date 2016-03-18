@@ -1,3 +1,7 @@
+v0.12.6
+
+* Rename --seed-file flag to the more appropriate --config-file 
+
 v0.12.5
 
 * Configuration file can be directly seeded from within git2consul without calling utils/config_seeder.js
