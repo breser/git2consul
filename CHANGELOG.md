@@ -1,3 +1,7 @@
+v0.12.8
+
+* Patch bug where config_seeder.js and config_reader.js were required before variable were set [GH-66]
+
 v0.12.7
 
 * Fix invalid reference `error` on index.js when calling config_seeder.set() [GH-62]
