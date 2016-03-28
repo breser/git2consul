@@ -1,3 +1,7 @@
+v0.12.9
+
+* Use `global.token` on config_reader.js [GH-67]
+
 v0.12.8
 
 * Patch bug where config_seeder.js and config_reader.js were required before variable were set [GH-66]
