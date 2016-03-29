@@ -279,6 +279,8 @@ usage example :
 }
 ```
 
+This feature will only work with **annotated tags**. `man git-tag` for more information about annotated tags
+
 ##### common_properties (default: undefined)
 
 a `common_properties` is a repo-level option instructing git2consul to inject common/shared properties as variables into other .properties files.
