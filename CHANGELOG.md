@@ -1,3 +1,7 @@
+v0.12.10
+
+* Ensure that config_reader.read() runs after config_seeder.set() [GH-69]
+
 v0.12.9
 
 * Use `global.token` on config_reader.js [GH-67]
