@@ -1,3 +1,7 @@
+v0.12.11
+
+* Allow git2consul global package installation with `npm install -g git2consul`.
+
 v0.12.10
 
 * Ensure that config_reader.read() runs after config_seeder.set() [GH-69]

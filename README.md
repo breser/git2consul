@@ -6,7 +6,7 @@ git2consul takes one or many git repositories and mirrors them into [Consul](htt
 
 #### Installation
 
-`npm install git2consul`
+`npm install -g git2consul`
 
 #### Mailing List
 
@@ -50,13 +50,13 @@ EOF
 Start git2consul:
 
 ```
-node . --config-file /tmp/git2consul.json
+git2consul --config-file /tmp/git2consul.json
 ```
 
 or for remote Consul endpoint:
 
 ```
-node . --endpoint remote.consul.host --port 80 --config-file /tmp/git2consul.json
+git2consul --endpoint remote.consul.host --port 80 --config-file /tmp/git2consul.json
 ```
 
 git2consul will now poll the "dev" branch of the "git2consul_data.git" repo once per minute.  On first run, it will mirror the 3 files into your Consul K/V with keys:
@@ -154,7 +154,7 @@ There are environment variable equivalents for the parameters that git2consul ac
 By default, git2consul looks for its configuration at the Consul Key `git2consul/config`.  You can override this with a `-c` of `--config_key` command line switch, like so:
 
 ```sh
-node . -c git2consul/alternative_config
+git2consul -c git2consul/alternative_config
 ```
 
 ##### No Daemon
