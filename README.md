@@ -111,7 +111,7 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
     }]
   },{
     "name" : "github_data",
-    "mode" : "expand_keys",
+    "expand_keys": true,
     "url" : "git@github.com:ryanbreen/git2consul_data.git",
     "branches" : [ "master" ],
     "hooks": [{
@@ -235,6 +235,11 @@ You can combine .properties files with the [common_properties option](#common_pr
 ##### include_branch_name (default: true)
 
 `include_branch_name` is a repo-level option instructing git2consul to use the branch name as part of the key prefix.  Setting this option to false will omit the branch name.
+
+
+##### include_file_name (default: true)
+
+`include_file_name` is a repo-level option instructing git2consul to use the file name as part of the key prefix. Setting this option to false will omit the file name.
 
 ##### mountpoint (default: undefined)
 
