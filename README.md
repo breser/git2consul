@@ -1,6 +1,10 @@
-### git2consul
+# git2consul
+
+[![Build Status](https://travis-ci.org/Cimpress-MCP/git2consul.svg?branch=master)](https://travis-ci.org/Cimpress-MCP/git2consul)
+[![Coverage Status](https://img.shields.io/coveralls/Cimpress-MCP/git2consul.svg)](https://coveralls.io/r/Cimpress-MCP/git2consul?branch=master)
 
 [![Join the chat at https://gitter.im/Cimpress-MCP/git2consul](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Cimpress-MCP/git2consul?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Google Groups](https://img.shields.io/badge/google--group-git2consul-green.svg)](https://groups.google.com/group/git2consul-tool/)
 
 git2consul takes one or many git repositories and mirrors them into [Consul](http://www.consul.io/) KVs.  The goal is for organizations of any size to use git as the backing store, audit trail, and access control mechanism for configuration changes and Consul as the delivery mechanism.
 
@@ -8,9 +12,9 @@ git2consul takes one or many git repositories and mirrors them into [Consul](htt
 
 `npm install -g git2consul`
 
-#### Mailing List
+#### Docker
 
-[Google Groups](https://groups.google.com/group/git2consul-tool/)
+The docker image for git2consul is available at [Cimpress-MCP/docker-git2consul](https://github.com/Cimpress-MCP/docker-git2consul)
 
 #### Requirements / Caveats
 
@@ -373,16 +377,6 @@ A client system should query Consul for the subset of the KV containing the data
 #### Tokens
 
 If you are using tokens for ACLs, you can pass a token to git2consul by specifying the `TOKEN` environment variable.  git2consul requires read/write access to your KV.  The purpose of git2consul is to treat git as the single source of truth for KVs, so it typically makes the most sense to give all other users a read-only token to the KV.
-
-#### CI
-
-Builds are automatically run by Travis on any push or pull request.
-
-![Travis Status](https://api.travis-ci.org/Cimpress-MCP/git2consul.svg?branch=master)
-
-Coverage is run automatically by Travis and uploaded to coveralls.io.
-
-[![Coverage Status](https://img.shields.io/coveralls/Cimpress-MCP/git2consul.svg)](https://coveralls.io/r/Cimpress-MCP/git2consul?branch=master)
 
 #### License
 
