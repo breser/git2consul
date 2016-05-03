@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "repos" : [
+    {
+      "name" : "orders",
+      "expand_keys": true,
+      "url" : "https://github.com/voxxit/git2consul-example.git",
+      "branches" : [
+        "production",
+        "staging"
+      ],
+      "hooks" : [
+        {
+          "type" : "polling",
+          "interval" : "1"
+        }
+      ]
+    }
+  ]
+}
