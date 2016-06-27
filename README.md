@@ -19,7 +19,7 @@ The docker image for git2consul is available at [Cimpress-MCP/docker-git2consul]
 #### Requirements / Caveats
 
 * git2consul does most of its Git work by shelling out to git.  Git must be installed and on your path.
-* Remote git repos must be world-readable or you need to use an ssh URL: git2consul has no mechanism to present HTTP credentials to git.
+* git2consul prefers ssh://... git URIs for authenticating to sensitive repos. http://... is accepted for publicly readable repos.
 * git2consul does the rest of its work by calling Consul's REST API.
 * git2consul requires write access to the KV store of its Consul agent.
 * git2consul has only been tested on Unix.
