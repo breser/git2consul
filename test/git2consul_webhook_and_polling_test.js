@@ -272,7 +272,7 @@ describe('webhook with support_tags', function() {
 
       request(req_conf, function (err) {
         setTimeout(function () {
-          var version = "v1";
+          var version = "v1.5_7";
           config.body = {ref: "refs/tag/" + version, head_commit: {id: 12345}};
           var req_conf_for_tag = extractReqInfo(config);
           create_tag_and_check_consul(version, 'test_repo', sample_key, cb);
