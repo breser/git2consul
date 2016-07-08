@@ -1,3 +1,8 @@
+v0.12.12 (UNRELEASED)
+
+*  `ignore_file_extension` option added to ignore file extensions on the KV side. [GH-84]
+* `support_tags` now have more flexible regex rules. [GH-64]
+
 v0.12.11
 
 * Allow git2consul global package installation with `npm install -g git2consul`. [GH-72]
