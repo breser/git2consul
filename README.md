@@ -366,9 +366,7 @@ Usage example :
   "repos" : [{
     "name" : "sample_configuration",
     "url" : "https://github.com/ryanbreen/git2consul_data.git",
-    "file_name_rule" : function(file) {
-        return file.toUpperCase();
-    },
+    "file_name_rule" : "return file.toUpperCase();",
     "branches" : ["dev"],
     "hooks": [{
       "type" : "polling",
@@ -378,7 +376,9 @@ Usage example :
 }
 ```
 
-If you have a file called `product-service.properties` in your repo, it will be written to Consul as `PRODUCT-SERVICE.PROPERTIES`.
+It is enaough to only provide method body of your conversion function, and `file` variable here is important. `file` variable 
+is only way for accessing repo file name. If you have a file called `product-service.properties` in your repo, it will be 
+written to Consul as `PRODUCT-SERVICE.PROPERTIES`.
 
 
 #### Debian packaging

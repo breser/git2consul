@@ -35,12 +35,7 @@ describe('file_name_rule', function() {
           repo_config.source_root = "src/main/resources";
           repo_config.include_branch_name = false;
           repo_config.expand_keys = true;
-          repo_config.file_name_rule = function(a) {
-            var fileArr = a.split(".")[0].split("-");
-            var fileName = fileArr.slice(0, fileArr.length - 1).join("-");
-            var fileEnv = fileArr[fileArr.length - 1];
-            return fileName.length == 0? a: (fileName + "," + fileEnv);
-          };
+          repo_config.file_name_rule = "var fileArr=file.split('.')[0].split('-');var fileName=fileArr.slice(0,fileArr.length-1).join('-');var fileEnv=fileArr[fileArr.length-1];return fileName.length==0?file:(fileName.concat(',').concat(fileEnv));";
           var repo = new Repo(repo_config);
           repo.init(function(err) {
             if (err) return done(err);

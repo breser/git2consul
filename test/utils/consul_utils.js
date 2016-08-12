@@ -6,7 +6,6 @@ var logger = require('../../lib/logging.js');
 
 exports.getValue = function(key, cb) {
   consul.kv.get({'key': key}, function(err, value) {
-    console.log(key, value);
     if (err) return cb(err);
 
     cb(null, value === undefined ? value : value.Value);
