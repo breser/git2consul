@@ -32,6 +32,8 @@ describe('ignore_file_extension', function() {
 
           var repo_config = git_utils.createRepoConfig();
           repo_config.source_root = "src/main/resources";
+          repo_config.expand_keys = true;
+          repo_config.ignore_file_extension = true;
           var repo = new Repo(repo_config);
           repo.init(function(err) {
             if (err) return done(err);
