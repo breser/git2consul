@@ -354,6 +354,32 @@ Usage example :
 
 Let say that you have a file called `user-service-dev.properties` in your repo. This file will be saved on consul as `user-service-dev`.
 
+##### file_name_rule
+
+an `file_name_rule` is an option lets you convert file names in more generic way by providing conversion functions.
+
+Usage example :
+
+```javascript
+{
+  "version": "1.0",
+  "repos" : [{
+    "name" : "sample_configuration",
+    "url" : "https://github.com/ryanbreen/git2consul_data.git",
+    "file_name_rule" : function(file) {
+        return file.toUpperCase();
+    },
+    "branches" : ["dev"],
+    "hooks": [{
+      "type" : "polling",
+      "interval" : "1"
+    }]
+  }]
+}
+```
+
+If you have a file called `product-service.properties` in your repo, it will be written to Consul as `PRODUCT-SERVICE.PROPERTIES`.
+
 
 #### Debian packaging
 
