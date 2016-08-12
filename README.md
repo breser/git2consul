@@ -356,7 +356,7 @@ Let say that you have a file called `user-service-dev.properties` in your repo. 
 
 ##### file_name_rule
 
-an `file_name_rule` is an option lets you convert file names in more generic way by providing conversion functions.
+an `file_name_rule` is an option lets you convert file names in more generic way by providing conversion function body as string.
 
 Usage example :
 
