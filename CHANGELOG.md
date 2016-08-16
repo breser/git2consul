@@ -1,5 +1,6 @@
 v0.12.12 (UNRELEASED)
 
+* Fix test fix for `ignore_file_extension` [GH-93]
 *  `ignore_file_extension` option added to ignore file extensions on the KV side. [GH-84]
 * `support_tags` now have more flexible regex rules. [GH-64]
 
