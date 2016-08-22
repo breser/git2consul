@@ -147,6 +147,119 @@ describe('Expand keys', function() {
     });
   });
 
+  /*YAML*/
+
+  it ('should handle additions of new YAML files', function(done) {
+    var sample_key = 'simple.yaml';
+    var sample_value = "---\n\nfirst_level:\n  second_level: is_all_we_need\n";
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/simple.yaml/first_level/second_level', 'is_all_we_need', function(err, value) {
+          if (err) return done(err);
+          done();
+        });
+      });
+    });
+  });
+
+  it ('should handle changing YAML files', function(done) {
+    var sample_key = 'changeme.yaml';
+    var sample_value = "---\n\nfirst_level:\n  is_all_we_need\n";
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/changeme.yaml/first_level', 'is_all_we_need', function(err, value) {
+          if (err) return done(err);
+
+          // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+          git_utils.addFileToGitRepo(sample_key, "---\n\nfirst_level:\n  is super different\n", "Change a file.", function(err) {
+            if (err) return done(err);
+
+            branch.handleRefChange(0, function(err) {
+              if (err) return done(err);
+
+              // At this point, the repo should have populated consul with our sample_key
+              consul_utils.validateValue('test_repo/master/changeme.yaml/first_level', 'is super different', function(err, value) {
+                if (err) return done(err);
+
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it ('should handle busted YAML files', function(done) {
+    var sample_key = 'busted.yaml';
+    // from: js-yaml / test / samples-load-errors / forbidden-value.yml
+    var sample_value = "---\n\ntest: key: value\n";
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/busted.yaml', sample_value, function(err, value) {
+          if (err) return done(err);
+
+          // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+          git_utils.addFileToGitRepo(sample_key, "---\n\nnot_busted: yaml\n", "Change a file.", function(err) {
+            if (err) return done(err);
+
+            branch.handleRefChange(0, function(err) {
+              if (err) return done(err);
+
+              // At this point, the repo should have populated consul with our sample_key
+              consul_utils.validateValue('test_repo/master/busted.yaml/not_busted', 'yaml', function(err, value) {
+                if (err) return done(err);
+
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it ('should handle YAML files with special characters', function(done) {
+    var sample_key = 'special.yaml';
+    var sample_value = "---\n\nfuzzy:\n  second level: ain\'t no one got time for that\n  second/level:\n    ok?: yes\n";
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/special.yaml/fuzzy/second%20level', "ain\'t no one got time for that", function(err, value) {
+          // At this point, the repo should have populated consul with our sample_key
+          consul_utils.validateValue('test_repo/master/special.yaml/fuzzy/second%2Flevel/ok%3F', 'yes', function(err, value) {
+            if (err) return done(err);
+            done();
+          });
+        });
+      });
+    });
+  });
+
   /*properties*/
 
   it ('should handle additions of new properties files', function(done) {
