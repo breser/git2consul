@@ -214,7 +214,7 @@ describe('Expand keys', function() {
       branch.handleRefChange(0, function(err) {
         if (err) return done(err);
         // At this point, the repo should have populated consul with our sample_key
-        consul_utils.validateValue('test_repo/master/busted.yaml', sample_value, function(err, value) {
+        consul_utils.validateValue('test_repo/master/busted.yaml', "---\n\ntest: key: value", function(err, value) {
           if (err) return done(err);
 
           // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
