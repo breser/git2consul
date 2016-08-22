@@ -115,7 +115,7 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
     }]
   },{
     "name" : "github_data",
-    "mode" : "expand_keys",
+    "expand_keys" : true,
     "url" : "git@github.com:ryanbreen/git2consul_data.git",
     "branches" : [ "master" ],
     "hooks": [{
@@ -202,6 +202,30 @@ A few notes on how this behaves:
 * Expanded keys are URI-encoded.  The spaces in "you get the picture" are thus converted into `%20`.
 
 * Any non-JSON files, including files with the extension ".json" that contain invalid JSON, are stored in your KV as if expand_keys mode was not enabled.
+
+###### YAML
+
+Similarly to JSON, git2consul can treat YAML documents in your repo as fully formed subtrees.
+
+```yaml
+---
+# file: example.yaml or example.yml
+first_level:
+  second_level:
+    third_level:
+      my_key: my_value
+```
+
+git2consul in expand_keys mode will generate the following KV:
+
+```
+/expando_keys/example.yaml/first_level/second_level/third_level/my_key
+or
+/expando_keys/example.yml/first_level/second_level/third_level/my_key
+```
+
+The value in that KV pair will be `my_value`.
+
 
 ###### .properties
 
