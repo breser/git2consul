@@ -1,4 +1,4 @@
-v0.12.12 (UNRELEASED)
+v0.12.12
 * Add support for YAML on `expand_keys` [GH-95]
 * Fix test fix for `ignore_file_extension` [GH-93]
 *  `ignore_file_extension` option added to ignore file extensions on the KV side. [GH-84]
