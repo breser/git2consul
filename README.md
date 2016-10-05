@@ -101,6 +101,7 @@ git2consul expects to be run on the same node as a Consul agent.  git2consul exp
     "name" : "vp_config",
     "url" : "ssh://stash.mydomain.com/team_configuration_data.git",
     "include_branch_name" : false,
+    "include_repo_name" : false,
     "source_root": "path/in/git/repo",
     "mountpoint": "nested/root/for/keys",
     "branches" : ["development", "staging", "production"],
@@ -264,9 +265,14 @@ You can combine .properties files with the [common_properties option](#common_pr
 
 `include_branch_name` is a repo-level option instructing git2consul to use the branch name as part of the key prefix.  Setting this option to false will omit the branch name.
 
+##### include_repo_name (default: true)
+
+`include_repo_name` is a repo-level option instructing git2consul to use the repo name as part of the key prefix.  Setting this option to false will omit the repo name.
+
+
 ##### mountpoint (default: undefined)
 
-A `mountpoint` is a repo-level option instructing git2consul to prepend a string to the key name.  By default, git2consul creates keys at the root of the KV store with the repo name being a top-level key. By setting a mountpoint, you define a prefix of arbitrary depth that will serve as the root for your key names. When building the key name, git2consul will concatenate mountpoint, repo name, branch name (assuming `include_branch_name` is true), and the path of the file in your git repo.
+A `mountpoint` is a repo-level option instructing git2consul to prepend a string to the key name.  By default, git2consul creates keys at the root of the KV store with the repo name being a top-level key. By setting a mountpoint, you define a prefix of arbitrary depth that will serve as the root for your key names. When building the key name, git2consul will concatenate mountpoint, repo name (assuming `include_repo_name` is true), branch name (assuming `include_branch_name` is true), and the path of the file in your git repo.
 
 *Note*: mountpoints can neither begin or end in with the character '/'.  git2consul will reject your repo config if that's the case.
 
