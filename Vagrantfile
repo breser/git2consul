@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-system("wget -q -O integration/consul.zip https://dl.bintray.com/mitchellh/consul/0.5.0_linux_amd64.zip") unless
+system("wget -q -O integration/consul.zip https://releases.hashicorp.com/consul/0.5.0/consul_0.5.0_linux_amd64.zip") unless
   File.exists?("integration/consul.zip") || File.exists?("consul.zip")
 
 @script = <<SCRIPT
