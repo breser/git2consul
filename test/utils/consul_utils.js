@@ -19,6 +19,17 @@ exports.setValue = function(key, value, cb) {
   });
 };
 
+exports.getKeyIndices = function(key, cb) {
+  consul.kv.get({'key': key}, function(err, value) {
+    if (err) return cb(err);
+
+    cb(null,
+       value === undefined ? value : value.CreateIndex,
+       value === undefined ? value : value.ModifyIndex,
+       value === undefined ? value : value.LockIndex);
+  });
+};
+
 exports.validateValue = function(key, expected_value, cb) {
   logger.trace('Looking for key %s with value %s', key, expected_value);
   exports.getValue(key, function(err, value) {
@@ -28,6 +39,20 @@ exports.validateValue = function(key, expected_value, cb) {
     } else {
       (value != undefined).should.equal(true);
       value.should.equal(expected_value);
+    }
+    cb();
+  })
+};
+
+exports.validateModifyIndex = function(key, expected_value, cb) {
+  logger.trace('Looking for key %s with ModifyIndex %s', key, expected_value);
+  exports.getKeyIndices(key, function(err, createIndex, modifyIndex, lockIndex) {
+    if (err) return cb(err);
+    if (!expected_value) {
+      (modifyIndex == undefined).should.equal(true);
+    } else {
+      (modifyIndex != undefined).should.equal(true);
+      modifyIndex.should.equal(expected_value);
     }
     cb();
   })
