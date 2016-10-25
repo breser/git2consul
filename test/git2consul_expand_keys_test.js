@@ -587,3 +587,212 @@ describe('Expand keys with invalid common properties path ', function() {
   });
 
 });
+
+describe('Expand keys using delta', function() {
+  var branch;
+  beforeEach(function(done) {
+    // Each of these tests needs a working repo instance, so create it here and expose it to the suite
+    // namespace.  These are all tests of expand_keys mode, so set that here.
+    git_utils.initRepo(_.extend(git_utils.createRepoConfig(), {'expand_keys': true, 'expand_keys_diff': true}), function(err, repo) {
+      if (err) return done(err);
+
+      // The default repo created by initRepo has a single branch, master.
+      branch = repo.branches['master'];
+
+      done();
+    });
+  });
+
+  /*JSON*/
+  it ('should handle additions of new JSON files', function(done) {
+    var sample_key = 'simple.json';
+    var sample_value = '{ "first_level" : { "second_level": "is_all_we_need" } }';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/simple.json/first_level/second_level', 'is_all_we_need', function(err, value) {
+          if (err) return done(err);
+          done();
+        });
+      });
+    });
+  });
+
+  it ('should handle update of JSON file', function(done) {
+    var sample_key = 'changeme.json';
+    var sample_value = '{ "first_level" : "is_all_we_need" }';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/changeme.json/first_level', 'is_all_we_need', function(err, value) {
+          if (err) return done(err);
+
+          // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+          git_utils.addFileToGitRepo(sample_key, '{ "first_level" : "is super different" }', "Change a file.", function(err) {
+            if (err) return done(err);
+
+            branch.handleRefChange(0, function(err) {
+              if (err) return done(err);
+
+              // At this point, the repo should have populated consul with our sample_key
+              consul_utils.validateValue('test_repo/master/changeme.json/first_level', 'is super different', function(err, value) {
+                if (err) return done(err);
+
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it ('should handle new key in JSON file', function(done) {
+    var sample_key = 'changeme.json';
+    var sample_value = '{ "first_level" : "is_all_we_need" }';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+        // At this point, the repo should have populated consul with our sample_key
+        consul_utils.validateValue('test_repo/master/changeme.json/first_level', 'is_all_we_need', function(err, value) {
+          if (err) return done(err);
+          
+          // Get the ModifyIndex of the 'first_level' key so we can make sure it isn't changed when the next key is
+          // added. This implies the delta is working.
+          consul_utils.getKeyIndices('test_repo/master/changeme.json/first_level', function(err, createIndex, modifyIndex) {
+            if (err) return done(err);
+
+            // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+            git_utils.addFileToGitRepo(sample_key, '{ "first_level" : "is_all_we_need", "first_level_new" : "is a new key" }', "Change a file.", function(err) {
+              if (err) return done(err);
+
+              branch.handleRefChange(0, function(err) {
+                if (err) return done(err);
+
+                // At this point, the repo should have populated consul with our sample_key
+                consul_utils.validateValue('test_repo/master/changeme.json/first_level_new', 'is a new key', function(err, value) {
+                  if (err) return done(err);
+
+                  // We also want to validate the the 'first_level' key has NOT been updated
+                  consul_utils.validateModifyIndex('test_repo/master/changeme.json/first_level', modifyIndex, function(err) {
+                    if (err) return done(err);
+
+                    done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it ('should handle delete in JSON file', function(done) {
+    var sample_key = 'deleteme.json';
+    var sample_value = '{ "a" : "1", "b" : "2", "c" : "3" }';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+
+        // Validate that at least one of the keys made it to consul
+        consul_utils.validateValue('test_repo/master/deleteme.json/a', '1', function(err, value) {
+          if (err) return done(err);
+
+          // Track the ModifyIndex of a key that is NOT supposed to change
+          consul_utils.getKeyIndices('test_repo/master/deleteme.json/a', function(err, createIndex, modifyIndex) {
+            if (err) return done(err);
+
+            // Update the document such that the 'b' key is removed.
+            git_utils.addFileToGitRepo(sample_key, '{ "a" : "1", "c" : "3" }', "Change a file.", function(err) {
+              if (err) return done(err);
+
+              branch.handleRefChange(0, function(err) {
+                if (err) return done(err);
+
+                // Check that the 'b' key is gone
+                consul_utils.validateValue('test_repo/master/deleteme.json/b', undefined, function(err, value) {
+                  if (err) return done(err);
+
+                  // Ensure that the a key was not modified
+                  consul_utils.validateModifyIndex('test_repo/master/deleteme.json/a', modifyIndex, function(err) {
+                    if (err) return done(err);
+
+                    done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it ('should handle complex diff in JSON file', function(done) {
+    var sample_key = 'complexdiff.json';
+    var sample_value = '{ "a" : "1", "b" : "2", "c" : { "d" : "4", "e" : { "f" : "6", "g" : "7" } } }';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+
+        // Validate that at least one of the keys made it to consul
+        consul_utils.validateValue('test_repo/master/complexdiff.json/a', '1', function(err, value) {
+          if (err) return done(err);
+
+          // Track the ModifyIndex of a key that is NOT supposed to change
+          consul_utils.getKeyIndices('test_repo/master/complexdiff.json/a', function(err, createIndex, modifyIndex) {
+            if (err) return done(err);
+
+            sample_value = '{ "a" : "1", "b" : { "i" : "9", "j" : { "k" : "11" } }, "c" : { "d" : "104", "e" : { "f" : "6", "h" : "8" } } }';
+            // Update the document such that the 'b' key is removed.
+            git_utils.addFileToGitRepo(sample_key, sample_value, "Change a file.", function(err) {
+              if (err) return done(err);
+
+              branch.handleRefChange(0, function(err) {
+                if (err) return done(err);
+
+                // Check that the 'i' key is set 
+                consul_utils.validateValue('test_repo/master/complexdiff.json/b/i', '9', function(err, value) {
+                  if (err) return done(err);
+
+                  // Ensure that the a key was not modified
+                  consul_utils.validateModifyIndex('test_repo/master/complexdiff.json/a', modifyIndex, function(err) {
+                    if (err) return done(err);
+
+                    consul_utils.validateValue('test_repo/master/complexdiff.json/c/d', '104', function(err, value) {
+                      if (err) return done(err);
+                      done();
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+});

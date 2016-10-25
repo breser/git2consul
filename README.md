@@ -171,6 +171,12 @@ If you would like git2consul to shutdown every time its configuration changes, y
 
 ##### expand_keys
 
+There are a couple of general behaviors in regards to `expand_keys`:
+
+* By default, the entire existing tree of keys represented by the file will be deleted and then rebuilt on any change to the file.
+
+* Setting `"expand_keys_diff": true` will apply a diff between the contents of the file and the existing keys and only add/update/delete the necessary keys.
+
 ###### JSON
 
 If you would like git2consul to treat JSON documents in your repo as fully formed subtrees, you can enable expand_keys mode via inclusion of the field `"expand_keys": true` at the top level of the repo's configuration.  If this mode is enabled, git2consul will treat any valid JSON file (that is, any file with extension ".json" that parses to an object) as if it contains a subtree of Consul KVs.  For example, if you have the file `root.json` in repo `expando_keys` with the following contents:
