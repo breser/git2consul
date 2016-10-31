@@ -103,6 +103,31 @@ describe('Initializing git2consul', function() {
       });
     });
   });
+
+    it ('should support disabling include_repo_name mode', function(done) {
+
+      // Create a remote git repo.  Then, init a Repo object with include_repo_name disabled and validate
+      // that files are in the appropriate place in the Consul KV store.
+      git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
+        if (err) return done(err);
+
+        git_utils.addFileToGitRepo("readme.md", "Test file branch-less KV", "Test commit.", function(err) {
+          if (err) return done(err);
+
+          var repo_config = git_utils.createRepoConfig();
+          repo_config.include_repo_name = false;
+          var repo = new Repo(repo_config);
+          repo.init(function(err) {
+            if (err) return done(err);
+            consul_utils.validateValue('master/readme.md', "Test file branch-less KV", function(err, value) {
+              if (err) return done(err);
+              done();
+            });
+          });
+        });
+      });
+    });
+
 });
 
 describe ('Error handling', function() {
