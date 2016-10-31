@@ -169,6 +169,28 @@ If there are no webhooks or polling watchers configured, git2consul will termina
 
 If you would like git2consul to shutdown every time its configuration changes, you can enable halt-on-change with the command-line switch `-h` or inclusion of the field `"halt_on_change": true` at the top level of your config JSON.  If this switch is enabled, git2consul will wait for changes in the config (which is itself stored in Consul) and gracefully halt when a change is detected.  It is expected that your git2consul process is configured to run as a service, so restarting git2consul is the responsibility of your service manager.
 
+#### Http maxSockets
+
+Since version [v0.12.0](http://blog.nodejs.org/2015/02/06/node-v0-12-0-stable/) of NodeJs, maxSockets is set to Infinity. This result in a lot of http connections being created
+when writing k/v to Consul, especially if you have a lot of branches / tags.
+
+In order to avoid hammering Consul with too many requests, you can specify the maximum amount of sockets that can be created by using the `maxSockets` option.
+
+Example :
+
+```javascript
+{
+  "version": "1.0",
+  "maxSockets": 1,
+  "repos": [
+   ...
+  ],
+  ...
+}
+```
+
+Will allow Node to only maintain one socket at a time.
+
 ##### expand_keys
 
 There are a couple of general behaviors in regards to `expand_keys`:
