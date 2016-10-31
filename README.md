@@ -174,14 +174,14 @@ If you would like git2consul to shutdown every time its configuration changes, y
 Since version [v0.12.0](http://blog.nodejs.org/2015/02/06/node-v0-12-0-stable/) of NodeJs, maxSockets is set to Infinity. This result in a lot of http connections being created
 when writing k/v to Consul, especially if you have a lot of branches / tags.
 
-In order to avoid hammering Consul with too many requests, you can specify the maximum amount of sockets that can be created by using the `maxSockets` option.
+In order to avoid hammering Consul with too many requests, you can specify the maximum amount of sockets that can be created by using the `max_sockets` option.
 
 Example :
 
 ```javascript
 {
   "version": "1.0",
-  "maxSockets": 1,
+  "max_sockets": 1,
   "repos": [
    ...
   ],
