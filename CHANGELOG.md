@@ -1,3 +1,8 @@
+v0.12.13 (UNRELEASED)
+* Improve logging on ref changes to include repository name. [GH-111]
+* `max_sockets` will set the limit on the number of open http sockets. [GH-109]
+* `expand_file_diff` will perform updates only on necessary files that contain deltas. [GH-103]
+
 v0.12.12
 * Add support for YAML on `expand_keys` [GH-95]
 * Fix test fix for `ignore_file_extension` [GH-93]
