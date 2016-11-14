@@ -382,6 +382,10 @@ Note :
 - If a variable is missing or unset, git2consul will store the file as a flat file without considering it as a k/v format.
 - If the path to common_properties is incorrect or corrupted, git2consul will ignore it and won't inject any properties.
 
+##### ignore_repo_name (default: false)
+
+`ignore_repo_name` is a repo-level option that, when set to true the repository name would be omitted from the prefix.
+
 ##### ignore_file_extension (default: false)
 
 an `ignore_file_extension` is a repo-level option lets file names be ignored by consul while creating sub folder.
