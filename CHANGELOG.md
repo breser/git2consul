@@ -1,4 +1,4 @@
-v0.12.13 (UNRELEASED)
+v0.12.13
 * `ignore_repo_name` option to ignore repository name as part of the KV path [GH-113]
 * Improve logging on ref changes to include repository name. [GH-111]
 * `max_sockets` will set the limit on the number of open http sockets. [GH-109]
