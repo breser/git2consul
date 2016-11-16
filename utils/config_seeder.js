@@ -1,5 +1,6 @@
 var fs = require('fs');
 var config_seeder = require('../lib/config_seeder.js')
+var logger = require('../lib/logging.js');
 
 /**
  * First, check if there is a command line override for the consul endpoint.
