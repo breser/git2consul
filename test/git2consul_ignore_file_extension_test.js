@@ -35,8 +35,9 @@ describe('ignore_file_extension', function() {
 
   it ('should ignore file extension when expand_keys == true', function(done) {
 
-    // Create a remote git repo.  Then, init a Repo object with property file validate
-    // that file are in the appropriate place in the Consul KV store without file extension.
+    // Initialize a Repo and commit a properties file. Validate that the
+    // expanded properties exist in the Consul KV store without a file
+    // extension.
     git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
       if (err) return done(err);
 
