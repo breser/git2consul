@@ -26,7 +26,7 @@ describe('ignore_file_extension', function() {
     done();
   });
 
-  it ('should create folders on consul without file extension', function(done) {
+  it ('should ignore file extension when expand_keys == true', function(done) {
 
     // Create a remote git repo.  Then, init a Repo object with property file validate
     // that file are in the appropriate place in the Consul KV store without file extension.
