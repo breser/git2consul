@@ -62,4 +62,29 @@ describe('ignore_file_extension', function() {
     });
   });
 
+  it ('should not ignore file extension when expand_keys == false', function(done) {
+
+    git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
+      if (err) return done(err);
+
+      mkdirp(git_utils.TEST_REMOTE_REPO + 'ignore_file_extension', function(cb) {
+        if (err) return done(err);
+
+        git_utils.addFileToGitRepo('ignore_file_extension/user-service-dev.properties', "default.connection.pool.db.url=jdbc:mysql://db-host:3306/user", "User property file for dev environment added.", function(err) {
+          if (err) return done(err);
+
+          var repo = new Repo(repo_config);
+
+          repo.init(function(err) {
+            if (err) return done(err);
+            consul_utils.validateValue('test_repo/master/ignore_file_extension/user-service-dev.properties', 'default.connection.pool.db.url=jdbc:mysql://db-host:3306/user', function(err, value) {
+              if (err) return done(err);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
 });
