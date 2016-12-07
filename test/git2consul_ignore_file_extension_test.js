@@ -25,14 +25,6 @@ describe('ignore_file_extension', function() {
     done();
   });
 
-  // Tear down Consul KV values after tests.
-  afterEach(function(done) {
-    consul_utils.purgeKeys('test_repo/master/ignore_file_extension', function(err) {
-      if (err) return done(err);
-    });
-    done();
-  });
-
   var test_files_known_extensions = {
     'ignore_file_extension/config_yaml.yaml': 'foo: bar',
     'ignore_file_extension/config_yml.yml': 'foo: bar',
