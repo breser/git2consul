@@ -17,6 +17,15 @@ var git_commands = require('../lib/git/commands.js');
 
 describe('ignore_file_extension', function() {
 
+  // Set up common configuration fixture.
+  var repo_config;
+  beforeEach(function(done) {
+    repo_config = git_utils.createRepoConfig();
+    repo_config.source_root = "src/main/resources";
+    repo_config.ignore_file_extension = true;
+    done();
+  });
+
   it ('should create folders on consul without file extension', function(done) {
 
     // Create a remote git repo.  Then, init a Repo object with property file validate
@@ -30,11 +39,9 @@ describe('ignore_file_extension', function() {
         git_utils.addFileToGitRepo("src/main/resources/user-service-dev.properties", "default.connection.pool.db.url=jdbc:mysql://db-host:3306/user", "User property file for dev environment added.", function(err) {
           if (err) return done(err);
 
-          var repo_config = git_utils.createRepoConfig();
-          repo_config.source_root = "src/main/resources";
           repo_config.expand_keys = true;
-          repo_config.ignore_file_extension = true;
           var repo = new Repo(repo_config);
+
           repo.init(function(err) {
             if (err) return done(err);
             consul_utils.validateValue('test_repo/master/user-service-dev/default.connection.pool.db.url', "jdbc:mysql://db-host:3306/user", function(err, value) {
