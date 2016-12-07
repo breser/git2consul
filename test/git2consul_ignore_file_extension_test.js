@@ -21,8 +21,15 @@ describe('ignore_file_extension', function() {
   var repo_config;
   beforeEach(function(done) {
     repo_config = git_utils.createRepoConfig();
-    repo_config.source_root = "src/main/resources";
     repo_config.ignore_file_extension = true;
+    done();
+  });
+
+  // Tear down Consul KV values after tests.
+  afterEach(function(done) {
+    consul_utils.purgeKeys('test_repo/master/ignore_file_extension', function(err) {
+      if (err) return done(err);
+    });
     done();
   });
 
@@ -33,10 +40,10 @@ describe('ignore_file_extension', function() {
     git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
       if (err) return done(err);
 
-      mkdirp(git_utils.TEST_REMOTE_REPO + "src/main/resources", function(cb) {
+      mkdirp(git_utils.TEST_REMOTE_REPO + 'ignore_file_extension', function(cb) {
         if (err) return done(err);
 
-        git_utils.addFileToGitRepo("src/main/resources/user-service-dev.properties", "default.connection.pool.db.url=jdbc:mysql://db-host:3306/user", "User property file for dev environment added.", function(err) {
+        git_utils.addFileToGitRepo("ignore_file_extension/user-service-dev.properties", "default.connection.pool.db.url=jdbc:mysql://db-host:3306/user", "User property file for dev environment added.", function(err) {
           if (err) return done(err);
 
           repo_config.expand_keys = true;
@@ -44,7 +51,7 @@ describe('ignore_file_extension', function() {
 
           repo.init(function(err) {
             if (err) return done(err);
-            consul_utils.validateValue('test_repo/master/user-service-dev/default.connection.pool.db.url', "jdbc:mysql://db-host:3306/user", function(err, value) {
+            consul_utils.validateValue('test_repo/master/ignore_file_extension/user-service-dev/default.connection.pool.db.url', "jdbc:mysql://db-host:3306/user", function(err, value) {
               if (err) return done(err);
               done();
             });
