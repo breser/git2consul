@@ -1,3 +1,6 @@
+v0.12.14 (UNRELEASED)
+* Only ignore embedded JSON/YAML/properties file extensions [GH-123]
+
 v0.12.13
 * `ignore_repo_name` option to ignore repository name as part of the KV path [GH-113]
 * Improve logging on ref changes to include repository name. [GH-111]
