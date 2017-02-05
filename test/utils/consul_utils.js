@@ -33,6 +33,7 @@ exports.getKeyIndices = function(key, cb) {
 exports.validateValue = function(key, expected_value, cb) {
   logger.trace('Looking for key %s with value %s', key, expected_value);
   exports.getValue(key, function(err, value) {
+    logger.trace("found key: ",key, value);
     if (err) return cb(err);
     if (!expected_value) {
       (value == undefined).should.equal(true);
