@@ -17,7 +17,7 @@ var git_commands = require('../lib/git/commands.js');
 
 describe('ignore_repo_name', function() {
 
-  it.skip('should create folders on consul without the repo name prefix', function(done) {
+  it ('should create folders on consul without the repo name prefix', function(done) {
     
     // Create a remote git repo.  Then, init a Repo object with property file and validate
     // that keys are in the appropriate place in the Consul KV store without the repo name prefix.
