@@ -33,7 +33,7 @@ describe('Parse YAML', function() {
 
   /*YAML*/
 
-  it ('should handle complex YAML files', function(done) {
+  it.only('should handle complex YAML files', function(done) {
     var sample_key = 'complex_sample.yaml';
     // from: js-yaml / test / samples-load-errors / forbidden-value.yml
     var sample_file = "./test/resources/complex_sample.yaml";
@@ -72,7 +72,7 @@ describe('Parse YAML', function() {
               },{
                 key:'languages/perl/level/scored/0',
                 value:'high'
-              },
+              }
           ];
           values_to_test.forEach(function(test_value){
             consul_utils.validateValue("test_repo/master/complex_sample.yaml/"+test_value['key'], test_value['value'], function(err, value) {
