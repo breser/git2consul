@@ -89,6 +89,7 @@ function create_tag_and_check_consul(version, repo_name, sample_key, done) {
       });
     });
 }
+
 function extractReqInfo(config) {
   var req_conf = {url: config.fqurl, method: 'POST'};
   if (config.type === 'bitbucket') {
@@ -389,6 +390,40 @@ describe('polling hook', function() {
         if (err) return done(err);
         var version = "v1";
         create_tag_and_check_consul(version, repo_config.name, sample_key, done);
+      });
+    });
+  });
+
+  it('should delete tags from consul when tag remove from git', function(done) {
+
+    var repo_config = git_utils.createRepoConfig();
+    repo_config.support_tags = true;
+    repo_config.hooks = [{
+      'type': 'polling',
+      'interval': '1',
+    }];
+    repo_config.name = "polling_test_delete_tags";
+
+    git_utils.initRepo(repo_config, function(err, repo) {
+      if (err) return done(err);
+
+      repo.hooks_active.should.equal(true);
+
+      var sample_key = 'sample_key';
+      var sample_value = 'stash test data';
+      git_utils.addFileToGitRepo(sample_key, sample_value, "Polling hook.", function(err) {
+        if (err) return done(err);
+        var version = "v1";
+        create_tag_and_check_consul(version, repo_config.name, sample_key, function(err) {
+          if (err) return done(err);
+          git_commands.delete_tag(version, git_utils.TEST_REMOTE_REPO, function(err) {
+            if (err) return done(err);
+            consul_utils.waitForDelete(repo_config.name + '/' + version + '.ref', function(err) {
+              if (err) return done(err);
+              done();
+            });
+          });
+        });
       });
     });
   });
