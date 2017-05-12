@@ -137,7 +137,7 @@ The above example also logs to stdout as well as to file.  Logging is handled vi
 
 git2consul uses the name and branches of configured repos to namespace the created KVs.  The goal is to allow multiple teams to use the same Consul agents and KV store to migrate configuration data around a network without needing to worry about data conflicts.  In the above example, a settings file stored at `foo_service/settings.json` in the `development` branch of the repo `vp_config` would be persisted in Consul as `vp_config/development/foo_service/settings.json`.
 
-If you are using a more [Twelve-Factor](http://12factor.net/) approach, where you wish to configure your applications via environment variables, you would store these settings as files in Git whose name is the key and whose body is the value.  For example, we could create the file `foo_service/log_level` with the body `trace` in the `development` branch of the `foo_service` repo and git2consul will create the KV `vp_config/development/foo_service/log_level` with the value `trace`.
+If you are using a more [Twelve-Factor](http://12factor.net/) approach, where you wish to configure your applications via environment variables, you would store these settings as files in Git whose name is the key and whose body is the value.  For example, we could create the file `foo_service/log_level` with the body `trace` in the `development` branch of the `vp_config` repo and git2consul will create the KV `vp_config/development/foo_service/log_level` with the value `trace`.
 
 As changes are detected in the specified Git repos, git2consul determines which files have been added, updated, or deleted and replicates those changes to the KV.  Because only changed branches and files are analyzed, git2consul should have a very slim profile on hosting systems.
 
@@ -155,7 +155,7 @@ There are environment variable equivalents for the parameters that git2consul ac
 
 ##### Alternate Config Locations
 
-By default, git2consul looks for its configuration at the Consul Key `git2consul/config`.  You can override this with a `-c` of `--config_key` command line switch, like so:
+By default, git2consul looks for its configuration at the Consul Key `git2consul/config`.  You can override this with a `-c` of `--config-key` command line switch, like so:
 
 ```sh
 git2consul -c git2consul/alternative_config
@@ -168,6 +168,28 @@ If there are no webhooks or polling watchers configured, git2consul will termina
 ##### Halt-on-change
 
 If you would like git2consul to shutdown every time its configuration changes, you can enable halt-on-change with the command-line switch `-h` or inclusion of the field `"halt_on_change": true` at the top level of your config JSON.  If this switch is enabled, git2consul will wait for changes in the config (which is itself stored in Consul) and gracefully halt when a change is detected.  It is expected that your git2consul process is configured to run as a service, so restarting git2consul is the responsibility of your service manager.
+
+#### Http maxSockets
+
+Since version [v0.12.0](http://blog.nodejs.org/2015/02/06/node-v0-12-0-stable/) of NodeJs, maxSockets is set to Infinity. This result in a lot of http connections being created
+when writing k/v to Consul, especially if you have a lot of branches / tags.
+
+In order to avoid hammering Consul with too many requests, you can specify the maximum amount of sockets that can be created by using the `max_sockets` option.
+
+Example :
+
+```javascript
+{
+  "version": "1.0",
+  "max_sockets": 1,
+  "repos": [
+   ...
+  ],
+  ...
+}
+```
+
+Will allow Node to only maintain one socket at a time.
 
 ##### expand_keys
 
@@ -359,6 +381,10 @@ Note :
 
 - If a variable is missing or unset, git2consul will store the file as a flat file without considering it as a k/v format.
 - If the path to common_properties is incorrect or corrupted, git2consul will ignore it and won't inject any properties.
+
+##### ignore_repo_name (default: false)
+
+`ignore_repo_name` is a repo-level option that, when set to true the repository name would be omitted from the prefix.
 
 ##### ignore_file_extension (default: false)
 

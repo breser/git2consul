@@ -1,7 +1,8 @@
 language: node_js
+dist: trusty
 sudo: false
 before_script:
-- wget  https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_linux_amd64.zip
+- wget https://releases.hashicorp.com/consul/0.6.3/consul_0.6.3_linux_amd64.zip
 - unzip consul_0.6.3_linux_amd64.zip
 - mkdir consul_data
 - "./consul agent -server -bootstrap -data-dir=consul_data &"
