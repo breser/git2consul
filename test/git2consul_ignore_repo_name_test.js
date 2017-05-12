@@ -38,7 +38,7 @@ describe('ignore_repo_name', function() {
           var repo = new Repo(repo_config);
           repo.init(function(err) {
             if (err) return done(err);
-            consul_utils.validateValue('user-service-dev/default.connection.pool.db.url', "jdbc:mysql://db-host:3306/user", function(err, value) {
+            consul_utils.validateValue('user-service-dev.properties/default.connection.pool.db.url', "jdbc:mysql://db-host:3306/user", function(err, value) {
               if (err) return done(err);
               done();
             });
