@@ -22,55 +22,126 @@ var token = process.env.TOKEN;
  * Test halt_on_change.  We register a config with halt on change functionality and validate
  * that halt is called on a consul config change.
  */
-describe('halt_on_change', function() {
+describe('halt_on_change', function () {
 
-  it ('should halt git2consul when config changes', function(done) {
+    it('should halt git2consul when config changes', function (done) {
 
-    consul.kv.set({'key': "git2consul/config", value: '{"fake":"config"}', token: token}, function(err) {
-      if (err) done(err);
+        consul.kv.set({'key': "git2consul/config", value: '{"fake":"config"}', token: token}, function (err) {
+            if (err) done(err);
 
-      var repo_config = git_utils.createRepoConfig();
-      repo_config.hooks = [{
-        'type': 'stash',
-        'url': '/stashpoke_bogus_branch',
-        'port': 5053
-      }];
-      repo_config.name = "halt_on_change_repo";
+            var repo_config = git_utils.createRepoConfig();
+            repo_config.hooks = [{
+                'type': 'stash',
+                'url': '/stashpoke_bogus_branch',
+                'port': 5053
+            }];
+            repo_config.name = "halt_on_change_repo";
 
-      git_commands.init(git_utils.TEST_REMOTE_REPO, function(err) {
-        if (err) return done(err);
+            git_commands.init(git_utils.TEST_REMOTE_REPO, function (err) {
+                if (err) return done(err);
 
-        var sample_key = 'readme.md';
-        var sample_value = 'stub data';
-        git_utils.addFileToGitRepo(sample_key, sample_value, "Stub commit.", function(err) {
-          if (err) return done(err);
+                var sample_key = 'readme.md';
+                var sample_value = 'stub data';
+                git_utils.addFileToGitRepo(sample_key, sample_value, "Stub commit.", function (err) {
+                    if (err) return done(err);
 
-          var config = {
-            repos: [repo_config],
-            local_store: git_utils.TEST_WORKING_DIR,
-            halt_on_change: true
-          };
+                    var config = {
+                        repos: [repo_config],
+                        local_store: git_utils.TEST_WORKING_DIR,
+                        halt_on_change: true
+                    };
 
-          // Now, create a repo with hooks.  The hooks should be active.
-          git.createRepos(config, function(err) {
-            (undefined === err).should.equal(true);
+                    // Now, create a repo with hooks.  The hooks should be active.
+                    git.createRepos(config, function (err) {
+                        (undefined === err).should.equal(true);
 
-            var repo = git.repos['halt_on_change_repo'];
-            repo.hooks_active.should.equal(true);
+                        var repo = git.repos['halt_on_change_repo'];
+                        repo.hooks_active.should.equal(true);
 
-            // Now update config and validate that a halt is seen.
-            consul.kv.set({'key': "git2consul/config", value: '{"fake":"config2electricboogaloo"}', token: token}, function(err) {
-              if (err) done(err);
+                        // Now update config and validate that a halt is seen.
+                        consul.kv.set({
+                            'key': "git2consul/config",
+                            value: '{"fake":"config2electricboogaloo"}',
+                            token: token
+                        }, function (err) {
+                            if (err) return done(err);
 
-              var check_halt = function() {
-                if (git.halt_seen) return done();
-                setTimeout(check_halt, 50);                
-              };
-              check_halt();
+                            var check_halt = function () {
+                                if (git.halt_seen) return done();
+                                setTimeout(check_halt, 50);
+                            };
+                            check_halt();
+                        });
+                    });
+                });
             });
-          });
         });
-      });
     });
-  });
+
+    it('should halt git2consul even after error in communicating', function (done) {
+
+        consul.kv.set({'key': "git2consul/config2", value: '{"fake":"config"}', token: token}, function (err) {
+            if (err) done(err);
+
+            global.config_key = "git2consul/config2"
+            global.config_read_retry_wait = 500;
+            var repo_config = git_utils.createRepoConfig();
+            repo_config.hooks = [{
+                'type': 'stash',
+                'url': '/totally_bogus',
+                'port': 5053
+            }];
+            repo_config.name = "halt_on_change_repo";
+
+            git_commands.init(git_utils.TEST_REMOTE_REPO, function (err) {
+                if (err) return done(err);
+
+                var sample_key = 'readme.md';
+                var sample_value = 'stub data';
+                git_utils.addFileToGitRepo(sample_key, sample_value, "Stub commit.", function (err) {
+                    if (err) return done(err);
+
+                    var config = {
+                        repos: [repo_config],
+                        local_store: git_utils.TEST_WORKING_DIR,
+                        halt_on_change: true
+                    };
+
+                    // Now, create a repo with hooks.  The hooks should be active.
+                    git.createRepos(config, function (err) {
+                        (undefined === err).should.equal(true);
+
+                        var repo = git.repos['halt_on_change_repo'];
+                        repo.hooks_active.should.equal(true);
+
+                        // Now remove the config data so it doesn't exist
+                        // This will cause an error with the read
+                        consul.kv.del({
+                            'key': "git2consul/config2",
+                            token: token
+                        }, function (err) {
+                            if (err) return done(err);
+
+                            // Add the configuration back, except modified. This should
+                            // trigger a halt
+                            consul.kv.set({
+                                'key': "git2consul/config2",
+                                value: '{"fake":"config2electricboogaloo"}',
+                                token: token
+                            }, function (err) {
+                                if (err) return done(err);
+
+                                var check_halt = function () {
+                                    if (git.halt_seen) return done();
+                                    setTimeout(check_halt, 50);
+                                };
+                                check_halt();
+                            });
+                        });
+
+                    });
+                });
+            });
+        });
+    });
 });
