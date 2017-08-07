@@ -10,6 +10,9 @@ var logger = require('../lib/logging.js');
 global.endpoint = process.env.CONSUL_ENDPOINT || "127.0.0.1";
 global.port = process.env.CONSUL_PORT || 8500;
 global.secure = process.env.CONSUL_SECURE || false;
+global.cert_filename = process.env.CONSUL_CERT || '';
+global.key_filename = process.env.CONSUL_KEY || '';
+global.ca_filename = process.env.CONSUL_CA || '';
 global.token = process.env.TOKEN || null;
 global.config_key = "git2consul/config";
 
