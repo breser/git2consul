@@ -1,7 +1,7 @@
 # git2consul
 
-[![Build Status](https://travis-ci.org/Cimpress-MCP/git2consul.svg?branch=master)](https://travis-ci.org/Cimpress-MCP/git2consul)
-[![Coverage Status](https://img.shields.io/coveralls/Cimpress-MCP/git2consul.svg)](https://coveralls.io/r/Cimpress-MCP/git2consul?branch=master)
+[![Build Status](https://travis-ci.org/breser/git2consul.svg?branch=master)](https://travis-ci.org/breser/git2consul)
+[![Coverage Status](https://img.shields.io/coveralls/breser/git2consul.svg)](https://coveralls.io/r/breser/git2consul?branch=master)
 
 [![Join the chat at https://gitter.im/Cimpress-MCP/git2consul](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Cimpress-MCP/git2consul?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Google Groups](https://img.shields.io/badge/google--group-git2consul-green.svg)](https://groups.google.com/group/git2consul-tool/)
