@@ -33,12 +33,12 @@ describe('ignore_repo_name', function() {
           var repo_config = git_utils.createRepoConfig();
           repo_config.source_root = "src/main/resources";
           repo_config.expand_keys = true;
-          repo.include_branch_name = false;
+          repo_config.include_branch_name = false;
           repo_config.ignore_repo_name = true;
           var repo = new Repo(repo_config);
           repo.init(function(err) {
             if (err) return done(err);
-            consul_utils.validateValue('user-service-dev/default.connection.pool.db.url', "jdbc:mysql://db-host:3306/user", function(err, value) {
+            consul_utils.validateValue('user-service-dev.properties/default.connection.pool.db.url', "jdbc:mysql://db-host:3306/user", function(err, value) {
               if (err) return done(err);
               done();
             });
