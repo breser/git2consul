@@ -10,7 +10,7 @@ before_script:
 - git config --global user.email "ryan@ryanbreen.com"
 - git config --global user.name "Ryan Breen"
 script:
-- npm run test
+- npm run cov
 deploy:
   provider: npm
   email: ryan@ryanbreen.com
