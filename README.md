@@ -155,7 +155,7 @@ There are environment variable equivalents for the parameters that git2consul ac
 
 ##### Alternate Config Locations
 
-By default, git2consul looks for its configuration at the Consul Key `git2consul/config`.  You can override this with a `-c` of `--config-key` command line switch, like so:
+By default, git2consul looks for its configuration at the Consul Key `git2consul/config`.  You can override this with a `-c` of `--config_key` command line switch, like so:
 
 ```sh
 git2consul -c git2consul/alternative_config
