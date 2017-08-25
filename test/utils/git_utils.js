@@ -112,3 +112,10 @@ exports.symlinkFileInGitRepo = function(link, referrent, commit_message, cb) {
   });
 
 };
+
+exports.addTagToGitRepo = function(tag, commit_message, cb) {
+  git_commands.tag(tag, commit_message, git_utils.TEST_REMOTE_REPO, function (err) {
+      if (err) return cb(err);
+      cb();
+  });
+}
