@@ -28,7 +28,7 @@
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-debian-package": "^0.1.11",
-    "istanbul": "0.2.11",
+    "istanbul": "0.4.5",
     "mocha": "3.5.0",
     "request": "^2.42.0",
     "should": "3.3.2",
