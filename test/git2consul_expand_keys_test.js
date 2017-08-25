@@ -796,3 +796,61 @@ describe('Expand keys using delta', function() {
     });
   });
 });
+
+describe('Expand keys using delta ignoring file extensions', function() {
+  var branch;
+  beforeEach(function(done) {
+    // Each of these tests needs a working repo instance, so create it here and expose it to the suite
+    // namespace.  These are all tests of expand_keys mode, so set that here.
+    git_utils.initRepo(_.extend(git_utils.createRepoConfig(), {'expand_keys': true, 'expand_keys_diff': true, 'ignore_file_extension': true}), function(err, repo) {
+      if (err) return done(err);
+
+      // The default repo created by initRepo has a single branch, master.
+      branch = repo.branches['master'];
+
+      done();
+    });
+  });
+
+  it ('should handle keys with same prefix', function(done) {
+    var sample_key = 'foo-test.json';
+    var sample_value = 'bar';
+
+    // Add the file, call branch.handleRef to sync the commit, then validate that consul contains the correct info.
+    git_utils.addFileToGitRepo(sample_key, sample_value, "Add a file.", function(err) {
+      if (err) return done(err);
+
+      branch.handleRefChange(0, function(err) {
+        if (err) return done(err);
+
+        // Validate that at least one of the keys made it to consul
+        consul_utils.validateValue('test_repo/master/foo-test', 'bar', function(err, value) {
+          if (err) return done(err);
+
+          var conflicting_key = 'foo.json';
+          var conflicting_value = '{ "bar": "baz" }';
+
+          // Update the document to add a key that starts with the same prefix
+          git_utils.addFileToGitRepo(conflicting_key, conflicting_value, "Change a file.", function(err) {
+              if (err) return done(err);
+
+              branch.handleRefChange(0, function(err) {
+                if (err) return done(err);
+
+                // Check that the new value is set
+                consul_utils.validateValue('test_repo/master/foo/bar', 'baz', function(err, value) {
+                  if (err) return done(err);
+
+                  // Ensure that the original value wasn't changed
+                  consul_utils.validateValue('test_repo/master/foo-test', 'bar', function(err, value) {
+                    if (err) return done(err);
+                    done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+});
