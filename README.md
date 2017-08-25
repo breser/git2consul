@@ -148,6 +148,9 @@ There are environment variable equivalents for the parameters that git2consul ac
 * `CONSUL_ENDPOINT` maps to `-e` or `--endpoint`
 * `CONSUL_PORT` maps to `-p` or `--port`
 * `CONSUL_SECURE` maps to `-s` or `--secure`
+* `CONSUL_CERT` maps to `--cert`
+* `CONSUL_KEY` maps to `--key`
+* `CONSUL_CA` maps to `--ca`
 * `TOKEN` maps to `-t` or `--token`
 
 
