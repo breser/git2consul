@@ -33,7 +33,7 @@ describe('Parse YAML', function() {
 
   /*YAML*/
 
-  it.only('should handle complex YAML files', function(done) {
+  it('should handle complex YAML files', function(done) {
     var sample_key = 'complex_sample.yaml';
     // from: js-yaml / test / samples-load-errors / forbidden-value.yml
     var sample_file = "./test/resources/complex_sample.yaml";
