@@ -26,7 +26,6 @@
     "js-yaml": "^3.6.1"
   },
   "devDependencies": {
-    "fs": "0.0.1-security",
     "grunt": "^1.0.1",
     "grunt-debian-package": "^0.1.11",
     "istanbul": "0.4.5",
