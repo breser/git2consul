@@ -236,7 +236,6 @@ A few notes on how this behaves:
 Similarly to JSON, git2consul can treat YAML documents in your repo as fully formed subtrees.
 
 ```yaml
----
 # file: example.yaml or example.yml
 first_level:
   second_level:
@@ -410,8 +409,104 @@ Usage example :
 
 Let say that you have a file called `user-service-dev.properties` in your repo. This file will be saved on consul as `user-service-dev`.
 
+##### array_format (default: none)
 
-#### Debian packaging
+`array_format` is a repo level option that applies only when expand_keys is set.  It defines what format array values from JSON and Yaml will be written to inside a single key.
+
+Valid values are:
+
+- `none`: do not include the array value
+- `json`: write a JSON array value
+- _separator_: Use the separator as a list delimiter -- e.g. use `,` for a comma-separated list. 
+
+Given the following JSON or Yaml
+
+JSON:
+```json
+{
+  "foods": ["apple", "bannana", "orange", "food \"with\" weird, name"]
+}
+```
+```yaml
+foods:
+  - apple
+  - bananna
+  - orange
+  - 'food "with" weird name'
+```
+
+The following values will be generated for the key `foods`:
+
+- `none` -\> No `foods` key will be written
+- `json` -\> `foods` will be set to `["apple", "bannana", "orange", "food \"with\" weird, name"]`
+- `,` -\> `foods` will be set to `apple,bannana,orange,food \"with\" weird,name` (note the extra, un-escaped comma!)
+
+Notes:
+
+- As the above example shows, no escaping is done for delimited lists.
+
+##### array_key_format (default: null)
+
+`array_key_format` is a repo level option that applies only when expand_keys is set.  It defines the format used to output array key values when outputting one key per array value.
+
+The format uses 2 special values, underscore (`_`) and octothorp (`#`):
+
+- `_` is replaced with the name of the array value.
+- `#` is replaced by the index in the array.
+
+Any value that is not a string with at least 1 character will result in no array keys being written.
+
+Given the following JSON or Yaml
+
+JSON:
+```json
+{
+  "cars": [
+    { "economy": ["ford", "gm"] },
+    { "luxury": ["bmw", "mercedes"] }
+  ]
+}
+```
+```yaml
+cars:
+  - economy
+    - ford
+    - gm
+  - luxury
+    - bmw
+    - mercedes
+```
+
+git2consul will generate the following keys:
+
+For `_/#` (prefix becomes a folder with index keys):
+```
+[..prefix...]/cars/0/economy/0=ford
+[..prefix...]/cars/0/economy/1=gm
+[..prefix...]/cars/1/luxury/0=bmw
+[..prefix...]/cars/1/luxury/1=mercedes
+```
+
+For `_[#]` (Spring-style array indexes):
+```
+[..prefix...]/cars[0]/economy/[0]=ford
+[..prefix...]/cars[0]/economy/[1]=gm
+[..prefix...]/cars[1]/luxury/[0]=bmw
+[..prefix...]/cars[1]/luxury/[1]=mercedes
+```
+
+For `#\__` (escaped underscore):
+```
+[..prefix...]/0_cars/0_economy/=ford
+[..prefix...]/0_cars/1_economy/=gm
+[..prefix...]/1_cars/0_luxury/=bmw
+[..prefix...]/1_cars/1_luxury/=mercedes
+```
+
+Note: as shown in the example above, keys are properly generated even for nested objects.
+
+#_
+# Debian packaging
 
 If you don't have grunt `sudo npm install -g grunt-cli`.
 

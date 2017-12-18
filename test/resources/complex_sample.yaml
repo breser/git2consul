@@ -1,0 +1,26 @@
+name: Kostas D'vloper
+job: Developer
+skill: Elite
+employed: True
+foods:
+    - Apple
+    - Orange
+    - Strawberry
+    - Mango
+languages:
+    perl: 
+        certified: true
+        level:
+            scored:
+                - high
+                - medium
+    python: 
+        certified: true
+        level:
+            scored:
+                - high
+                - medium
+    pascal: Lame
+my.server.path: 
+    - KEY-ENV-VAR: "true"
+    - OTHER-VAR: "59900"
