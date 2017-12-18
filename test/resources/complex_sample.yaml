@@ -22,5 +22,5 @@ languages:
                 - medium
     pascal: Lame
 my.server.path: 
-  - KEY-ENV-VAR: "true"
-  - OTHER-VAR: "59900"
+    - KEY-ENV-VAR: "true"
+    - OTHER-VAR: "59900"

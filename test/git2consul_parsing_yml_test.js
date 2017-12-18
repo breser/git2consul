@@ -7,11 +7,8 @@ var mkdirp = require('mkdirp');
 // We want this above any git2consul module to make sure logging gets configured
 require('./git2consul_bootstrap_test.js');
 
-var repo = require('../lib/git/repo.js');
 var git_utils = require('./utils/git_utils.js');
 var consul_utils = require('./utils/consul_utils.js');
-
-var git_commands = require('../lib/git/commands.js');
 
 describe('Parse YAML', function() {
 
@@ -21,7 +18,11 @@ describe('Parse YAML', function() {
 
     // Each of these tests needs a working repo instance, so create it here and expose it to the suite
     // namespace.  These are all tests of expand_keys mode, so set that here.
-    git_utils.initRepo(_.extend(git_utils.createRepoConfig(), {'expand_keys': true}), function(err, repo) {
+    var repoConfig = git_utils.createRepoConfig();
+    // Add array settings
+    repoConfig.array_format = 'json';
+    repoConfig.array_key_format = '_/#';
+    git_utils.initRepo(_.extend(repoConfig, {'expand_keys': true}), function(err, repo) {
       if (err) return done(err);
 
       // The default repo created by initRepo has a single branch, master.
@@ -79,8 +80,7 @@ describe('Parse YAML', function() {
               if (err) return done(err);
             });
           });
-          // At this point, the repo should have populated consul with our sample_key
-          consul_utils.validateValue('test_repo/master/complex_sample.yaml/my.server.path/KEY-ENV-VAR', 'true', function(err, value) {
+          consul_utils.validateValue('test_repo/master/complex_sample.yaml/my.server.path/0/KEY-ENV-VAR', 'true', function(err, value) {
             if (err) return done(err);
             done();
           });
