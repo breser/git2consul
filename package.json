@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/Cimpress-MCP/git2consul.git"
+    "url": "git://github.com/andriniaina/git2consul-windows.git"
   },
   "dependencies": {
     "body-parser": "~1.4.3",
