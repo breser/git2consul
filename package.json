@@ -1,17 +1,21 @@
 {
-  "name": "git2consul",
+  "name": "git2consul-windows",
   "description": "System for moving data from git to consul",
   "license": "Apache-2.0",
-  "version": "0.12.13",
+  "version": "0.12.14",
   "contributors": [
     {
       "name": "Ryan Breen",
       "email": "rbreen@cimpress.com"
+    },
+    {
+      "name": "Andri Rakotomalala",
+      "email": "andriniaina@gmail.com"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/Cimpress-MCP/git2consul.git"
+    "url": "git://github.com/andriniaina/git2consul-windows.git"
   },
   "dependencies": {
     "body-parser": "~1.4.3",

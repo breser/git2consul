@@ -1,3 +1,5 @@
+> This utility is **exactly** the same as [breser/git2consul](https://github.com/breser/git2consul) but it includes a small patch that fixes a crash on Windows.
+
 # git2consul
 
 [![Build Status](https://travis-ci.org/breser/git2consul.svg?branch=master)](https://travis-ci.org/breser/git2consul)
