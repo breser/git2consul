@@ -1,5 +1,5 @@
 {
-  "name": "git2consul",
+  "name": "git2consul-windows",
   "description": "System for moving data from git to consul",
   "license": "Apache-2.0",
   "version": "0.12.13",
