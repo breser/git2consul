@@ -23,7 +23,8 @@
     "rimraf": "2.2.8",
     "underscore": "^1.8.0",
     "properties": "1.2.1",
-    "js-yaml": "^3.6.1"
+    "js-yaml": "^3.6.1",
+    "sha512": "^0.0.1"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
