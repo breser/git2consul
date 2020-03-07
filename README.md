@@ -386,6 +386,10 @@ Note :
 
 `ignore_repo_name` is a repo-level option that, when set to true the repository name would be omitted from the prefix.
 
+##### ignore_file_name (default: false)
+
+`ignore_file_name` is a repo-level option that, when set to true the file name would be omitted from the prefix.
+
 ##### ignore_file_extension (default: false)
 
 an `ignore_file_extension` is a repo-level option lets file names be ignored by consul while creating sub folder.
