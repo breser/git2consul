@@ -34,12 +34,12 @@ describe('ignore_file_name', function() {
                     repo_config.source_root = "src/main/resources";
                     repo_config.expand_keys = true;
                     repo_config.include_branch_name = false;
-                    repo_config.ignore_repo_name = true;
+                    repo_config.ignore_repo_name = false;
                     repo_config.ignore_file_name = true;
                     var repo = new Repo(repo_config);
                     repo.init(function(err) {
                         if (err) return done(err);
-                        consul_utils.validateValue('default.connection.pool.db.url', "jdbc:mysql://db-host:3306/user", function(err, value) {
+                        consul_utils.validateValue('test_repo/default.connection.pool.db.url', "jdbc:mysql://db-host:3306/user", function(err, value) {
                             if (err) return done(err);
                             done();
                         });
